@@ -78,6 +78,11 @@ public class HapiProperties {
   static final String PARTITIONING_MULTITENANCY_ENABLED = "partitioning.multitenancy.enabled";
   static final String CLIENT_ID_STRATEGY = "daoconfig.client_id_strategy";
 
+  static final String HAPI_PERSISTENCE_UNIT = "persistence_unit_name";
+  static final String AUTH_SERVER_URL = "auth.server.url";
+  static final String AUTH_REALM = "auth.realm";
+  static final String DISABLE_SSL_VALIDATION = "disable-ssl-validation";
+
   private static Properties ourProperties;
 
   public static boolean isElasticSearchEnabled() {
@@ -512,5 +517,23 @@ public class HapiProperties {
   public static boolean getPartitioningMultitenancyEnabled() {
     return HapiProperties.getBooleanProperty(PARTITIONING_MULTITENANCY_ENABLED, false);
   }
+
+  public static String getHapiPersistenceUnit() {
+    return HapiProperties.getProperty(HAPI_PERSISTENCE_UNIT, "HAPI_PU");
+  }
+
+  public static String getAuthServerUrl() {
+    return HapiProperties.getProperty(AUTH_SERVER_URL, "https://localhost:8443");
+  }
+
+  public static String getAuthRealm() {
+    return HapiProperties.getProperty(AUTH_REALM, "clin");
+  }
+
+  public static boolean isSSLValidationDisabled() {
+    return HapiProperties.getBooleanProperty(DISABLE_SSL_VALIDATION, false);
+  }
+
+
 }
 

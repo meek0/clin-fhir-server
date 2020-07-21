@@ -1,5 +1,6 @@
 package ca.uhn.fhir.jpa.starter;
 
+import bio.ferlab.clin.interceptors.ServiceContextCleanerInterceptor;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
@@ -40,6 +41,7 @@ import ca.uhn.fhir.rest.server.interceptor.partition.RequestTenantPartitionInter
 import ca.uhn.fhir.rest.server.tenant.UrlBaseTenantIdentificationStrategy;
 import ca.uhn.fhir.validation.IValidatorModule;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
+import bio.ferlab.clin.interceptors.AccessTokenInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
@@ -332,6 +334,10 @@ public class BaseJpaRestfulServer extends RestfulServer {
       daoConfig.setResourceServerIdStrategy(DaoConfig.IdStrategyEnum.UUID);
       daoConfig.setResourceClientIdStrategy(HapiProperties.getClientIdStrategy());
     }
+
+    // CLIN
+    registerInterceptor(new AccessTokenInterceptor());
+    registerInterceptor(new ServiceContextCleanerInterceptor());
   }
 
 }
