@@ -52,16 +52,12 @@ public class AccessTokenInterceptor {
         accessToken = bearer.split(" ")[1];
       }
 
-      //Decode token
       DecodedJWT decodedJWT = JWT.decode(accessToken);
 
       //Save user info in ThreadLocal for later use
-      ServiceContext sc = new ServiceContext();
-      sc.setUserId(decodedJWT.getSubject());
-      sc.setLocale(request.getLocale());
-      ThreadLocalServiceContext.getInstance().set(sc);
+      ServiceContext.build(decodedJWT.getSubject(), request.getLocale());
 
-      //Get public keys
+      //Validate access token based on public key
       String url = StringUtils.appendIfMissing(HapiProperties.getAuthServerUrl(), "/") + "auth/realms/" + HapiProperties.getAuthRealm() + "/protocol/openid-connect/certs";
       JwkProvider provider =  new JwkProviderBuilder(new URL(url)).build();
       Jwk jwk = provider.get(decodedJWT.getKeyId());
@@ -76,6 +72,10 @@ public class AccessTokenInterceptor {
     }
   }
 
+  /**
+   * DO NOT USE IN PRODUCTION.  Local development environment ONLY.
+   * @return All-trusting SSLContext
+   */
   private static SSLContext getDisabledSSLContext(){
     //Disable SSL Validation during local development with self signed certificates.
     SSLContext sc = null;

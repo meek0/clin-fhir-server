@@ -1,5 +1,6 @@
 package bio.ferlab.clin.context;
 
+import jdk.vm.ci.meta.Local;
 import lombok.Data;
 
 import java.util.Locale;
@@ -8,6 +9,14 @@ import java.util.Locale;
 public class ServiceContext {
     private String userId;
     private Locale locale;
+
+    public static ServiceContext build(String userId, Locale locale){
+        ServiceContext sc = ServiceContext.get();
+        sc.setUserId(userId);
+        sc.setLocale(locale);
+
+        return sc;
+    }
 
     public static ServiceContext get() {
         ServiceContext sc = ThreadLocalServiceContext.getInstance().get();
