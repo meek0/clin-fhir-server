@@ -1,7 +1,6 @@
 package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.context.ServiceContext;
-import bio.ferlab.clin.context.ThreadLocalServiceContext;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
@@ -23,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -32,12 +32,22 @@ import java.security.interfaces.RSAPublicKey;
 @Interceptor
 public class AccessTokenInterceptor {
 
+
+  private static final JwkProvider provider;
   private static final ObjectMapper mapper = new ObjectMapper();
   private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
 
   static{
     if(HapiProperties.isSSLValidationDisabled()) {
       getDisabledSSLContext();
+    }
+
+    String url = StringUtils.appendIfMissing(HapiProperties.getAuthServerUrl(), "/") + "auth/realms/" + HapiProperties.getAuthRealm() + "/protocol/openid-connect/certs";
+    try {
+      provider =  new JwkProviderBuilder(new URL(url)).build();
+    } catch (MalformedURLException e) {
+      //Cannot acquire certificates to validate the tokens.  Fail.
+      throw new RuntimeException(e);
     }
   }
 
@@ -56,10 +66,9 @@ public class AccessTokenInterceptor {
 
       //Save user info in ThreadLocal for later use
       ServiceContext.build(decodedJWT.getSubject(), request.getLocale());
+      //TODO: Add the roles so we can eventually use them to build a list of IAuthRule => https://hapifhir.io/hapi-fhir/docs/security/authorization_interceptor.html
 
       //Validate access token based on public key
-      String url = StringUtils.appendIfMissing(HapiProperties.getAuthServerUrl(), "/") + "auth/realms/" + HapiProperties.getAuthRealm() + "/protocol/openid-connect/certs";
-      JwkProvider provider =  new JwkProviderBuilder(new URL(url)).build();
       Jwk jwk = provider.get(decodedJWT.getKeyId());
       Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
       Verification verifier = JWT.require(algorithm);
