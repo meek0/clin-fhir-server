@@ -1,0 +1,15 @@
+
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+- name: clin-fhir-server
+  literals:
+  - HAPI_DATASOURCE_DRIVER=org.postgresql.Driver
+  - HAPI_DATASOURCE_URL=jdbc:postgresql://__UNDEFINED__:5432/hapi
+  - HAPI_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQL95Dialect
+  - HAPI_AUTH_SERVER_URL=https://__UNDEFINED__
+  - HAPI_AUTH_REALM=clin
+  - HAPI_DISABLE_SSL_VALIDATION="false"
+  - HAPI_SERVER_ADDRESS=https://__UNDEFINED__/fhir/
+  - JAVA_OPTS="-server -Xmx1024m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -XX:+UseContainerSupport"

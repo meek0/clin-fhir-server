@@ -1,0 +1,11 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clin-fhir-server
+spec:
+  template:
+    spec:
+      containers:
+        - image: chusj/clin-fhir-server:a0b3f5c
+          name: clin-fhir-server

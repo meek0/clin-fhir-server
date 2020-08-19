@@ -1,0 +1,19 @@
+#Once migration is complete, clin.cqdg -> clin + switch to clin certificate
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: clin-fhir-server
+spec:
+  tls:
+    - hosts:
+      - fhir.qa.clin.cqdg.ferlab.bio
+      secretName: letsencrypt-certificate
+  rules:
+    - host: fhir.qa.clin.cqdg.ferlab.bio
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: clin-fhir-server
+            servicePort: 8080
