@@ -1,5 +1,6 @@
 package ca.uhn.fhir.jpa.starter;
 
+import bio.ferlab.clin.es.ElasticsearchConfiguration;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
@@ -35,6 +36,7 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext {
       register(SubscriptionChannelConfig.class);
     }
 
+    register(ElasticsearchConfiguration.class);
   }
 
 }
