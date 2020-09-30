@@ -22,43 +22,23 @@ public class IndexerInterceptor {
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_CREATED)
-    public void resourceCreated(
-            IBaseResource resource,
-            RequestDetails requestDetails,
-            ServletRequestDetails servletRequestDetails,
-            TransactionDetails transactionDetails) {
-
+    public void resourceCreated(IBaseResource resource) {
         if (resource instanceof Patient) {
-            client.index(new ElasticsearchRestClient.IndexParams<>(
-                    "test",
-                    (Resource) resource
-            ));
+            client.index("test", (Resource) resource);
         }
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_UPDATED)
-    public void resourceUpdated(
-            IBaseResource oldResource,
-            IBaseResource newResource,
-            RequestDetails requestDetails,
-            ServletRequestDetails servletRequestDetails,
-            TransactionDetails transactionDetails) {
-
+    public void resourceUpdated(IBaseResource oldResource, IBaseResource newResource) {
         if (newResource instanceof Patient) {
-            client.index(new ElasticsearchRestClient.IndexParams<>(
-                    "test",
-                    (Resource) newResource
-            ));
+            client.index("test", (Resource) newResource);
         }
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_DELETED)
     public void resourceDeleted(IBaseResource resource, RequestDetails requestDetails) {
         if (resource instanceof Patient) {
-            client.delete(new ElasticsearchRestClient.IndexParams<>(
-                    "test",
-                    (Resource) resource
-            ));
+            client.delete("test", (Resource) resource);
         }
     }
 }

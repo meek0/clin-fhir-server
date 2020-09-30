@@ -9,9 +9,13 @@ import java.io.IOException;
 public class ElasticsearchData {
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchData.class);
     public final RestClient client;
+    public final String host;
+    public final String authToken;
 
-    public ElasticsearchData(RestClient client) {
+    public ElasticsearchData(RestClient client, String host, String authToken) {
         this.client = client;
+        this.host = host;
+        this.authToken = authToken;
     }
 
     public void close() {

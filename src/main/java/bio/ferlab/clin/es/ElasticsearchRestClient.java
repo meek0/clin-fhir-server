@@ -21,49 +21,29 @@ public class ElasticsearchRestClient {
         this.data = data;
     }
 
-    public <T extends Resource> void index(IndexParams<T> params) {
+    public <T extends Resource> void index(String index, T resource) {
         final RestClient client = this.data.client;
-        final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(params.data);
+        final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(resource);
         final HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
-        final String id = params.data.getIdElement().getIdPart();
+        final String id = resource.getIdElement().getIdPart();
         client.performRequestAsync("PUT",
-                String.format("/%s/_doc/%s", params.index, id),
+                String.format("/%s/_doc/%s", index, id),
                 new HashMap<>(),
                 entity,
-                new IndexResponseListener(params.index)
+                new IndexResponseListener(index)
         );
     }
 
-    public <T extends Resource> void delete(IndexParams<T> params) {
-
+    public <T extends Resource> void delete(String index, T resource) {
         final RestClient client = this.data.client;
-        final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(params.data);
+        final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(resource);
         final HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
-        final String id = params.data.getIdElement().getIdPart();
+        final String id = resource.getIdElement().getIdPart();
         client.performRequestAsync("DELETE",
-                String.format("/%s/_doc/%s", params.index, id),
+                String.format("/%s/_doc/%s", index, id),
                 new HashMap<>(),
                 entity,
-                new IndexResponseListener(params.index)
+                new IndexResponseListener(index)
         );
     }
-
-    public static class IndexParams<T extends Resource> {
-        public final String index;
-        public final T data;
-
-        public IndexParams(String index, T data) {
-            this.index = index;
-            this.data = data;
-        }
-    }
-
-    public static class GetParams {
-        public final String index;
-
-        public GetParams(String index) {
-            this.index = index;
-        }
-    }
-
 }
