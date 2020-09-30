@@ -22,27 +22,25 @@ public class ElasticsearchRestClient {
     }
 
     public <T extends Resource> void index(String index, T resource) {
-        final RestClient client = this.data.client;
         final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(resource);
-        final HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
         final String id = resource.getIdElement().getIdPart();
-        client.performRequestAsync("PUT",
+        logger.info(String.format("Indexing resource id[%s]", id));
+        this.data.client.performRequestAsync("PUT",
                 String.format("/%s/_doc/%s", index, id),
                 new HashMap<>(),
-                entity,
+                new NStringEntity(content, ContentType.APPLICATION_JSON),
                 new IndexResponseListener(index)
         );
     }
 
     public <T extends Resource> void delete(String index, T resource) {
-        final RestClient client = this.data.client;
         final String content = FhirContext.forR4().newJsonParser().encodeResourceToString(resource);
-        final HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
         final String id = resource.getIdElement().getIdPart();
-        client.performRequestAsync("DELETE",
+        logger.info(String.format("Deleting resource id[%s]", id));
+        this.data.client.performRequestAsync("DELETE",
                 String.format("/%s/_doc/%s", index, id),
                 new HashMap<>(),
-                entity,
+                new NStringEntity(content, ContentType.APPLICATION_JSON),
                 new IndexResponseListener(index)
         );
     }
