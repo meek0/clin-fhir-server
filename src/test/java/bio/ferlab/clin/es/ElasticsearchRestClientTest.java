@@ -51,7 +51,7 @@ public class ElasticsearchRestClientTest {
         this.patient.setGender(Enumerations.AdministrativeGender.MALE);
         this.patient.setId(IdType.newRandomUuid());
 
-        this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost", INDEX_NAME));
+        this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost"));
     }
 
     @Nested
@@ -63,7 +63,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
             public void shouldMakeAsyncCall() {
-                elasticsearchRestClient.index(patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 anyString(),
@@ -77,7 +77,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should encode the resource to JSON")
             public void shouldEncodeResourceToJson() {
-                elasticsearchRestClient.index(patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 anyString(),
@@ -99,7 +99,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make the correct request")
             public void shouldMakeCorrectRequest() {
-                elasticsearchRestClient.index(patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 eq("PUT"),
@@ -118,7 +118,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
             public void shouldMakeAsyncCall() {
-                elasticsearchRestClient.delete(patient);
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 anyString(),
@@ -131,7 +131,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make the correct delete request")
             public void shouldMakeCorrectRequest() {
-                elasticsearchRestClient.delete(patient);
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 eq("DELETE"),
@@ -153,7 +153,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should handle any exception during request")
             public void shouldHandleAnyException() {
-                elasticsearchRestClient.index(patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 doAnswer(invocationOnMock -> {
                     verify(responseListenerCaptor.getValue(), times(1))
                             .onFailure(any(Exception.class));
@@ -175,7 +175,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should handle any exception during request")
             public void shouldHandleAnyException() {
-                elasticsearchRestClient.delete(patient);
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
                 doAnswer(invocationOnMock -> {
                     verify(responseListenerCaptor.getValue(), times(1))
                             .onFailure(any(Exception.class));

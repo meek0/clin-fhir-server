@@ -1,78 +1,33 @@
 package bio.ferlab.clin.es.data;
 
 import com.fasterxml.jackson.annotation.*;
+import lombok.Data;
 
 public class ElasticResponse {
+    @Data
     public static class Index {
-        private String index;
-        private String type;
-        private String id;
-        private long version;
-        private String result;
-        private Shards shards;
-        private long seqNo;
-        private long primaryTerm;
-
         @JsonProperty("_index")
-        public String getIndex() {
-            return index;
-        }
-
+        private String index;
         @JsonProperty("_type")
-        public String getType() {
-            return type;
-        }
-
+        private String type;
         @JsonProperty("_id")
-        public String getID() {
-            return id;
-        }
-
+        private String id;
         @JsonProperty("_version")
-        public long getVersion() {
-            return version;
-        }
-
+        private long version;
         @JsonProperty("result")
-        public String getResult() {
-            return result;
-        }
-
+        private String result;
         @JsonProperty("_shards")
-        public Shards getShards() {
-            return shards;
-        }
-
+        private Shards shards;
         @JsonProperty("_seq_no")
-        public long getSeqNo() {
-            return seqNo;
-        }
-
+        private long seqNo;
         @JsonProperty("_primary_term")
-        public long getPrimaryTerm() {
-            return primaryTerm;
-        }
+        private long primaryTerm;
     }
 
-
+    @Data
     public static class Shards {
         private long total;
         private long successful;
         private long failed;
-
-        @JsonProperty("total")
-        public long getTotal() {
-            return total;
-        }
-
-        @JsonProperty("successful")
-        public long getSuccessful() {
-            return successful;
-        }
-
-        @JsonProperty("failed")
-        public long getFailed() {
-            return failed;
-        }
     }
 }

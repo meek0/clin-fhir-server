@@ -10,18 +10,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticsearchConfiguration {
     private final String host = HapiProperties.getBioEsHost();
-    private final String index = HapiProperties.getBioEsIndex();
     private final int port = HapiProperties.getBioEsPort();
-    private final int transportPort = HapiProperties.getBioEsTransportPort();
     private final String scheme = HapiProperties.getBioEsScheme();
 
     @Bean(destroyMethod = "close")
     public ElasticsearchData esData() {
         RestClient client = RestClient.builder(
-                new HttpHost(this.host, this.port, this.scheme),
-                new HttpHost(this.host, this.transportPort, this.scheme)
+                new HttpHost(this.host, this.port, this.scheme)
         ).build();
-        return new ElasticsearchData(client, this.host, this.index);
+        return new ElasticsearchData(client, this.host);
     }
 
     @Bean
