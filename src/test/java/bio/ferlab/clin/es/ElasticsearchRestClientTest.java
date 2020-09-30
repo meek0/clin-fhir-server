@@ -2,7 +2,6 @@ package bio.ferlab.clin.es;
 
 import bio.ferlab.clin.es.data.ElasticsearchData;
 import ca.uhn.fhir.context.FhirContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.elasticsearch.client.ResponseListener;
@@ -20,10 +19,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ElasticsearchRestClientTest {
+    private static final String INDEX_NAME = "test";
+
     @Mock
     private RestClient client;
     @Captor
@@ -40,17 +40,16 @@ public class ElasticsearchRestClientTest {
         MockitoAnnotations.initMocks(this);
 
         this.patient = new Patient();
-
-        Patient patient = new Patient();
-        patient.addIdentifier()
+        this.patient.addIdentifier()
                 .setSystem("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient")
                 .setValue("12345");
-        patient.addName()
+        this.patient.addName()
                 .setFamily("Test")
                 .addGiven("TTest")
                 .addGiven("Testing");
-        patient.setGender(Enumerations.AdministrativeGender.MALE);
-        patient.setId(IdType.newRandomUuid());
+        this.patient.setIdElement(IdType.newRandomUuid());
+        this.patient.setGender(Enumerations.AdministrativeGender.MALE);
+        this.patient.setId(IdType.newRandomUuid());
 
         this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost", ""));
     }
@@ -64,7 +63,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
             public void shouldMakeAsyncCall() {
-                elasticsearchRestClient.index("test", patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 anyString(),
@@ -78,7 +77,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should encode the resource to JSON")
             public void shouldEncodeResourceToJson() {
-                elasticsearchRestClient.index("test", patient);
+                elasticsearchRestClient.index(INDEX_NAME, patient);
                 verify(client, times(1))
                         .performRequestAsync(
                                 anyString(),
@@ -96,7 +95,98 @@ public class ElasticsearchRestClientTest {
                     e.printStackTrace();
                 }
             }
+
+            @Test
+            @DisplayName("Should make the correct request")
+            public void shouldMakeCorrectRequest() {
+                elasticsearchRestClient.index(INDEX_NAME, patient);
+                verify(client, times(1))
+                        .performRequestAsync(
+                                eq("PUT"),
+                                eq(String.format("/%s/_doc/%s", INDEX_NAME, patient.getIdElement().getIdPart())),
+                                anyMapOf(String.class, String.class),
+                                httpEntityCaptor.capture(),
+                                responseListenerCaptor.capture()
+                        );
+            }
+        }
+
+
+        @Nested
+        @DisplayName("RestClient::Delete function")
+        class Delete {
+            @Test
+            @DisplayName("Should make an async call to the Elasticsearch API")
+            public void shouldMakeAsyncCall() {
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
+                verify(client, times(1))
+                        .performRequestAsync(
+                                anyString(),
+                                anyString(),
+                                anyMapOf(String.class, String.class),
+                                responseListenerCaptor.capture()
+                        );
+            }
+
+            @Test
+            @DisplayName("Should make the correct delete request")
+            public void shouldMakeCorrectRequest() {
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
+                verify(client, times(1))
+                        .performRequestAsync(
+                                eq("DELETE"),
+                                eq(String.format("/%s/_doc/%s", INDEX_NAME, patient.getIdElement().getIdPart())),
+                                anyMapOf(String.class, String.class),
+                                responseListenerCaptor.capture()
+                        );
+            }
         }
     }
 
+
+    @Nested
+    @DisplayName("Invalid request")
+    class InvalidRequest {
+        @Nested
+        @DisplayName("RestClient::Index function")
+        class Index {
+            @Test
+            @DisplayName("Should handle any exception during request")
+            public void shouldHandleAnyException() {
+                elasticsearchRestClient.index(INDEX_NAME, patient);
+                doAnswer(invocationOnMock -> {
+                    verify(responseListenerCaptor.getValue(), times(1))
+                            .onFailure(any(Exception.class));
+                    throw new RuntimeException("Exception");
+                }).when(client).performRequestAsync(
+                        anyString(),
+                        anyString(),
+                        anyMapOf(String.class, String.class),
+                        httpEntityCaptor.capture(),
+                        responseListenerCaptor.capture()
+                );
+            }
+        }
+
+
+        @Nested
+        @DisplayName("RestClient::Delete function")
+        class Delete {
+            @Test
+            @DisplayName("Should handle any exception during request")
+            public void shouldHandleAnyException() {
+                elasticsearchRestClient.delete(INDEX_NAME, patient);
+                doAnswer(invocationOnMock -> {
+                    verify(responseListenerCaptor.getValue(), times(1))
+                            .onFailure(any(Exception.class));
+                    throw new RuntimeException("Exception");
+                }).when(client).performRequestAsync(
+                        anyString(),
+                        anyString(),
+                        anyMapOf(String.class, String.class),
+                        responseListenerCaptor.capture()
+                );
+            }
+        }
+    }
 }

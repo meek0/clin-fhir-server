@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 
-public class IndexResponseListener implements ResponseListener {
-    private static final Logger logger = LoggerFactory.getLogger(IndexResponseListener.class);
+public class UpdateResponseListener implements ResponseListener {
+    private static final Logger logger = LoggerFactory.getLogger(UpdateResponseListener.class);
     private final String index;
 
-    public IndexResponseListener(String index) {
+    public UpdateResponseListener(String index) {
         this.index = index;
     }
 
