@@ -10,12 +10,12 @@ public class ElasticsearchData {
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchData.class);
     public final RestClient client;
     public final String host;
-    public final String authToken;
+    public final String index;
 
-    public ElasticsearchData(RestClient client, String host, String authToken) {
+    public ElasticsearchData(RestClient client, String host, String index) {
         this.client = client;
         this.host = host;
-        this.authToken = authToken;
+        this.index = index;
     }
 
     public void close() {

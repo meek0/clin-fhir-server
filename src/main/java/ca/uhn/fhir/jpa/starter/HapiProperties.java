@@ -83,11 +83,11 @@ public class HapiProperties {
     static final String AUTH_REALM = "auth.realm";
     static final String DISABLE_SSL_VALIDATION = "disable-ssl-validation";
 
-    static final String BIO_ES_AUTH = "bio.elasticsearch.auth";
+    static final String BIO_ES_HOST = "bio.elasticsearch.host";
+    static final String BIO_ES_INDEX = "bio.elasticsearch.index";
     static final String BIO_ES_PORT = "bio.elasticsearch.port";
     static final String BIO_ES_TRANSPORT_PORT = "bio.elasticsearch.transport.port";
     static final String BIO_ES_SCHEME = "bio.elasticsearch.scheme";
-    static final String BIO_ES_AUTHORIZATION_TOKEN = "bio.elasticsearch.authorization.token";
 
     private static Properties ourProperties;
 
@@ -540,8 +540,12 @@ public class HapiProperties {
         return HapiProperties.getBooleanProperty(DISABLE_SSL_VALIDATION, false);
     }
 
-    public static String getBioEsAuth() {
-        return HapiProperties.getProperty(BIO_ES_AUTH, "localhost");
+    public static String getBioEsHost() {
+        return HapiProperties.getProperty(BIO_ES_HOST, "localhost");
+    }
+
+    public static String getBioEsIndex() {
+        return HapiProperties.getProperty(BIO_ES_INDEX, "test");
     }
 
     public static int getBioEsPort() {
@@ -554,10 +558,6 @@ public class HapiProperties {
 
     public static String getBioEsScheme() {
         return HapiProperties.getProperty(BIO_ES_SCHEME, "http");
-    }
-
-    public static String getBioEsAuthorizationToken() {
-        return HapiProperties.getProperty(BIO_ES_AUTHORIZATION_TOKEN, "");
     }
 }
 

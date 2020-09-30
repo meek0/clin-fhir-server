@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ElasticsearchConfiguration {
-    private final String host = HapiProperties.getBioEsAuth();
+    private final String host = HapiProperties.getBioEsHost();
+    private final String index = HapiProperties.getBioEsIndex();
     private final int port = HapiProperties.getBioEsPort();
     private final int transportPort = HapiProperties.getBioEsTransportPort();
     private final String scheme = HapiProperties.getBioEsScheme();
-    private final String authToken = HapiProperties.getBioEsAuthorizationToken();
 
     @Bean(destroyMethod = "close")
     public ElasticsearchData esData() {
@@ -21,7 +21,7 @@ public class ElasticsearchConfiguration {
                 new HttpHost(this.host, this.port, this.scheme),
                 new HttpHost(this.host, this.transportPort, this.scheme)
         ).build();
-        return new ElasticsearchData(client, this.host, this.authToken);
+        return new ElasticsearchData(client, this.host, this.index);
     }
 
     @Bean
