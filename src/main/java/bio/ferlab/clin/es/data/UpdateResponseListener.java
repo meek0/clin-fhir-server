@@ -21,9 +21,8 @@ public class UpdateResponseListener implements ResponseListener {
 
     @Override
     public void onSuccess(Response response) {
-        final String content;
         try {
-            content = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
+            final String content = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
             final ElasticResponse.Index parsed = new ObjectMapper().readValue(content, ElasticResponse.Index.class);
             if (parsed.getShards().getSuccessful() != 1 || parsed.getShards().getFailed() > 0) {
                 throw new FailedToUpdateIndexException(this.index);

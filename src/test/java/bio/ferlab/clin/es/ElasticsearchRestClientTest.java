@@ -58,7 +58,7 @@ public class ElasticsearchRestClientTest {
     @DisplayName("Valid")
     class ValidRequest {
         @Nested
-        @DisplayName("RestClient::Index function")
+        @DisplayName("ElasticsearchRestClient::Index function")
         class Index {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
@@ -113,7 +113,7 @@ public class ElasticsearchRestClientTest {
 
 
         @Nested
-        @DisplayName("RestClient::Delete function")
+        @DisplayName("ElasticsearchRestClient::Delete function")
         class Delete {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
@@ -148,7 +148,7 @@ public class ElasticsearchRestClientTest {
     @DisplayName("Invalid request")
     class InvalidRequest {
         @Nested
-        @DisplayName("RestClient::Index function")
+        @DisplayName("ElasticsearchRestClient::Index function")
         class Index {
             @Test
             @DisplayName("Should handle any exception during request")
@@ -170,7 +170,7 @@ public class ElasticsearchRestClientTest {
 
 
         @Nested
-        @DisplayName("RestClient::Delete function")
+        @DisplayName("ElasticsearchRestClient::Delete function")
         class Delete {
             @Test
             @DisplayName("Should handle any exception during request")
