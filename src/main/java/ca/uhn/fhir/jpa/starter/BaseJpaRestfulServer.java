@@ -1,9 +1,6 @@
 package ca.uhn.fhir.jpa.starter;
 
-import bio.ferlab.clin.interceptors.AccessTokenInterceptor;
-import bio.ferlab.clin.interceptors.IndexerInterceptor;
-import bio.ferlab.clin.interceptors.ServiceContextCleanerInterceptor;
-import bio.ferlab.clin.interceptors.ValidationInterceptor;
+import bio.ferlab.clin.interceptors.*;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
@@ -326,6 +323,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         }
 
         // CLIN
+        registerInterceptor(new FieldValidatorInterceptor(appCtx));
         registerInterceptor(new IndexerInterceptor(appCtx));
         registerInterceptor(new ValidationInterceptor());
         registerInterceptor(new AccessTokenInterceptor());
