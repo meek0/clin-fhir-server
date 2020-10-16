@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationChain {
-    private List<SchemaValidator<? extends IBaseResource>> validators = new ArrayList<>();
+    private final List<SchemaValidator<? extends IBaseResource>> validators = new ArrayList<>();
 
     public ValidationChain withValidator(SchemaValidator<? extends  IBaseResource> validator) {
         this.validators.add(validator);
