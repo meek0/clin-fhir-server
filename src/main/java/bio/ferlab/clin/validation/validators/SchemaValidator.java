@@ -2,7 +2,6 @@ package bio.ferlab.clin.validation.validators;
 
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.DomainResource;
 
 public abstract class SchemaValidator<T extends IBaseResource> {
     private final Class<T> tClass;

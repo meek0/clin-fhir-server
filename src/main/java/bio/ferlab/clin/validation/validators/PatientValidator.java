@@ -2,6 +2,7 @@ package bio.ferlab.clin.validation.validators;
 
 import bio.ferlab.clin.validation.utils.ValidatorUtils;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 
@@ -16,7 +17,7 @@ public class PatientValidator extends SchemaValidator<Patient> {
 
     @Override
     public boolean validateResource(Patient patient) {
-        return validateNames(patient) && validateBirthDate(patient);
+        return validateNames(patient) && validateBirthDate(patient) && isValidRAMQ(patient);
     }
 
     private boolean validateBirthDate(Patient patient) {
@@ -44,5 +45,14 @@ public class PatientValidator extends SchemaValidator<Patient> {
         return name.length() > 2 &&
                 !ValidatorUtils.hasSpecialCharacters(name) &&
                 ValidatorUtils.isTrimmed(name);
+    }
+
+    private boolean isValidRAMQ(Patient patient) {
+        if (patient.getIdentifier().size() < 2) {
+            return false;
+        }
+        final Identifier identifier = patient.getIdentifier().get(1);
+        final boolean validRAMQ = ValidatorUtils.isValidRAMQ(identifier.getValue());
+        return validRAMQ;
     }
 }

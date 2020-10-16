@@ -11,4 +11,8 @@ public class ValidatorUtils {
     public static boolean hasSpecialCharacters(String value){
         return !ValidationPatterns.NO_SPECIAL_CHARACTERS.matcher(value).find();
     }
+
+    public static boolean isValidRAMQ(String value){
+        return ValidationPatterns.VALID_RAMQ.matcher(value).find();
+    }
 }

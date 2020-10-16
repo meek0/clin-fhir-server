@@ -3,6 +3,7 @@ package bio.ferlab.clin.validation.validators;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.*;
 
@@ -16,8 +17,12 @@ public class PatientValidatorTest {
     public void setup() {
         this.patient = new Patient();
         this.patient.addIdentifier()
-                .setSystem("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient")
+                .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
                 .setValue("12345");
+
+        this.patient.addIdentifier()
+                .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                .setValue("ABCD00000000");
 
         this.patient.setBirthDate(DateUtils.addDays(new Date(), -1));
         this.patient.addName()
@@ -41,7 +46,7 @@ public class PatientValidatorTest {
 
 
     @Nested
-    @DisplayName("With invalid")
+    @DisplayName("With invalid data")
     class Invalid {
 
         @Nested
@@ -49,7 +54,7 @@ public class PatientValidatorTest {
         class InvalidBirthDate {
             @Test
             @DisplayName("PatientValidator::validate should return false")
-            public void validateShouldReturnTrue() {
+            public void validateShouldReturnFalse() {
                 patient.setBirthDate(null);
                 Assertions.assertFalse(patientValidator.validate(patient));
             }
@@ -64,7 +69,7 @@ public class PatientValidatorTest {
             class NotTrimmed {
                 @Test
                 @DisplayName("PatientValidator::validate should return false")
-                public void validateShouldReturnTrue() {
+                public void validateShouldReturnFalse() {
                     patient.addName().setFamily("Test ");
                     Assertions.assertFalse(patientValidator.validate(patient));
                 }
@@ -76,10 +81,22 @@ public class PatientValidatorTest {
             class SpecialCharacters {
                 @Test
                 @DisplayName("PatientValidator::validate should return false")
-                public void validateShouldReturnTrue() {
+                public void validateShouldReturnFalse() {
                     patient.addName().setFamily("%^Test");
                     Assertions.assertFalse(patientValidator.validate(patient));
                 }
+            }
+        }
+
+
+        @Nested
+        @DisplayName("RAMQ")
+        class InvalidRAMQ {
+            @Test
+            @DisplayName("PatientValidator::validate should return false")
+            public void validateShouldReturnFalse(){
+                patient.getIdentifier().get(1).setValue("ABC00000000");
+                Assertions.assertFalse(patientValidator.validate(patient));
             }
         }
     }

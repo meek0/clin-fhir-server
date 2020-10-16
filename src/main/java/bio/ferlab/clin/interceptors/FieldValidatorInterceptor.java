@@ -17,7 +17,7 @@ public class FieldValidatorInterceptor {
     public void resourceCreated(IBaseResource resource) {
         final boolean validation = this.validationChain.isValid(resource);
         if (!validation) {
-            throw new RuntimeException("Validation failed");
+            throw new ca.uhn.fhir.rest.server.exceptions.InvalidRequestException("Validation failed");
         }
     }
 
@@ -25,7 +25,7 @@ public class FieldValidatorInterceptor {
     public void resourceUpdated(IBaseResource oldResource, IBaseResource newResource) {
         final boolean validation = this.validationChain.isValid(newResource);
         if (!validation) {
-            throw new RuntimeException("Validation failed");
+            throw new ca.uhn.fhir.rest.server.exceptions.InvalidRequestException("Validation failed");
         }
     }
 
