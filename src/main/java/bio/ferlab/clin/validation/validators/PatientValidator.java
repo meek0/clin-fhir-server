@@ -17,11 +17,39 @@ public class PatientValidator extends SchemaValidator<Patient> {
 
     @Override
     public boolean validateResource(Patient patient) {
-        return validateNames(patient) && validateBirthDate(patient) && isValidRAMQ(patient);
+        return validateNames(patient) &&
+                validateBirthDate(patient) &&
+                validateMRN(patient) &&
+                validateRAMQ(patient);
     }
 
     private boolean validateBirthDate(Patient patient) {
         return patient.hasBirthDate() && patient.getBirthDate().before(new Date());
+    }
+
+    private boolean validateMRN(Patient patient) {
+        if (patient.getIdentifier().isEmpty()) {
+            return false;
+        }
+
+        final Identifier identifier = patient.getIdentifier().get(0);
+        final String mrn = identifier.getValue();
+
+        return mrn != null &&
+                mrn.length() > 0 &&
+                ValidatorUtils.isTrimmed(mrn) &&
+                !ValidatorUtils.hasSpecialCharacters(mrn);
+    }
+
+    private boolean validateRAMQ(Patient patient) {
+        if (patient.getIdentifier().size() < 2) {
+            return true;
+        }
+        final Identifier identifier = patient.getIdentifier().get(1);
+        final String ramq = identifier.getValue();
+        return ramq != null &&
+                ValidatorUtils.isTrimmed(ramq) &&
+                ValidatorUtils.isValidRAMQ(ramq);
     }
 
     private boolean validateNames(Patient patient) {
@@ -42,17 +70,9 @@ public class PatientValidator extends SchemaValidator<Patient> {
     }
 
     private boolean isValidName(String name) {
-        return name.length() > 2 &&
+        return name != null &&
+                name.length() > 2 &&
                 !ValidatorUtils.hasSpecialCharacters(name) &&
                 ValidatorUtils.isTrimmed(name);
-    }
-
-    private boolean isValidRAMQ(Patient patient) {
-        if (patient.getIdentifier().size() < 2) {
-            return false;
-        }
-        final Identifier identifier = patient.getIdentifier().get(1);
-        final boolean validRAMQ = ValidatorUtils.isValidRAMQ(identifier.getValue());
-        return validRAMQ;
     }
 }
