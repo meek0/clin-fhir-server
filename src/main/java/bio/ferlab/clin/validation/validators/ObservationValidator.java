@@ -8,14 +8,14 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
 public class ObservationValidator extends SchemaValidator<Observation> {
-    enum SupportedCodesEnum {
+    private enum SupportedCodesEnum {
         CGH,
         INDIC,
         PHENO,
         INVES
     }
 
-    enum CghInterpretationEnum {
+    private enum CghInterpretationEnum {
         A,
         N,
         IND
@@ -52,7 +52,7 @@ public class ObservationValidator extends SchemaValidator<Observation> {
             return false;
         }
 
-        // Make sure the CGH has an interpretation
+        // Make sure the interpretation has only one coding
         final CodeableConcept interpretation = resource.getInterpretation().get(0);
         if (interpretation.isEmpty() || interpretation.getCoding().size() != 1) {
             return false;
@@ -75,7 +75,7 @@ public class ObservationValidator extends SchemaValidator<Observation> {
     }
 
     private boolean validateNote(Observation resource) {
-        if(resource.hasNote()){
+        if (resource.hasNote()) {
             final Annotation note = resource.getNote().get(0);
             return !note.isEmpty() &&
                     note.getText() != null &&
