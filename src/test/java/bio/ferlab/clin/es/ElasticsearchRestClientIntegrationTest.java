@@ -1,7 +1,6 @@
 package bio.ferlab.clin.es;
 
 import bio.ferlab.clin.es.data.ElasticsearchData;
-import bio.ferlab.clin.es.data.UpdateResponseListener;
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -16,7 +15,10 @@ import org.elasticsearch.client.RestClient;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;

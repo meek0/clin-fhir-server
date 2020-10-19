@@ -1,6 +1,7 @@
 package bio.ferlab.clin.validation.validators;
 
 import bio.ferlab.clin.validation.utils.ValidatorUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
@@ -24,7 +25,14 @@ public class PatientValidator extends SchemaValidator<Patient> {
     }
 
     private boolean validateBirthDate(Patient patient) {
-        return patient.hasBirthDate() && patient.getBirthDate().before(new Date());
+        return patient.hasBirthDate() && isValidBirthDate(patient.getBirthDate());
+    }
+
+    private boolean isValidBirthDate(Date date) {
+        final Date today = new Date();
+        if (DateUtils.isSameDay(date, today)) {
+            return true;
+        } else return date.before(today);
     }
 
     private boolean validateMRN(Patient patient) {
