@@ -95,7 +95,7 @@ public class ObservationValidator extends SchemaValidator<Observation> {
     }
 
     private boolean validateInvestigations(Observation resource) {
-        return resource.hasNote() && validateNote(resource);
+        return validateNote(resource);
     }
 
     private String getCode(Observation resource) {
