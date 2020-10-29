@@ -160,11 +160,7 @@ public class NDJsonResourceProviderIntegrationTest {
                 .useHttpGet()
                 .execute();
 
-        Thread.sleep(5000);
-
-        ObjectMetadata meta = s3Client.getObjectMetadata(HapiProperties.getNdjsonExportS3Bucket(), HapiProperties.getNdjsonExportS3Prefix() + "/Patient.json");
-        Assertions.assertNotNull(meta);
-        Assertions.assertTrue(meta.getContentLength() > 0);
+        validateContentIsOnS3();
     }
 
     @Test
@@ -177,6 +173,10 @@ public class NDJsonResourceProviderIntegrationTest {
                 .useHttpGet()
                 .execute();
 
+        validateContentIsOnS3();
+    }
+
+    private void validateContentIsOnS3() throws Exception{
         Thread.sleep(5000);
 
         ObjectMetadata meta = s3Client.getObjectMetadata(HapiProperties.getNdjsonExportS3Bucket(), HapiProperties.getNdjsonExportS3Prefix() + "/Patient.json");
