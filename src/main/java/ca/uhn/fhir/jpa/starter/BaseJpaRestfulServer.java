@@ -177,12 +177,18 @@ public class BaseJpaRestfulServer extends RestfulServer {
         /*
          * Add some logging for each request
          */
-        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
-        loggingInterceptor.setLoggerName(HapiProperties.getLoggerName());
-        loggingInterceptor.setMessageFormat(HapiProperties.getLoggerFormat());
-        loggingInterceptor.setErrorMessageFormat(HapiProperties.getLoggerErrorFormat());
-        loggingInterceptor.setLogExceptions(HapiProperties.getLoggerLogExceptions());
-        this.registerInterceptor(loggingInterceptor);
+        if(HapiProperties.isServerLoggingEnabled()) {
+            LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+            loggingInterceptor.setLoggerName(HapiProperties.getLoggerName());
+            loggingInterceptor.setMessageFormat(HapiProperties.getLoggerFormat());
+            loggingInterceptor.setErrorMessageFormat(HapiProperties.getLoggerErrorFormat());
+            loggingInterceptor.setLogExceptions(HapiProperties.getLoggerLogExceptions());
+            this.registerInterceptor(loggingInterceptor);
+        }
+
+        if(HapiProperties.isClientLoggingEnabled()) {
+            this.registerInterceptor(new ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor(true));
+        }
 
         /*
          * If you are hosting this server at a specific DNS name, the server will try to
@@ -324,9 +330,13 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
         // CLIN
         registerInterceptor(new FieldValidatorInterceptor(appCtx));
-        registerInterceptor(new IndexerInterceptor(appCtx));
         registerInterceptor(new ValidationInterceptor());
-        registerInterceptor(new AccessTokenInterceptor());
+        if(HapiProperties.isBioEsEnabled()) {
+            registerInterceptor(new IndexerInterceptor(appCtx));
+        }
+        if(HapiProperties.isAuthEnabled()){
+            registerInterceptor(new AccessTokenInterceptor());
+        }
         registerInterceptor(new ServiceContextCleanerInterceptor());
     }
 
