@@ -26,67 +26,79 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 public class HapiProperties {
-    static final String ENABLE_INDEX_MISSING_FIELDS = "enable_index_missing_fields";
-    static final String AUTO_CREATE_PLACEHOLDER_REFERENCE_TARGETS = "auto_create_placeholder_reference_targets";
-    static final String ENFORCE_REFERENTIAL_INTEGRITY_ON_WRITE = "enforce_referential_integrity_on_write";
-    static final String ENFORCE_REFERENTIAL_INTEGRITY_ON_DELETE = "enforce_referential_integrity_on_delete";
-    static final String BINARY_STORAGE_ENABLED = "binary_storage.enabled";
-    static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
-    static final String ALLOW_MULTIPLE_DELETE = "allow_multiple_delete";
-    static final String ALLOW_PLACEHOLDER_REFERENCES = "allow_placeholder_references";
-    static final String REUSE_CACHED_SEARCH_RESULTS_MILLIS = "reuse_cached_search_results_millis";
-    static final String DATASOURCE_DRIVER = "datasource.driver";
-    static final String DATASOURCE_MAX_POOL_SIZE = "datasource.max_pool_size";
-    static final String DATASOURCE_PASSWORD = "datasource.password";
-    static final String DATASOURCE_URL = "datasource.url";
-    static final String DATASOURCE_USERNAME = "datasource.username";
-    static final String DEFAULT_ENCODING = "default_encoding";
-    static final String DEFAULT_PAGE_SIZE = "default_page_size";
-    static final String DEFAULT_PRETTY_PRINT = "default_pretty_print";
-    static final String ETAG_SUPPORT = "etag_support";
-    static final String FHIR_VERSION = "fhir_version";
-    static final String ALLOW_CASCADING_DELETES = "allow_cascading_deletes";
-    static final String HAPI_PROPERTIES = "hapi.properties";
-    static final String LOGGER_ERROR_FORMAT = "logger.error_format";
-    static final String LOGGER_FORMAT = "logger.format";
-    static final String LOGGER_LOG_EXCEPTIONS = "logger.log_exceptions";
-    static final String LOGGER_NAME = "logger.name";
-    static final String MAX_FETCH_SIZE = "max_fetch_size";
-    static final String MAX_PAGE_SIZE = "max_page_size";
-    static final String SERVER_ADDRESS = "server_address";
-    static final String SERVER_ID = "server.id";
-    static final String SERVER_NAME = "server.name";
-    static final String SUBSCRIPTION_EMAIL_ENABLED = "subscription.email.enabled";
-    static final String SUBSCRIPTION_RESTHOOK_ENABLED = "subscription.resthook.enabled";
-    static final String SUBSCRIPTION_WEBSOCKET_ENABLED = "subscription.websocket.enabled";
-    static final String ALLOWED_BUNDLE_TYPES = "allowed_bundle_types";
-    static final String TEST_PORT = "test.port";
-    static final String TESTER_CONFIG_REFUSE_TO_FETCH_THIRD_PARTY_URLS = "tester.config.refuse_to_fetch_third_party_urls";
-    static final String CORS_ENABLED = "cors.enabled";
-    static final String CORS_ALLOWED_ORIGIN = "cors.allowed_origin";
-    static final String CORS_ALLOW_CREDENTIALS = "cors.allowCredentials";
-    static final String ALLOW_CONTAINS_SEARCHES = "allow_contains_searches";
-    static final String ALLOW_OVERRIDE_DEFAULT_SEARCH_PARAMS = "allow_override_default_search_params";
-    static final String EMAIL_FROM = "email.from";
-    static final String VALIDATE_REQUESTS_ENABLED = "validation.requests.enabled";
-    static final String VALIDATE_RESPONSES_ENABLED = "validation.responses.enabled";
-    static final String FILTER_SEARCH_ENABLED = "filter_search.enabled";
-    static final String GRAPHQL_ENABLED = "graphql.enabled";
-    static final String BULK_EXPORT_ENABLED = "bulk.export.enabled";
-    static final String EXPIRE_SEARCH_RESULTS_AFTER_MINS = "retain_cached_searches_mins";
-    static final String MAX_BINARY_SIZE = "max_binary_size";
-    static final String PARTITIONING_MULTITENANCY_ENABLED = "partitioning.multitenancy.enabled";
-    static final String CLIENT_ID_STRATEGY = "daoconfig.client_id_strategy";
+    public static final String ENABLE_INDEX_MISSING_FIELDS = "enable_index_missing_fields";
+    public static final String AUTO_CREATE_PLACEHOLDER_REFERENCE_TARGETS = "auto_create_placeholder_reference_targets";
+    public static final String ENFORCE_REFERENTIAL_INTEGRITY_ON_WRITE = "enforce_referential_integrity_on_write";
+    public static final String ENFORCE_REFERENTIAL_INTEGRITY_ON_DELETE = "enforce_referential_integrity_on_delete";
+    public static final String BINARY_STORAGE_ENABLED = "binary_storage.enabled";
+    public static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
+    public static final String ALLOW_MULTIPLE_DELETE = "allow_multiple_delete";
+    public static final String ALLOW_PLACEHOLDER_REFERENCES = "allow_placeholder_references";
+    public static final String REUSE_CACHED_SEARCH_RESULTS_MILLIS = "reuse_cached_search_results_millis";
+    public static final String DATASOURCE_DRIVER = "datasource.driver";
+    public static final String DATASOURCE_MAX_POOL_SIZE = "datasource.max_pool_size";
+    public static final String DATASOURCE_PASSWORD = "datasource.password";
+    public static final String DATASOURCE_URL = "datasource.url";
+    public static final String DATASOURCE_USERNAME = "datasource.username";
+    public static final String DEFAULT_ENCODING = "default_encoding";
+    public static final String DEFAULT_PAGE_SIZE = "default_page_size";
+    public static final String DEFAULT_PRETTY_PRINT = "default_pretty_print";
+    public static final String ETAG_SUPPORT = "etag_support";
+    public static final String FHIR_VERSION = "fhir_version";
+    public static final String ALLOW_CASCADING_DELETES = "allow_cascading_deletes";
+    public static final String HAPI_PROPERTIES = "hapi.properties";
+    public static final String LOGGER_ERROR_FORMAT = "logger.error_format";
+    public static final String LOGGER_FORMAT = "logger.format";
+    public static final String LOGGER_LOG_EXCEPTIONS = "logger.log_exceptions";
+    public static final String LOGGER_NAME = "logger.name";
+    public static final String LOGGING_INTERCEPTOR_SERVER_ENABLED = "logging.interceptor.server.enabled";
+    public static final String LOGGING_INTERCEPTOR_CLIENT_ENABLED = "logging.interceptor.client.enabled";
+    public static final String MAX_FETCH_SIZE = "max_fetch_size";
+    public static final String MAX_PAGE_SIZE = "max_page_size";
+    public static final String SERVER_ADDRESS = "server_address";
+    public static final String SERVER_ID = "server.id";
+    public static final String SERVER_NAME = "server.name";
+    public static final String SUBSCRIPTION_EMAIL_ENABLED = "subscription.email.enabled";
+    public static final String SUBSCRIPTION_RESTHOOK_ENABLED = "subscription.resthook.enabled";
+    public static final String SUBSCRIPTION_WEBSOCKET_ENABLED = "subscription.websocket.enabled";
+    public static final String ALLOWED_BUNDLE_TYPES = "allowed_bundle_types";
+    public static final String TEST_PORT = "test.port";
+    public static final String TESTER_CONFIG_REFUSE_TO_FETCH_THIRD_PARTY_URLS = "tester.config.refuse_to_fetch_third_party_urls";
+    public static final String CORS_ENABLED = "cors.enabled";
+    public static final String CORS_ALLOWED_ORIGIN = "cors.allowed_origin";
+    public static final String CORS_ALLOW_CREDENTIALS = "cors.allowCredentials";
+    public static final String ALLOW_CONTAINS_SEARCHES = "allow_contains_searches";
+    public static final String ALLOW_OVERRIDE_DEFAULT_SEARCH_PARAMS = "allow_override_default_search_params";
+    public static final String EMAIL_FROM = "email.from";
+    public static final String VALIDATE_REQUESTS_ENABLED = "validation.requests.enabled";
+    public static final String VALIDATE_RESPONSES_ENABLED = "validation.responses.enabled";
+    public static final String FILTER_SEARCH_ENABLED = "filter_search.enabled";
+    public static final String GRAPHQL_ENABLED = "graphql.enabled";
+    public static final String BULK_EXPORT_ENABLED = "bulk.export.enabled";
+    public static final String EXPIRE_SEARCH_RESULTS_AFTER_MINS = "retain_cached_searches_mins";
+    public static final String MAX_BINARY_SIZE = "max_binary_size";
+    public static final String PARTITIONING_MULTITENANCY_ENABLED = "partitioning.multitenancy.enabled";
+    public static final String CLIENT_ID_STRATEGY = "daoconfig.client_id_strategy";
 
-    static final String HAPI_PERSISTENCE_UNIT = "persistence_unit_name";
-    static final String AUTH_SERVER_URL = "auth.server.url";
-    static final String AUTH_REALM = "auth.realm";
-    static final String DISABLE_SSL_VALIDATION = "disable-ssl-validation";
+    public static final String HAPI_PERSISTENCE_UNIT = "persistence_unit_name";
+    public static final String AUTH_SERVER_URL = "auth.server.url";
+    public static final String AUTH_REALM = "auth.realm";
+    public static final String DISABLE_SSL_VALIDATION = "disable-ssl-validation";
+    public static final String AUTH_ENABLED = "auth.enabled";
 
-    static final String BIO_ES_HOST = "bio.elasticsearch.host";
-    static final String BIO_ES_PORT = "bio.elasticsearch.port";
-    static final String BIO_ES_SCHEME = "bio.elasticsearch.scheme";
-    static final String BIO_ES_INDEX_PATIENT = "bio.elasticsearch.index.patient";
+    public static final String BIO_ES_HOST = "bio.elasticsearch.host";
+    public static final String BIO_ES_PORT = "bio.elasticsearch.port";
+    public static final String BIO_ES_SCHEME = "bio.elasticsearch.scheme";
+    public static final String BIO_ES_INDEX_PATIENT = "bio.elasticsearch.index.patient";
+    public static final String BIO_ES_ENABLED = "bio.elasticsearch.enabled";
+
+    public static final String S3_ACCESS_KEY = "s3.access.key";
+    public static final String S3_SECRET_KEY = "s3.secret.key";
+    public static final String S3_SERVICE_ENDPOINT = "s3.service.endpoint";
+    public static final String S3_SIGNIN_REGION = "s3.signin.region";
+
+    public static final String EXPORTS_NDJSON_S3_BUCKET = "exports.ndjson.s3.bucket";
+    public static final String EXPORTS_NDJSON_S3_PREFIX = "exports.ndjson.s3.prefix";
 
     private static Properties ourProperties;
 
@@ -313,6 +325,14 @@ public class HapiProperties {
         return HapiProperties.getBooleanProperty(LOGGER_LOG_EXCEPTIONS, true);
     }
 
+    public static boolean isServerLoggingEnabled() {
+        return HapiProperties.getBooleanProperty(LOGGING_INTERCEPTOR_SERVER_ENABLED, true);
+    }
+
+    public static boolean isClientLoggingEnabled() {
+        return HapiProperties.getBooleanProperty(LOGGING_INTERCEPTOR_CLIENT_ENABLED, false);
+    }
+
     public static String getDataSourceDriver() {
         return HapiProperties.getProperty(DATASOURCE_DRIVER, "org.apache.derby.jdbc.EmbeddedDriver");
     }
@@ -527,6 +547,10 @@ public class HapiProperties {
         return HapiProperties.getProperty(HAPI_PERSISTENCE_UNIT, "HAPI_PU");
     }
 
+    public static boolean isAuthEnabled() {
+        return HapiProperties.getBooleanProperty(AUTH_ENABLED, true);
+    }
+
     public static String getAuthServerUrl() {
         return HapiProperties.getProperty(AUTH_SERVER_URL, "https://localhost:8443");
     }
@@ -542,17 +566,23 @@ public class HapiProperties {
     public static String getBioEsHost() {
         return HapiProperties.getProperty(BIO_ES_HOST, "localhost");
     }
-
     public static int getBioEsPort() {
         return HapiProperties.getIntegerProperty(BIO_ES_PORT, 9200);
     }
-
     public static String getBioEsScheme() {
         return HapiProperties.getProperty(BIO_ES_SCHEME, "http");
     }
-
     public static String getBioEsIndexPatient() {
         return HapiProperties.getProperty(BIO_ES_INDEX_PATIENT);
     }
+    public static boolean isBioEsEnabled() { return HapiProperties.getBooleanProperty(BIO_ES_ENABLED, true); }
+
+
+    public static String getS3AccessKey(){ return HapiProperties.getProperty(S3_ACCESS_KEY, "minio"); }
+    public static String getS3SecretKey(){ return HapiProperties.getProperty(S3_SECRET_KEY, "minio123"); }
+    public static String getS3ServiceEndpoint(){ return HapiProperties.getProperty(S3_SERVICE_ENDPOINT, "http://127.0.0.1:9000"); }
+    public static String getS3SigninRegion(){ return HapiProperties.getProperty(S3_SIGNIN_REGION, "chusj"); }
+    public static String getNdjsonExportS3Bucket(){ return HapiProperties.getProperty(EXPORTS_NDJSON_S3_BUCKET, "clin"); }
+    public static String getNdjsonExportS3Prefix(){ return HapiProperties.getProperty(EXPORTS_NDJSON_S3_PREFIX, "exports"); }
 }
 

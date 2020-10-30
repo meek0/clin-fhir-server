@@ -12,7 +12,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
@@ -52,7 +51,6 @@ public class AccessTokenInterceptor {
 
     @Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_PROCESSED)
     public void validateToken(HttpServletRequest request, HttpServletResponse response) {
-
         String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
         String accessToken = null;
         if (StringUtils.isNotBlank(bearer)) {
