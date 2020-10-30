@@ -9,6 +9,7 @@ import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -87,7 +88,9 @@ public class NDJsonResourceProvider {
                     (new Thread(() -> {
                         try {
                             upload(resources, entity, multipart);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
+                            // No need to rethrow... since it's async, it's already too late.
+                            // HTTP response was already sent back.
                             logger.error("Failed exporting entities of type " + entity);
                         }
                     })).start();
@@ -103,7 +106,7 @@ public class NDJsonResourceProvider {
         response.setStatus(HttpStatus.SC_OK);
     }
 
-    private void upload(List<IBaseResource> resources, IPrimitiveType<String> entity, IPrimitiveType<Boolean> multipart) throws IOException {
+    private void upload(List<IBaseResource> resources, IPrimitiveType<String> entity, IPrimitiveType<Boolean> multipart) throws Exception {
         if(multipart == null || !multipart.getValue().booleanValue()){
             String ndjson = String.join(
                     "\n",
@@ -131,19 +134,15 @@ public class NDJsonResourceProvider {
      * @param entity
      * @param resources
      */
-    private void multipartUpload(String entity, List<IBaseResource> resources) throws IOException {
+    private void multipartUpload(String entity, List<IBaseResource> resources) throws Exception {
 
         String tmpFilePath = StringUtils.appendIfMissing(System.getProperty("java.io.tmpdir"), File.separator);
         tmpFilePath += UUID.randomUUID().toString();
 
         try(Writer fw = new FileWriter(tmpFilePath, false);) {
-            resources.forEach(res -> {
-                try {
-                    this.parser.encodeResourceToWriter(res, fw);
-                } catch (IOException e) {
-                    logger.error("Failed to write to file", e);
-                }
-            });
+            for(IBaseResource res : resources){
+                this.parser.encodeResourceToWriter(res, fw);
+            }
             fw.flush();
         }
 
@@ -163,22 +162,19 @@ public class NDJsonResourceProvider {
 
         try {
             upload.waitForCompletion();
-        } catch (Exception e) {
+        } catch (AmazonClientException | InterruptedException e) {
             logger.error("Upload failed.", e);
+            throw e;
         } finally{
             tmpFile.delete();
         }
     }
 
-    private void createBucketIfRequired() throws InterruptedException {
-        try {
-            if (!s3Client.doesBucketExistV2(HapiProperties.getNdjsonExportS3Bucket())) {
-                // Because the CreateBucketRequest object doesn't specify a region, the
-                // bucket is created in the region specified in the client.
-                s3Client.createBucket(new CreateBucketRequest(HapiProperties.getNdjsonExportS3Bucket()));
-            }
-        }catch(Exception e){
-            logger.error("Failed to create bucket in s3.", e);
+    private void createBucketIfRequired() {
+        if (!s3Client.doesBucketExistV2(HapiProperties.getNdjsonExportS3Bucket())) {
+            // Because the CreateBucketRequest object doesn't specify a region, the
+            // bucket is created in the region specified in the client.
+            s3Client.createBucket(new CreateBucketRequest(HapiProperties.getNdjsonExportS3Bucket()));
         }
     }
 
