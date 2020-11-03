@@ -1,4 +1,4 @@
-package bio.ferlab.clin.es;
+package bio.ferlab.clin.es.config;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import org.hl7.fhir.r4.model.Organization;

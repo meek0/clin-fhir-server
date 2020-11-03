@@ -1,9 +1,9 @@
 package ca.uhn.fhir.jpa.starter;
 
 import bio.ferlab.clin.dao.DaoConfiguration;
-import bio.ferlab.clin.es.ElasticsearchConfiguration;
-import bio.ferlab.clin.es.PatientDataBuilder;
-import bio.ferlab.clin.es.PatientDataConfiguration;
+import bio.ferlab.clin.es.config.ElasticsearchConfiguration;
+import bio.ferlab.clin.es.data.builder.PatientDataBuilder;
+import bio.ferlab.clin.es.config.PatientDataConfiguration;
 import bio.ferlab.clin.validation.ValidationConfiguration;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;

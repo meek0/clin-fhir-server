@@ -1,5 +1,6 @@
-package bio.ferlab.clin.es;
+package bio.ferlab.clin.es.config;
 
+import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.data.ElasticsearchData;
 import ca.uhn.fhir.jpa.starter.HapiProperties;
 import org.apache.http.HttpHost;

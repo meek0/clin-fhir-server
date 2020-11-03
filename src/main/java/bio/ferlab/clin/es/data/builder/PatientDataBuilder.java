@@ -1,48 +1,36 @@
-package bio.ferlab.clin.es;
+package bio.ferlab.clin.es.data.builder;
 
+import bio.ferlab.clin.es.config.PatientDataConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
+import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Component
 public class PatientDataBuilder {
-    private static final String BLOOD_RELATIONSHIP_EXTENSION = "http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship";
-    private static final String ETHNICITY_EXTENSION = "http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity";
-    private static final String IS_PROBAND_EXTENSION = "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband";
-    private static final String FAMILY_ID_EXTENSION = "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id";
     private static final String STATUS_INACTIVE = "inactive";
     private static final String STATUS_ACTIVE = "active";
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private final PatientDataConfiguration configuration;
     private final IParser parser;
     private PatientData patientData;
-
-    public PatientDataBuilder(PatientDataConfiguration configuration, FhirContext context) {
-        this.configuration = configuration;
-        this.parser = context.newJsonParser();
-    }
-
-    private class Handle<T> {
-        final Class<T> tClass;
-        final Consumer<T> callback;
-
-        public Handle(Class<T> tClass, Consumer<T> callback) {
-            this.tClass = tClass;
-            this.callback = callback;
-        }
-    }
 
     private final List<Handle<?>> handles = Arrays.asList(
             new Handle<>(Patient.class, this::handlePatient),
             new Handle<>(ServiceRequest.class, this::handleServiceRequest)
     );
 
+    public PatientDataBuilder(PatientDataConfiguration configuration, FhirContext context) {
+        this.configuration = configuration;
+        this.parser = context.newJsonParser();
+    }
 
     public PatientData fromJson(byte[] content) {
         return this.fromJson(new String(content));
@@ -67,7 +55,7 @@ public class PatientDataBuilder {
     }
 
 
-    private void handlePatient(Patient patient) {
+    void handlePatient(Patient patient) {
         patientData.setId(patient.getId());
         patientData.setMrn(patient.getIdentifier().get(0).getValue());
         patientData.setStatus(patient.getActive() ? STATUS_ACTIVE : STATUS_INACTIVE);
@@ -82,35 +70,36 @@ public class PatientDataBuilder {
             patientData.setRamq(patient.getIdentifier().get(1).getValue());
         }
 
-        if (patient.hasExtension(BLOOD_RELATIONSHIP_EXTENSION)) {
-            final Extension extension = patient.getExtensionByUrl(BLOOD_RELATIONSHIP_EXTENSION);
+        if (patient.hasExtension(Extensions.BLOOD_RELATIONSHIP)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.BLOOD_RELATIONSHIP);
             if (extension.hasValue() && extension.getValue() instanceof Coding) {
                 final Coding value = (Coding) extension.getValue();
                 patientData.setBloodRelationship(value.getDisplay());
             }
         }
 
-        if (patient.hasExtension(ETHNICITY_EXTENSION)) {
-            final Extension extension = patient.getExtensionByUrl(ETHNICITY_EXTENSION);
+        if (patient.hasExtension(Extensions.ETHNICITY)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.ETHNICITY);
             if (extension.hasValue() && extension.getValue() instanceof Coding) {
                 final Coding value = (Coding) extension.getValue();
                 patientData.setEthnicity(value.getDisplay());
             }
         }
 
-        if(patient.hasExtension(IS_PROBAND_EXTENSION)){
-            final Extension extension = patient.getExtensionByUrl(IS_PROBAND_EXTENSION);
+        if (patient.hasExtension(Extensions.IS_PROBAND)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.IS_PROBAND);
             if (extension.hasValue()) {
                 final BooleanType value = (BooleanType) extension.getValue();
                 patientData.setPosition(value.booleanValue() ? "Proband" : "Parent");
             }
         }
 
-        if(patient.hasExtension(FAMILY_ID_EXTENSION)){
-            final Extension extension = patient.getExtensionByUrl(IS_PROBAND_EXTENSION);
-            if(extension.hasValue() && extension.getValue() instanceof Reference){
+        if (patient.hasExtension(Extensions.FAMILY_ID)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
+            if (extension.hasValue() && extension.getValue() instanceof Reference) {
                 final Reference value = (Reference) extension.getValue();
                 patientData.setFamilyId(value.getReference());
+                patientData.setFamilyType("trio");
             }
         }
 
@@ -118,25 +107,34 @@ public class PatientDataBuilder {
             final String id = patient.getGeneralPractitioner().get(0).getReference();
             final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
             final Name name = extractName(practitioner.getName());
-            patientData.setPractitioner(String.format("%s %s", name.firstName, name.lastName));
+            patientData.getPractitioner().setId(id);
+            patientData.getPractitioner().setLastName(name.lastName);
+            patientData.getPractitioner().setFirstName(name.firstName);
         }
 
         if (patient.hasManagingOrganization()) {
             final String id = patient.getManagingOrganization().getReference();
             final Organization organization = configuration.organizationDAO.read(new IdType(id));
-            final String name = organization.hasName() ? organization.getName() : id;
-            patientData.setOrganization(name);
+            patientData.getOrganization().setId(id);
+            patientData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
         }
 
-        if(patient.hasBirthDate()){
-            patientData.setBirthDate(patientData.getBirthDate());
+        if (patient.hasBirthDate()) {
+            patientData.setBirthDate(simpleDateFormat.format(patient.getBirthDate()));
         }
-
-
     }
 
-    private void handleServiceRequest(ServiceRequest serviceRequest) {
+    void handleServiceRequest(ServiceRequest serviceRequest) {
         patientData.setRequest(serviceRequest.getId());
+        if (serviceRequest.hasCode()) {
+            final CodeableConcept code = serviceRequest.getCode();
+            if (code.hasCoding()) {
+                patientData.setTest(code.getCoding().get(0).getCode());
+            }
+        }
+        if (serviceRequest.hasAuthoredOn()) {
+            patientData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
+        }
     }
 
     private static Name extractName(List<HumanName> humanNames) {
