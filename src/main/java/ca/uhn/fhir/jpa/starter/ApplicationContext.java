@@ -2,6 +2,7 @@ package ca.uhn.fhir.jpa.starter;
 
 import bio.ferlab.clin.dao.DaoConfiguration;
 import bio.ferlab.clin.es.ElasticsearchConfiguration;
+import bio.ferlab.clin.es.PatientDataBuilder;
 import bio.ferlab.clin.es.PatientDataConfiguration;
 import bio.ferlab.clin.validation.ValidationConfiguration;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -43,6 +44,7 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext {
     register(ValidationConfiguration.class);
     register(DaoConfiguration.class);
     register(PatientDataConfiguration.class);
+    register(PatientDataBuilder.class);
   }
 
 }
