@@ -1,6 +1,10 @@
 package ca.uhn.fhir.jpa.starter;
 
-import bio.ferlab.clin.es.ElasticsearchConfiguration;
+import bio.ferlab.clin.dao.DaoConfiguration;
+import bio.ferlab.clin.es.config.ElasticsearchConfiguration;
+import bio.ferlab.clin.es.config.PatientDataConfiguration;
+import bio.ferlab.clin.es.data.builder.PatientDataBuilder;
+import bio.ferlab.clin.utils.JsonGenerator;
 import bio.ferlab.clin.validation.ValidationConfiguration;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
@@ -39,6 +43,10 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext {
 
     register(ElasticsearchConfiguration.class);
     register(ValidationConfiguration.class);
+    register(DaoConfiguration.class);
+    register(PatientDataConfiguration.class);
+    register(PatientDataBuilder.class);
+    register(JsonGenerator.class);
   }
 
 }
