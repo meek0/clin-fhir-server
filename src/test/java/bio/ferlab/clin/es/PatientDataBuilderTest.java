@@ -122,20 +122,27 @@ public class PatientDataBuilderTest {
     @Nested
     @DisplayName("Valid bundle")
     class Valid {
-        @Nested
-        @DisplayName("From json")
-        class FromJson {
-            @Test
-            @DisplayName("Should extract the data correctly")
-            public void shouldExtractCorrectly() {
-                final String content = jsonGenerator.toString(bundle);
-                final PatientData patientData = patientDataBuilder.fromJson(content);
+        @Test
+        @DisplayName("Should extract the data correctly")
+        public void shouldExtractCorrectly() {
+            final String content = jsonGenerator.toString(bundle);
+            final PatientData patientData = patientDataBuilder.fromJson(content);
 
-                final String output = jsonGenerator.toString(patientData);
-                final String expectedJson = jsonGenerator.toString(expectedPatientData);
+            final String output = jsonGenerator.toString(patientData);
+            final String expectedJson = jsonGenerator.toString(expectedPatientData);
 
-                Assertions.assertTrue(output.contentEquals(expectedJson));
-            }
+            Assertions.assertTrue(output.contentEquals(expectedJson));
+        }
+    }
+
+    @Nested
+    @DisplayName("Invalid bundle")
+    class InValid {
+        @Test
+        @DisplayName("Should return null")
+        public void shouldExtractCorrectly() {
+            final PatientData patientData = patientDataBuilder.fromJson("");
+            Assertions.assertNull(patientData);
         }
     }
 }
