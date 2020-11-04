@@ -1,6 +1,8 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.ElasticsearchRestClient.IndexData;
 import bio.ferlab.clin.es.data.ElasticsearchData;
+import bio.ferlab.clin.utils.JsonGenerator;
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -47,7 +49,10 @@ public class ElasticsearchRestClientIntegrationTest {
                         ).build();
 
                 client.performRequest("PUT", "/patient/");
-                ElasticsearchRestClient restClient = new ElasticsearchRestClient(new ElasticsearchData(client, container.getHttpHostAddress()));
+                final JsonGenerator jsonGenerator = new JsonGenerator(FhirContext.forR4());
+                final ElasticsearchRestClient restClient = new ElasticsearchRestClient(
+                        new ElasticsearchData(client, container.getHttpHostAddress())
+                );
 
                 final Patient patient = new Patient();
                 patient.addIdentifier().setSystem("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient").setValue("12345");
@@ -56,7 +61,8 @@ public class ElasticsearchRestClientIntegrationTest {
                 patient.setGender(Enumerations.AdministrativeGender.MALE);
                 patient.setId(IdType.newRandomUuid());
 
-                restClient.index("patient", patient);
+                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
+                restClient.index("patient", data);
 
                 Thread.sleep(1000);
                 final Response response = client.performRequest("GET", "/patient/_search");
@@ -92,7 +98,9 @@ public class ElasticsearchRestClientIntegrationTest {
                         ).build();
 
                 client.performRequest("PUT", "/patient/");
-                ElasticsearchRestClient restClient = new ElasticsearchRestClient(new ElasticsearchData(client, container.getHttpHostAddress()));
+                ElasticsearchRestClient restClient = new ElasticsearchRestClient(
+                        new ElasticsearchData(client, container.getHttpHostAddress())
+                );
 
                 final Patient patient = new Patient();
                 patient.addIdentifier().setSystem("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient").setValue("12345");
@@ -110,7 +118,7 @@ public class ElasticsearchRestClientIntegrationTest {
                         new NStringEntity(indexContent, ContentType.APPLICATION_JSON)
                 );
 
-                restClient.delete("patient", patient);
+                restClient.delete("patient", patient.getIdElement().getIdPart());
                 Thread.sleep(1000);
 
                 final Response response = client.performRequest("GET", "/patient/_search");

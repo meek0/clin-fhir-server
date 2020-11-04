@@ -6,6 +6,8 @@ import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Component
 public class PatientDataBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(PatientDataBuilder.class);
     private static final String STATUS_INACTIVE = "inactive";
     private static final String STATUS_ACTIVE = "active";
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -37,7 +40,12 @@ public class PatientDataBuilder {
     }
 
     public PatientData fromJson(String content) {
-        return this.fromBundle(this.parser.parseResource(Bundle.class, content));
+        try{
+            return this.fromBundle(this.parser.parseResource(Bundle.class, content));
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            return null;
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
