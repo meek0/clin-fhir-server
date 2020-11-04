@@ -20,12 +20,12 @@ public class IndexerInterceptor {
 
     private final ElasticsearchRestClient client;
     private final PatientDataBuilder patientDataBuilder;
-    private final JsonGenerator parser;
+    private final JsonGenerator jsonGenerator;
 
     public IndexerInterceptor(ApplicationContext appContext) {
         this.client = appContext.getBean(ElasticsearchRestClient.class);
         this.patientDataBuilder = appContext.getBean(PatientDataBuilder.class);
-        this.parser = appContext.getBean(JsonGenerator.class);
+        this.jsonGenerator = appContext.getBean(JsonGenerator.class);
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_CREATED)
@@ -49,7 +49,7 @@ public class IndexerInterceptor {
         if (resource instanceof Patient) {
             final PatientData patientData = this.patientDataBuilder.fromJson(requestDetails.getRequestContentsIfLoaded());
             if (patientData != null) {
-                final IndexData data = new IndexData(resource.getIdElement().getIdPart(), parser.toString(patientData));
+                final IndexData data = new IndexData(resource.getIdElement().getIdPart(), jsonGenerator.toString(patientData));
                 client.index(INDEX_PATIENT, data);
             }
         }

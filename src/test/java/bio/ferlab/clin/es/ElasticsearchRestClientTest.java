@@ -35,7 +35,7 @@ public class ElasticsearchRestClientTest {
 
     private Patient patient;
 
-    private JsonGenerator parser;
+    private JsonGenerator jsonGenerator;
 
     private ElasticsearchRestClient elasticsearchRestClient;
 
@@ -55,7 +55,7 @@ public class ElasticsearchRestClientTest {
         this.patient.setGender(Enumerations.AdministrativeGender.MALE);
         this.patient.setId(IdType.newRandomUuid());
 
-        this.parser = new JsonGenerator(FhirContext.forR4());
+        this.jsonGenerator = new JsonGenerator(FhirContext.forR4());
         this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost"));
     }
 
@@ -68,7 +68,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
             public void shouldMakeAsyncCall() {
-                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), parser.toString(patient));
+                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
                         .performRequestAsync(
@@ -83,7 +83,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should encode the resource to JSON")
             public void shouldEncodeResourceToJson() {
-                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), parser.toString(patient));
+                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
                         .performRequestAsync(
@@ -106,7 +106,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should make the correct request")
             public void shouldMakeCorrectRequest() {
-                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), parser.toString(patient));
+                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
                         .performRequestAsync(
@@ -161,7 +161,7 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should handle any exception during request")
             public void shouldHandleAnyException() {
-                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), parser.toString(patient));
+                final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 doAnswer(invocationOnMock -> {
                     verify(responseListenerCaptor.getValue(), times(1))

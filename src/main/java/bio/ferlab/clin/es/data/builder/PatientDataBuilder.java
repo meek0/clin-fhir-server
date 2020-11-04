@@ -21,14 +21,14 @@ public class PatientDataBuilder {
     private static final String STATUS_ACTIVE = "active";
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final PatientDataConfiguration configuration;
-    private final IParser parser;
-    private PatientData patientData;
-
     private final List<Handle<?>> handles = Arrays.asList(
             new Handle<>(Patient.class, this::handlePatient),
             new Handle<>(ServiceRequest.class, this::handleServiceRequest)
     );
+    private final PatientDataConfiguration configuration;
+    private final IParser parser;
+
+    private PatientData patientData;
 
     public PatientDataBuilder(PatientDataConfiguration configuration, FhirContext context) {
         this.configuration = configuration;
