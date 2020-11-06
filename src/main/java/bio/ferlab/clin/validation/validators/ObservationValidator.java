@@ -1,5 +1,6 @@
 package bio.ferlab.clin.validation.validators;
 
+import bio.ferlab.clin.utils.Extensions;
 import bio.ferlab.clin.validation.utils.ValidatorUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.hl7.fhir.r4.model.Annotation;
@@ -8,6 +9,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
 public class ObservationValidator extends SchemaValidator<Observation> {
+    private static final String AGE_AT_ONSET_PREFIX_VALUE = "HP:";
+
     private enum SupportedCodesEnum {
         CGH,
         INDIC,
@@ -19,6 +22,12 @@ public class ObservationValidator extends SchemaValidator<Observation> {
         A,
         N,
         IND
+    }
+
+    private enum PhenotypeInterpretationEnum {
+        NEG,
+        POS,
+        IND,
     }
 
     public ObservationValidator() {
@@ -74,6 +83,34 @@ public class ObservationValidator extends SchemaValidator<Observation> {
         return validateNote(resource);
     }
 
+    private boolean validateIndications(Observation resource) {
+        return validateNote(resource);
+    }
+
+    private boolean validatePhenotype(Observation resource) {
+        final boolean validInterpretation = resource.hasInterpretation() &&
+                resource.getInterpretation().size() == 1 &&
+                isValidPhenotypeInterpretation(resource.getInterpretation().get(0));
+
+        return validInterpretation && hasValidAgAtOnset(resource) && validateNote(resource);
+    }
+
+    private boolean hasValidAgAtOnset(Observation observation) {
+        if (!observation.hasExtension(Extensions.AGE_AT_ONSET)) {
+            return false;
+        }
+        final Coding coding = (Coding) observation.getExtensionByUrl(Extensions.AGE_AT_ONSET).getValue();
+        return coding.getCode().startsWith(AGE_AT_ONSET_PREFIX_VALUE);
+    }
+
+    private boolean isValidPhenotypeInterpretation(CodeableConcept interpretation) {
+        if (interpretation.isEmpty() || interpretation.getCoding().size() != 1) {
+            return false;
+        }
+
+        return EnumUtils.isValidEnum(PhenotypeInterpretationEnum.class, interpretation.getCoding().get(0).getCode());
+    }
+
     private boolean validateNote(Observation resource) {
         if (resource.hasNote()) {
             final Annotation note = resource.getNote().get(0);
@@ -83,15 +120,6 @@ public class ObservationValidator extends SchemaValidator<Observation> {
         }
 
         return true;
-    }
-
-
-    private boolean validateIndications(Observation resource) {
-        return validateNote(resource);
-    }
-
-    private boolean validatePhenotype(Observation resource) {
-        return validateNote(resource);
     }
 
     private boolean validateInvestigations(Observation resource) {
