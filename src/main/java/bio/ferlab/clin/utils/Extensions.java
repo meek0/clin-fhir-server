@@ -5,4 +5,5 @@ public class Extensions {
     public static final String ETHNICITY = "http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity";
     public static final String IS_PROBAND = "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband";
     public static final String FAMILY_ID = "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id";
+    public static final String AGE_AT_ONSET = "http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset";
 }
