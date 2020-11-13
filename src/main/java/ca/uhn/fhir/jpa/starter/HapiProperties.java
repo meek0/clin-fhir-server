@@ -91,6 +91,7 @@ public class HapiProperties {
     public static final String BIO_ES_SCHEME = "bio.elasticsearch.scheme";
     public static final String BIO_ES_INDEX_PATIENT = "bio.elasticsearch.index.patient";
     public static final String BIO_ES_ENABLED = "bio.elasticsearch.enabled";
+    public static final String BIO_ES_BUNDLE_ID = "bio.elasticsearch.bundle-id";
 
     public static final String S3_ACCESS_KEY = "s3.access.key";
     public static final String S3_SECRET_KEY = "s3.secret.key";
@@ -566,23 +567,50 @@ public class HapiProperties {
     public static String getBioEsHost() {
         return HapiProperties.getProperty(BIO_ES_HOST, "localhost");
     }
+
     public static int getBioEsPort() {
         return HapiProperties.getIntegerProperty(BIO_ES_PORT, 9200);
     }
+
     public static String getBioEsScheme() {
         return HapiProperties.getProperty(BIO_ES_SCHEME, "http");
     }
+
     public static String getBioEsIndexPatient() {
         return HapiProperties.getProperty(BIO_ES_INDEX_PATIENT);
     }
-    public static boolean isBioEsEnabled() { return HapiProperties.getBooleanProperty(BIO_ES_ENABLED, true); }
+
+    public static boolean isBioEsEnabled() {
+        return HapiProperties.getBooleanProperty(BIO_ES_ENABLED, true);
+    }
+
+    public static String getBioEsBundleId() {
+        return HapiProperties.getProperty(BIO_ES_BUNDLE_ID);
+    }
 
 
-    public static String getS3AccessKey(){ return HapiProperties.getProperty(S3_ACCESS_KEY, "minio"); }
-    public static String getS3SecretKey(){ return HapiProperties.getProperty(S3_SECRET_KEY, "minio123"); }
-    public static String getS3ServiceEndpoint(){ return HapiProperties.getProperty(S3_SERVICE_ENDPOINT, "http://127.0.0.1:9000"); }
-    public static String getS3SigninRegion(){ return HapiProperties.getProperty(S3_SIGNIN_REGION, "chusj"); }
-    public static String getNdjsonExportS3Bucket(){ return HapiProperties.getProperty(EXPORTS_NDJSON_S3_BUCKET, "clin"); }
-    public static String getNdjsonExportS3Prefix(){ return HapiProperties.getProperty(EXPORTS_NDJSON_S3_PREFIX, "exports"); }
+    public static String getS3AccessKey() {
+        return HapiProperties.getProperty(S3_ACCESS_KEY, "minio");
+    }
+
+    public static String getS3SecretKey() {
+        return HapiProperties.getProperty(S3_SECRET_KEY, "minio123");
+    }
+
+    public static String getS3ServiceEndpoint() {
+        return HapiProperties.getProperty(S3_SERVICE_ENDPOINT, "http://127.0.0.1:9000");
+    }
+
+    public static String getS3SigninRegion() {
+        return HapiProperties.getProperty(S3_SIGNIN_REGION, "chusj");
+    }
+
+    public static String getNdjsonExportS3Bucket() {
+        return HapiProperties.getProperty(EXPORTS_NDJSON_S3_BUCKET, "clin");
+    }
+
+    public static String getNdjsonExportS3Prefix() {
+        return HapiProperties.getProperty(EXPORTS_NDJSON_S3_PREFIX, "exports");
+    }
 }
 
