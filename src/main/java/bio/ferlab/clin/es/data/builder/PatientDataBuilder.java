@@ -17,8 +17,6 @@ import java.util.List;
 @Component
 public class PatientDataBuilder {
     private static final Logger logger = LoggerFactory.getLogger(PatientDataBuilder.class);
-    private static final String STATUS_INACTIVE = "inactive";
-    private static final String STATUS_ACTIVE = "active";
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private final List<Handle<?>> handles = Arrays.asList(
@@ -66,7 +64,6 @@ public class PatientDataBuilder {
     void handlePatient(Patient patient) {
         patientData.setId(patient.getId());
         patientData.setMrn(patient.getIdentifier().get(0).getValue());
-        patientData.setStatus(patient.getActive() ? STATUS_ACTIVE : STATUS_INACTIVE);
         patientData.setGender(patient.getGender().getDisplay());
 
         if (patient.hasName()) {
@@ -134,6 +131,7 @@ public class PatientDataBuilder {
 
     void handleServiceRequest(ServiceRequest serviceRequest) {
         patientData.setRequest(serviceRequest.getId());
+        patientData.setStatus(serviceRequest.getStatus().toCode());
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {

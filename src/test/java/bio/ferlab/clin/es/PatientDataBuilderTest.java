@@ -57,6 +57,7 @@ public class PatientDataBuilderTest {
                 .setCode("WGS")
                 .setDisplay("Whole Genome Sequencing");
         this.serviceRequest.setCode(code);
+        this.serviceRequest.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED);
         this.serviceRequest.setAuthoredOn(new Date());
 
         this.patient = new Patient();
@@ -98,7 +99,7 @@ public class PatientDataBuilderTest {
         this.expectedPatientData = new PatientData();
         this.expectedPatientData.setId(String.format("Patient/%s", patient.getId()));
         this.expectedPatientData.setMrn(patient.getIdentifier().get(0).getValue());
-        this.expectedPatientData.setStatus("inactive");
+        this.expectedPatientData.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED.toCode());
         this.expectedPatientData.setGender("Male");
         this.expectedPatientData.setLastName(patient.getName().get(0).getFamily());
         this.expectedPatientData.setFirstName(patient.getName().get(0).getGiven().get(0).asStringValue());
