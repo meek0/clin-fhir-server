@@ -79,7 +79,7 @@ public class PatientValidator extends SchemaValidator<Patient> {
 
     private boolean isValidName(String name) {
         return name != null &&
-                name.length() > 2 &&
+                name.length() >= 2 &&
                 !ValidatorUtils.hasSpecialCharacters(name) &&
                 ValidatorUtils.isTrimmed(name);
     }
