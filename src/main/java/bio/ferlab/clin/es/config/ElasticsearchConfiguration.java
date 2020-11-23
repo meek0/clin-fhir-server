@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ElasticsearchConfiguration {
+    private static final int KEEP_ALIVE_VALUE = 1000 * 30;
     private final String host = HapiProperties.getBioEsHost();
     private final int port = HapiProperties.getBioEsPort();
     private final String scheme = HapiProperties.getBioEsScheme();
@@ -19,12 +20,9 @@ public class ElasticsearchConfiguration {
     public ElasticsearchData esData() {
         RestClient client = RestClient.builder(
                 new HttpHost(this.host, this.port, this.scheme)
-        )
-                .setMaxRetryTimeoutMillis(1000 * 60)
-                .setHttpClientConfigCallback(httpClientBuilder -> HttpAsyncClientBuilder.create().setKeepAliveStrategy(
-                        (response, context) -> 1000 * 60)
-                )
-                .build();
+        ).setHttpClientConfigCallback(httpClientBuilder -> HttpAsyncClientBuilder.create().setKeepAliveStrategy(
+                (response, context) -> KEEP_ALIVE_VALUE)
+        ).build();
         return new ElasticsearchData(client, this.host);
     }
 
