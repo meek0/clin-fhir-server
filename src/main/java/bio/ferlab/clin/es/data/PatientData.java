@@ -3,6 +3,8 @@ package bio.ferlab.clin.es.data;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 public class PatientData {
     private static final String EMPTY_STRING = "";
@@ -24,6 +26,7 @@ public class PatientData {
     private String ethnicity;
     private String bloodRelationship;
     private String request;
+    private String timestamp;
 
     public PatientData() {
         this.id = EMPTY_STRING;
@@ -44,6 +47,7 @@ public class PatientData {
         this.ethnicity = EMPTY_STRING;
         this.bloodRelationship = EMPTY_STRING;
         this.request = EMPTY_STRING;
+        this.timestamp = Instant.now().toString();
     }
 
     @Data
