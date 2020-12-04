@@ -18,10 +18,12 @@ import java.util.List;
 public class PatientDataBuilder {
     private static final Logger logger = LoggerFactory.getLogger(PatientDataBuilder.class);
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static final String ID_SEPARATOR = "/";
 
     private final List<Handle<?>> handles = Arrays.asList(
             new Handle<>(Patient.class, this::handlePatient),
-            new Handle<>(ServiceRequest.class, this::handleServiceRequest)
+            new Handle<>(ServiceRequest.class, this::handleServiceRequest),
+            new Handle<>(Group.class, this::handleFamilyGroup)
     );
     private final PatientDataConfiguration configuration;
     private final IParser parser;
@@ -38,9 +40,9 @@ public class PatientDataBuilder {
     }
 
     public PatientData fromJson(String content) {
-        try{
+        try {
             return this.fromBundle(this.parser.parseResource(Bundle.class, content));
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return null;
         }
@@ -103,8 +105,8 @@ public class PatientDataBuilder {
             final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
             if (extension.hasValue() && extension.getValue() instanceof Reference) {
                 final Reference value = (Reference) extension.getValue();
-                patientData.setFamilyId(value.getReference());
-                patientData.setFamilyType("trio");
+                final String[] idParts = value.getReference().split(ID_SEPARATOR);
+                patientData.setFamilyId(idParts.length > 1 ? idParts[1] : idParts[0]);
             }
         }
 
@@ -141,6 +143,11 @@ public class PatientDataBuilder {
         if (serviceRequest.hasAuthoredOn()) {
             patientData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }
+    }
+
+    void handleFamilyGroup(Group group) {
+        patientData.setFamilyId(group.getId());
+        patientData.setFamilyType("trio");
     }
 
     private static Name extractName(List<HumanName> humanNames) {
