@@ -18,7 +18,7 @@ import java.util.List;
 public class PatientDataBuilder {
     private static final Logger logger = LoggerFactory.getLogger(PatientDataBuilder.class);
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    public static final String ID_SEPARATOR = "/";
+    private static final String ID_SEPARATOR = "/";
 
     private final List<Handle<?>> handles = Arrays.asList(
             new Handle<>(Patient.class, this::handlePatient),
