@@ -130,9 +130,13 @@ public class PatientDataBuilderTest {
             final PatientData patientData = patientDataBuilder.fromJson(content);
 
             final String output = jsonGenerator.toString(patientData);
+
+            //Ignore the timestamp
+            expectedPatientData.setTimestamp(patientData.getTimestamp());
+
             final String expectedJson = jsonGenerator.toString(expectedPatientData);
 
-            Assertions.assertTrue(output.contentEquals(expectedJson));
+            Assertions.assertTrue(expectedJson.contentEquals(output));
         }
     }
 

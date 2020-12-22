@@ -29,8 +29,6 @@ public class ElasticsearchRestClientTest {
     @Mock
     private RestClient client;
     @Captor
-    private ArgumentCaptor<ResponseListener> responseListenerCaptor;
-    @Captor
     private ArgumentCaptor<HttpEntity> httpEntityCaptor;
 
     private Patient patient;
@@ -67,31 +65,29 @@ public class ElasticsearchRestClientTest {
         class Index {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
-            public void shouldMakeAsyncCall() {
+            public void shouldMakeAsyncCall() throws IOException {
                 final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
-                        .performRequestAsync(
+                        .performRequest(
                                 anyString(),
                                 anyString(),
                                 anyMapOf(String.class, String.class),
-                                httpEntityCaptor.capture(),
-                                responseListenerCaptor.capture()
+                                httpEntityCaptor.capture()
                         );
             }
 
             @Test
             @DisplayName("Should encode the resource to JSON")
-            public void shouldEncodeResourceToJson() {
+            public void shouldEncodeResourceToJson() throws IOException {
                 final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
-                        .performRequestAsync(
+                        .performRequest(
                                 anyString(),
                                 anyString(),
                                 anyMapOf(String.class, String.class),
-                                httpEntityCaptor.capture(),
-                                responseListenerCaptor.capture()
+                                httpEntityCaptor.capture()
                         );
                 try {
                     final String encodedPatient = IOUtils.toString(httpEntityCaptor.getValue().getContent(), Charset.defaultCharset());
@@ -105,16 +101,15 @@ public class ElasticsearchRestClientTest {
 
             @Test
             @DisplayName("Should make the correct request")
-            public void shouldMakeCorrectRequest() {
+            public void shouldMakeCorrectRequest() throws IOException {
                 final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
                 elasticsearchRestClient.index(INDEX_NAME, data);
                 verify(client, times(1))
-                        .performRequestAsync(
+                        .performRequest(
                                 eq("PUT"),
                                 eq(String.format("/%s/_doc/%s", INDEX_NAME, patient.getIdElement().getIdPart())),
                                 anyMapOf(String.class, String.class),
-                                httpEntityCaptor.capture(),
-                                responseListenerCaptor.capture()
+                                httpEntityCaptor.capture()
                         );
             }
         }
@@ -125,27 +120,25 @@ public class ElasticsearchRestClientTest {
         class Delete {
             @Test
             @DisplayName("Should make an async call to the Elasticsearch API")
-            public void shouldMakeAsyncCall() {
+            public void shouldMakeAsyncCall() throws IOException {
                 elasticsearchRestClient.delete(INDEX_NAME, patient.getIdElement().getIdPart());
                 verify(client, times(1))
-                        .performRequestAsync(
+                        .performRequest(
                                 anyString(),
                                 anyString(),
-                                anyMapOf(String.class, String.class),
-                                responseListenerCaptor.capture()
+                                anyMapOf(String.class, String.class)
                         );
             }
 
             @Test
             @DisplayName("Should make the correct delete request")
-            public void shouldMakeCorrectRequest() {
+            public void shouldMakeCorrectRequest() throws IOException {
                 elasticsearchRestClient.delete(INDEX_NAME, patient.getIdElement().getIdPart());
                 verify(client, times(1))
-                        .performRequestAsync(
+                        .performRequest(
                                 eq("DELETE"),
                                 eq(String.format("/%s/_doc/%s", INDEX_NAME, patient.getIdElement().getIdPart())),
-                                anyMapOf(String.class, String.class),
-                                responseListenerCaptor.capture()
+                                anyMapOf(String.class, String.class)
                         );
             }
         }
@@ -162,18 +155,22 @@ public class ElasticsearchRestClientTest {
             @DisplayName("Should handle any exception during request")
             public void shouldHandleAnyException() {
                 final IndexData data = new IndexData(patient.getIdElement().getIdPart(), jsonGenerator.toString(patient));
-                elasticsearchRestClient.index(INDEX_NAME, data);
-                doAnswer(invocationOnMock -> {
-                    verify(responseListenerCaptor.getValue(), times(1))
-                            .onFailure(any(Exception.class));
-                    throw new RuntimeException("Exception");
-                }).when(client).performRequestAsync(
-                        anyString(),
-                        anyString(),
-                        anyMapOf(String.class, String.class),
-                        httpEntityCaptor.capture(),
-                        responseListenerCaptor.capture()
-                );
+
+                try {
+                    when(client.performRequest(
+                            anyString(),
+                            anyString(),
+                            anyMapOf(String.class, String.class),
+                            httpEntityCaptor.capture()
+                    )).thenThrow(new IOException());
+
+                    Assertions.assertThrows(
+                            ca.uhn.fhir.rest.server.exceptions.InternalErrorException.class,
+                            () -> elasticsearchRestClient.index(INDEX_NAME, data)
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -184,17 +181,20 @@ public class ElasticsearchRestClientTest {
             @Test
             @DisplayName("Should handle any exception during request")
             public void shouldHandleAnyException() {
-                elasticsearchRestClient.delete(INDEX_NAME, patient.getIdElement().getIdPart());
-                doAnswer(invocationOnMock -> {
-                    verify(responseListenerCaptor.getValue(), times(1))
-                            .onFailure(any(Exception.class));
-                    throw new RuntimeException("Exception");
-                }).when(client).performRequestAsync(
-                        anyString(),
-                        anyString(),
-                        anyMapOf(String.class, String.class),
-                        responseListenerCaptor.capture()
-                );
+                try {
+                    when(client.performRequest(
+                            anyString(),
+                            anyString(),
+                            anyMapOf(String.class, String.class)
+                    )).thenThrow(new IOException());
+
+                    Assertions.assertThrows(
+                            ca.uhn.fhir.rest.server.exceptions.InternalErrorException.class,
+                            () -> elasticsearchRestClient.delete(INDEX_NAME, patient.getIdElement().getIdPart())
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

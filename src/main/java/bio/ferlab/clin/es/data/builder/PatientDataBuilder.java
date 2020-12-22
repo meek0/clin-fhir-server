@@ -67,6 +67,7 @@ public class PatientDataBuilder {
         patientData.setId(patient.getId());
         patientData.setMrn(patient.getIdentifier().get(0).getValue());
         patientData.setGender(patient.getGender().getDisplay());
+        patientData.setFamilyType("trio");
 
         if (patient.hasName()) {
             final Name name = extractName(patient.getName());
@@ -147,7 +148,6 @@ public class PatientDataBuilder {
 
     void handleFamilyGroup(Group group) {
         patientData.setFamilyId(group.getId());
-        patientData.setFamilyType("trio");
     }
 
     private static Name extractName(List<HumanName> humanNames) {
