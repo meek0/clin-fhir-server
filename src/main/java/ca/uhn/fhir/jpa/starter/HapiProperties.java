@@ -101,6 +101,8 @@ public class HapiProperties {
     public static final String EXPORTS_NDJSON_S3_BUCKET = "exports.ndjson.s3.bucket";
     public static final String EXPORTS_NDJSON_S3_PREFIX = "exports.ndjson.s3.prefix";
 
+    public static final String AUDITS_ENABLED = "audits.enabled";
+
     private static Properties ourProperties;
 
     public static boolean isElasticSearchEnabled() {
@@ -611,6 +613,10 @@ public class HapiProperties {
 
     public static String getNdjsonExportS3Prefix() {
         return HapiProperties.getProperty(EXPORTS_NDJSON_S3_PREFIX, "exports");
+    }
+
+    public static boolean isAuditsEnabled(){
+        return HapiProperties.getBooleanProperty(AUDITS_ENABLED, false);
     }
 }
 
