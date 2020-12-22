@@ -178,7 +178,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         /*
          * Add some logging for each request
          */
-        if(HapiProperties.isServerLoggingEnabled()) {
+        if (HapiProperties.isServerLoggingEnabled()) {
             LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
             loggingInterceptor.setLoggerName(HapiProperties.getLoggerName());
             loggingInterceptor.setMessageFormat(HapiProperties.getLoggerFormat());
@@ -187,7 +187,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
             this.registerInterceptor(loggingInterceptor);
         }
 
-        if(HapiProperties.isClientLoggingEnabled()) {
+        if (HapiProperties.isClientLoggingEnabled()) {
             this.registerInterceptor(new ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor(true));
         }
 
@@ -332,14 +332,16 @@ public class BaseJpaRestfulServer extends RestfulServer {
         // CLIN
         registerInterceptor(new FieldValidatorInterceptor(appCtx));
         registerInterceptor(new ValidationInterceptor());
-        if(HapiProperties.isBioEsEnabled()) {
+        if (HapiProperties.isBioEsEnabled()) {
             registerInterceptor(new IndexerInterceptor(appCtx));
         }
-        if(HapiProperties.isAuthEnabled()){
+        if (HapiProperties.isAuthEnabled()) {
             registerInterceptor(new AccessTokenInterceptor());
         }
         registerInterceptor(new ServiceContextCleanerInterceptor());
-        registerInterceptor(new ConsentInterceptor(new ConsentServiceInterceptor(appCtx)));
-    }
 
+        if (HapiProperties.isAuditsEnabled()) {
+            registerInterceptor(new ConsentInterceptor(new ConsentServiceInterceptor(appCtx)));
+        }
+    }
 }
