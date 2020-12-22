@@ -41,7 +41,9 @@ public class AuditEventsBuilder {
         bundle.getEntry().forEach(entry -> {
             final AuditEventAction action = this.getActionFromBundleVerb(entry.getRequest().getMethod());
             if (action == AuditEventAction.R) {
-                final String resourceType = entry.getResource().fhirType();
+                final String url = entry.getRequest().getUrl();
+                final int endIndex = !url.contains("?") ? url.indexOf("/") : url.indexOf("?");
+                final String resourceType = endIndex > 0 ? url.substring(0, endIndex) : "";
                 this.resources.add(AuditResource.fromReadAction(entry.getRequest().getUrl(), resourceType));
             } else {
                 this.resources.add(new AuditResource(entry.getResource(), action));

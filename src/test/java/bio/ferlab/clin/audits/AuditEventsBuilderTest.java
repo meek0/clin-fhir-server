@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuditEventsBuilderTest {
     private AuditEventsBuilder auditEventsBuilder;
@@ -44,7 +43,7 @@ public class AuditEventsBuilderTest {
             final Reference what = events.get(0).getEntity().get(0).getWhat();
 
             assertEquals(events.size(), 1);
-            assertSame(ResourceType.Patient.toString(), events.get(0).getEntity().get(0).getType().getCode());
+            assertTrue(ResourceType.Patient.toString().contentEquals(events.get(0).getEntity().get(0).getType().getCode()));
             assertSame(patientId, what.getReference());
         }
 
@@ -82,7 +81,7 @@ public class AuditEventsBuilderTest {
     class AuditEventCRUD {
         @Nested
         @DisplayName("From a resource")
-        class Resource{
+        class Resource {
             @Test
             @DisplayName("Read")
             public void createReadAuditEvent() {
@@ -139,7 +138,7 @@ public class AuditEventsBuilderTest {
 
         @Nested
         @DisplayName("From a bundle")
-        class WithBundle{
+        class WithBundle {
             @Test
             @DisplayName("Read")
             public void createReadAuditEvent() {
@@ -147,8 +146,10 @@ public class AuditEventsBuilderTest {
                 final Bundle bundle = new Bundle();
 
                 final Patient patient = new Patient();
-                bundle.addEntry().setResource(patient).setRequest(new Bundle.BundleEntryRequestComponent().setMethod(Bundle.HTTPVerb.GET));
                 patient.setIdElement(new IdType().setValue("Patient/TestId"));
+                bundle.addEntry().setResource(patient).setRequest(
+                        new Bundle.BundleEntryRequestComponent().setMethod(Bundle.HTTPVerb.GET)
+                                .setUrl(patient.getId()));
 
                 final List<AuditEvent> events = auditEventsBuilder.addBundle(bundle).build();
 
