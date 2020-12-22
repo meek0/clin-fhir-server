@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AuditEventsBuilder {
+    public static final String UNKNOWN_HTTP_VERB = "Unknown http verb";
     private final List<AuditResource> resources = new ArrayList<>();
     private final UserData userData;
 
@@ -33,7 +34,7 @@ public class AuditEventsBuilder {
                 return AuditEventAction.D;
 
         }
-        throw new IllegalStateException("HTTP Verb is unknown");
+        throw new IllegalStateException(UNKNOWN_HTTP_VERB);
     }
 
     public AuditEventsBuilder addBundle(Bundle bundle) {
@@ -65,7 +66,6 @@ public class AuditEventsBuilder {
     }
 
     private AuditEvent generateAuditEvent(AuditResource auditResource) {
-
         final AuditEvent event = new AuditEvent();
         event.setRecorded(Date.from(Instant.now()));
 
@@ -93,6 +93,7 @@ public class AuditEventsBuilder {
 
     @Data
     static class AuditResource {
+        public static final String AUDIT_ENTITY_TYPE_SYSTEM = "https://www.hl7.org/fhir/valueset-audit-entity-type.html";
         private final Resource resource;
         private final AuditEventAction action;
         private Reference reference;
@@ -105,7 +106,6 @@ public class AuditEventsBuilder {
                 this.reference = new Reference().setReference(resource.getId());
                 this.type = createTypeCoding().setCode(resource.getResourceType().toString());
             }
-
         }
 
         public static AuditResource fromReadAction(String url, String type) {
@@ -123,7 +123,7 @@ public class AuditEventsBuilder {
         }
 
         private static Coding createTypeCoding() {
-            return new Coding().setSystem("https://www.hl7.org/fhir/valueset-audit-entity-type.html");
+            return new Coding().setSystem(AUDIT_ENTITY_TYPE_SYSTEM);
         }
 
         public boolean isReadAll() {

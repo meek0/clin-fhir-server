@@ -15,7 +15,6 @@ public class AuditTrail {
         this.auditEventDao = auditEventDao;
     }
 
-
     public void auditEvents(List<AuditEvent> events, boolean successful) {
         events.forEach(event -> this.auditEvent(event, successful));
     }
