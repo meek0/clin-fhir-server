@@ -40,7 +40,8 @@ public class AuditEventsBuilder {
         bundle.getEntry().forEach(entry -> {
             final AuditEventAction action = this.getActionFromBundleVerb(entry.getRequest().getMethod());
             if (action == AuditEventAction.R) {
-                this.resources.add(AuditResource.fromReadAction(entry.getRequest().getUrl()));
+                final String resourceType = entry.getResource().fhirType();
+                this.resources.add(AuditResource.fromReadAction(entry.getRequest().getUrl(), resourceType));
             } else {
                 this.resources.add(new AuditResource(entry.getResource(), action));
             }
@@ -50,7 +51,7 @@ public class AuditEventsBuilder {
 
     public AuditEventsBuilder addResource(Resource resource, AuditEventAction action) {
         if (action == AuditEventAction.R) {
-            this.resources.add(AuditResource.fromReadAction(resource.getId()));
+            this.resources.add(AuditResource.fromReadAction(resource.getId(), resource.fhirType()));
         } else {
             this.resources.add(new AuditResource(resource, action));
         }
@@ -107,9 +108,10 @@ public class AuditEventsBuilder {
 
         }
 
-        public static AuditResource fromReadAction(String url) {
+        public static AuditResource fromReadAction(String url, String type) {
             final AuditResource auditResource = new AuditResource(null, AuditEventAction.R);
             auditResource.setReference(new Reference(url));
+            auditResource.setType(createTypeCoding().setCode(type));
             return auditResource;
         }
 
