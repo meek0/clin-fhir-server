@@ -141,6 +141,13 @@ public class PatientDataBuilder {
                 patientData.setTest(code.getCoding().get(0).getCode());
             }
         }
+
+        if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)){
+            final Extension extension = serviceRequest.getExtensionByUrl(Extensions.IS_SUBMITTED);
+            final BooleanType valueBoolean = (BooleanType) extension.getValue();
+            patientData.setSubmitted(valueBoolean.getValue());
+        }
+
         if (serviceRequest.hasAuthoredOn()) {
             patientData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }

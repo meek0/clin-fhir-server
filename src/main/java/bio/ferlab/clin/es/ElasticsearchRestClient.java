@@ -36,6 +36,22 @@ public class ElasticsearchRestClient {
         }
     }
 
+    public void update(String index, IndexData data){
+        final String id = data.id;
+        logger.info(String.format("Updating resource id[%s]", id));
+        try {
+            this.data.client.performRequest(
+                    HttpMethod.POST.name(),
+                    String.format("/%s/_update/%s", index, id),
+                    new HashMap<>(),
+                    new NStringEntity(data.jsonContent, ContentType.APPLICATION_JSON)
+            );
+        } catch (IOException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_SAVE_RESOURCE);
+        }
+    }
+
     public void delete(String index, String id) {
         logger.info(String.format("Deleting resource id[%s]", id));
         try {
