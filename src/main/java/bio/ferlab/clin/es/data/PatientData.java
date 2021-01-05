@@ -27,6 +27,7 @@ public class PatientData {
     private String bloodRelationship;
     private String request;
     private String timestamp;
+    private boolean submitted;
 
     public PatientData() {
         this.id = EMPTY_STRING;
@@ -48,6 +49,7 @@ public class PatientData {
         this.bloodRelationship = EMPTY_STRING;
         this.request = EMPTY_STRING;
         this.timestamp = Instant.now().toString();
+        this.submitted = false;
     }
 
     @Data
