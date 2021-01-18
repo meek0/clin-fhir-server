@@ -113,7 +113,8 @@ public class PatientDataBuilder {
 
         if (patient.hasGeneralPractitioner()) {
             final String id = patient.getGeneralPractitioner().get(0).getReference();
-            final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
+            final PractitionerRole practitionerRole = configuration.practitionerRoleDao.read(new IdType(id));
+            final Practitioner practitioner = configuration.practitionerDao.read(practitionerRole.getPractitioner().getReferenceElement());
             final Name name = extractName(practitioner.getName());
             patientData.getPractitioner().setId(id);
             patientData.getPractitioner().setLastName(name.lastName);
