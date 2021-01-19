@@ -28,10 +28,14 @@ public class PatientDataBuilderTest {
     private IFhirResourceDao<Practitioner> practitionerDao;
 
     @Mock
+    private IFhirResourceDao<PractitionerRole> practitionerRoleDao;
+
+    @Mock
     private IFhirResourceDao<Organization> organizationDao;
 
     private ServiceRequest serviceRequest;
     private Practitioner practitioner;
+    private PractitionerRole practitionerRole;
     private Organization organization;
     private Patient patient;
     private Bundle bundle;
@@ -44,6 +48,9 @@ public class PatientDataBuilderTest {
         this.practitioner = new Practitioner();
         this.practitioner.addName().setFamily("PractitionerFamilyName").addGiven("PractitionerGiven");
         this.practitioner.setId("PR12345");
+
+        this.practitionerRole = new PractitionerRole();
+        this.practitionerRole.setPractitioner(new Reference(this.practitioner));
 
         this.organization = new Organization();
         this.organization.setId("OR12345");
@@ -85,8 +92,9 @@ public class PatientDataBuilderTest {
 
         when(this.organizationDao.read(any())).thenReturn(this.organization);
         when(this.practitionerDao.read(any())).thenReturn(this.practitioner);
+        when(this.practitionerRoleDao.read(any())).thenReturn(this.practitionerRole);
 
-        this.patientDataConfiguration = new PatientDataConfiguration(null, this.organizationDao, this.practitionerDao);
+        this.patientDataConfiguration = new PatientDataConfiguration(null, this.organizationDao, this.practitionerDao, this.practitionerRoleDao);
         this.bundle = new Bundle();
         this.bundle.addEntry().setResource(patient);
         this.bundle.addEntry().setResource(serviceRequest);
