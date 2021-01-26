@@ -94,8 +94,9 @@ public class PatientDataBuilderTest {
         when(this.practitionerDao.read(any())).thenReturn(this.practitioner);
         when(this.practitionerRoleDao.read(any())).thenReturn(this.practitionerRole);
 
-        this.patientDataConfiguration = new PatientDataConfiguration(null, this.organizationDao, this.practitionerDao, this.practitionerRoleDao);
+        this.patientDataConfiguration = new PatientDataConfiguration(null, null, this.organizationDao, this.practitionerDao, this.practitionerRoleDao);
         this.bundle = new Bundle();
+        this.bundle.setId("bundle-id");
         this.bundle.addEntry().setResource(patient);
         this.bundle.addEntry().setResource(serviceRequest);
 

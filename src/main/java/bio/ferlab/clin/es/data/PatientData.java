@@ -39,7 +39,7 @@ public class PatientData {
         this.birthDate = EMPTY_STRING;
         this.practitioner = new Practitioner();
         this.test = EMPTY_STRING;
-        this.prescription = EMPTY_STRING;
+        this.prescription = null;
         this.mrn = EMPTY_STRING;
         this.ramq = EMPTY_STRING;
         this.position = EMPTY_STRING;
