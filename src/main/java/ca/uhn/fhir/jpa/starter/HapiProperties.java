@@ -91,7 +91,8 @@ public class HapiProperties {
     public static final String BIO_ES_SCHEME = "bio.elasticsearch.scheme";
     public static final String BIO_ES_INDEX_PATIENT = "bio.elasticsearch.index.patient";
     public static final String BIO_ES_ENABLED = "bio.elasticsearch.enabled";
-    public static final String BIO_ES_BUNDLE_ID = "bio.elasticsearch.bundle-id";
+    public static final String BIO_ES_PATIENT_BUNDLE_ID = "bio.elasticsearch.patient-bundle-id";
+    public static final String BIO_ES_REQUEST_BUNDLE_ID = "bio.elasticsearch.request-bundle-id";
 
     public static final String S3_ACCESS_KEY = "s3.access.key";
     public static final String S3_SECRET_KEY = "s3.secret.key";
@@ -586,10 +587,13 @@ public class HapiProperties {
         return HapiProperties.getBooleanProperty(BIO_ES_ENABLED, true);
     }
 
-    public static String getBioEsBundleId() {
-        return HapiProperties.getProperty(BIO_ES_BUNDLE_ID);
+    public static String getBioEsPatientBundleId() {
+        return HapiProperties.getProperty(BIO_ES_PATIENT_BUNDLE_ID);
     }
 
+    public static String getBioEsRequestBundleId() {
+        return HapiProperties.getProperty(BIO_ES_REQUEST_BUNDLE_ID);
+    }
 
     public static String getS3AccessKey() {
         return HapiProperties.getProperty(S3_ACCESS_KEY, "minio");
@@ -615,7 +619,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(EXPORTS_NDJSON_S3_PREFIX, "exports");
     }
 
-    public static boolean isAuditsEnabled(){
+    public static boolean isAuditsEnabled() {
         return HapiProperties.getBooleanProperty(AUDITS_ENABLED, false);
     }
 }

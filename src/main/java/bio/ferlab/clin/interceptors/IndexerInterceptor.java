@@ -76,7 +76,6 @@ public class IndexerInterceptor {
             ResponseDetails responseDetails) {
 
         if (isEsBundled(requestDetails)) {
-
             final String content = new String(requestDetails.getRequestContentsIfLoaded());
             final Bundle bundle = parser.parseResource(Bundle.class, content);
             final Bundle responseBundle = (Bundle) responseDetails.getResponseResource();
@@ -92,7 +91,8 @@ public class IndexerInterceptor {
 
     private boolean isEsBundled(RequestDetails requestDetails) {
         return requestDetails.getParameters().containsKey("id") &&
-                requestDetails.getParameters().get("id")[0].contentEquals(HapiProperties.getBioEsBundleId());
+                (requestDetails.getParameters().get("id")[0].contentEquals(HapiProperties.getBioEsPatientBundleId()) ||
+                        requestDetails.getParameters().get("id")[0].contentEquals(HapiProperties.getBioEsRequestBundleId()));
     }
 
 

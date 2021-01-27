@@ -4,6 +4,7 @@ import bio.ferlab.clin.es.config.PatientDataConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.starter.HapiProperties;
 import ca.uhn.fhir.parser.IParser;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +53,16 @@ public class PatientDataBuilder {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public PatientData fromBundle(Bundle bundle) {
         this.patientData = new PatientData();
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+
+        final List<Bundle.BundleEntryComponent> entries = new ArrayList<>();
+
+        if(bundle.getId().contentEquals(HapiProperties.getBioEsRequestBundleId())){
+            entries.add(new Bundle.BundleEntryComponent().setResource(retrievePatient(bundle)));
+        }
+
+        entries.addAll(bundle.getEntry());
+
+        for (Bundle.BundleEntryComponent entry : entries) {
             final Resource resource = entry.getResource();
             for (Handle handle : handles) {
                 if (handle.tClass.isInstance(resource)) {
@@ -143,7 +154,7 @@ public class PatientDataBuilder {
             }
         }
 
-        if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)){
+        if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)) {
             final Extension extension = serviceRequest.getExtensionByUrl(Extensions.IS_SUBMITTED);
             final BooleanType valueBoolean = (BooleanType) extension.getValue();
             patientData.setSubmitted(valueBoolean.getValue());
@@ -156,6 +167,29 @@ public class PatientDataBuilder {
 
     void handleFamilyGroup(Group group) {
         patientData.setFamilyId(group.getId());
+    }
+
+
+    private Patient retrievePatient(Bundle bundle) {
+        if (bundle.getEntry().isEmpty()) {
+            throw new Error();
+        }
+
+        final Resource resource = bundle.getEntry().get(0).getResource();
+        if (!(resource instanceof ServiceRequest) && !(resource instanceof ClinicalImpression)) {
+            throw new Error();
+        }
+
+        final Reference reference = getPatientReference(resource);
+        return this.configuration.patientDAO.read(reference.getReferenceElement());
+    }
+
+    private Reference getPatientReference(Resource resource) {
+        if (resource instanceof ServiceRequest) {
+            return ((ServiceRequest) resource).getSubject();
+        } else {
+            return ((ClinicalImpression) resource).getSubject();
+        }
     }
 
     private static Name extractName(List<HumanName> humanNames) {
