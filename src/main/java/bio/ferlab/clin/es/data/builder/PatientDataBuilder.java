@@ -56,8 +56,8 @@ public class PatientDataBuilder {
 
         final List<Bundle.BundleEntryComponent> entries = new ArrayList<>();
 
-        if(bundle.getId().contentEquals(HapiProperties.getBioEsRequestBundleId())){
-            entries.add(new Bundle.BundleEntryComponent().setResource(retrievePatient(bundle)));
+        if (bundle.getId().contentEquals(HapiProperties.getBioEsRequestBundleId())) {
+            retrievePatientData(entries, bundle);
         }
 
         entries.addAll(bundle.getEntry());
@@ -78,7 +78,6 @@ public class PatientDataBuilder {
         patientData.setId(patient.getId());
         patientData.setMrn(patient.getIdentifier().get(0).getValue());
         patientData.setGender(patient.getGender().getDisplay());
-        patientData.setFamilyType("trio");
 
         if (patient.hasName()) {
             final Name name = extractName(patient.getName());
@@ -113,6 +112,14 @@ public class PatientDataBuilder {
             }
         }
 
+        if (patient.hasExtension(Extensions.IS_FETUS)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.IS_FETUS);
+            if (extension.hasValue()) {
+                final BooleanType value = (BooleanType) extension.getValue();
+                patientData.setFetus(value.booleanValue());
+            }
+        }
+
         if (patient.hasExtension(Extensions.FAMILY_ID)) {
             final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
             if (extension.hasValue() && extension.getValue() instanceof Reference) {
@@ -142,6 +149,7 @@ public class PatientDataBuilder {
         if (patient.hasBirthDate()) {
             patientData.setBirthDate(simpleDateFormat.format(patient.getBirthDate()));
         }
+
     }
 
     void handleServiceRequest(ServiceRequest serviceRequest) {
@@ -167,10 +175,17 @@ public class PatientDataBuilder {
 
     void handleFamilyGroup(Group group) {
         patientData.setFamilyId(group.getId());
+        if (group.hasExtension(Extensions.FAMILY_ID)) {
+            final Extension extension = group.getExtensionByUrl(Extensions.FAMILY_ID);
+            final Coding coding = (Coding) extension.getValue();
+            patientData.setFamilyType(coding.getDisplay());
+        } else {
+            patientData.setFamilyType("Solo");
+        }
     }
 
 
-    private Patient retrievePatient(Bundle bundle) {
+    private void retrievePatientData(List<Bundle.BundleEntryComponent> entries, Bundle bundle) {
         if (bundle.getEntry().isEmpty()) {
             throw new Error();
         }
@@ -181,7 +196,14 @@ public class PatientDataBuilder {
         }
 
         final Reference reference = getPatientReference(resource);
-        return this.configuration.patientDAO.read(reference.getReferenceElement());
+        final Patient patient = this.configuration.patientDAO.read(reference.getReferenceElement());
+        entries.add(new Bundle.BundleEntryComponent().setResource(patient));
+
+        if (patient.hasExtension(Extensions.FAMILY_ID)) {
+            final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
+            final Reference ref = (Reference) extension.getValue();
+            entries.add(new Bundle.BundleEntryComponent().setResource(this.configuration.groupDao.read(ref.getReferenceElement())));
+        }
     }
 
     private Reference getPatientReference(Resource resource) {

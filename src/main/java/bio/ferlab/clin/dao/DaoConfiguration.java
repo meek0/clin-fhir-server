@@ -15,6 +15,10 @@ public class DaoConfiguration {
         return daoRegistry.getResourceDao(ServiceRequest.class);
     }
 
+    public IFhirResourceDao<Group> groupDao(DaoRegistry daoRegistry) {
+        return daoRegistry.getResourceDao(Group.class);
+    }
+
     public IFhirResourceDao<Organization> organizationDao(DaoRegistry daoRegistry) {
         return daoRegistry.getResourceDao(Organization.class);
     }

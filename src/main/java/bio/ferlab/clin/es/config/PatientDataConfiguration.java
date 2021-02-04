@@ -9,18 +9,20 @@ public class PatientDataConfiguration {
     public final IFhirResourceDao<Organization> organizationDAO;
     public final IFhirResourceDao<Practitioner> practitionerDao;
     public final IFhirResourceDao<PractitionerRole> practitionerRoleDao;
+    public final IFhirResourceDao<Group> groupDao;
 
     public PatientDataConfiguration(
             IFhirResourceDao<Patient> patientDAO,
             IFhirResourceDao<ServiceRequest> serviceRequestDAO,
             IFhirResourceDao<Organization> organizationDAO,
             IFhirResourceDao<Practitioner> practitionerDao,
-            IFhirResourceDao<PractitionerRole> practitionerRoleDao
-    ) {
+            IFhirResourceDao<PractitionerRole> practitionerRoleDao,
+            IFhirResourceDao<Group> groupDao) {
         this.patientDAO = patientDAO;
         this.serviceRequestDAO = serviceRequestDAO;
         this.organizationDAO = organizationDAO;
         this.practitionerDao = practitionerDao;
         this.practitionerRoleDao = practitionerRoleDao;
+        this.groupDao = groupDao;
     }
 }
