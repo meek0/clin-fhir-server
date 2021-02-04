@@ -17,12 +17,10 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.api.server.ResponseDetails;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,10 +95,32 @@ public class IndexerInterceptor {
 
 
     private void indexToEs(Bundle bundle) {
-        final PatientData patientData = this.patientDataBuilder.fromBundle(bundle);
-        if (patientData != null) {
+        final List<PatientData> indexData = new ArrayList<>();
+        if (bundle.getId().contentEquals(HapiProperties.getBioEsPatientBundleId())) {
+            final long patientCount = bundle.getEntry().stream().filter(entry -> entry.getResource() instanceof Patient).count();
+            if (patientCount > 1) {
+                Bundle.BundleEntryComponent patient = bundle.getEntry().remove(1);
+                indexData.add(this.patientDataBuilder.fromBundle(bundle));
+                bundle.getEntry().add(1, patient);
+                patient = bundle.getEntry().remove(0);
+                indexData.add(this.patientDataBuilder.fromBundle(bundle));
+                bundle.getEntry().add(0, patient);
+            } else {
+                final PatientData patientData = this.patientDataBuilder.fromBundle(bundle);
+                if (patientData != null) {
+                    indexData.add(patientData);
+                }
+            }
+        } else {
+            final PatientData patientData = this.patientDataBuilder.fromBundle(bundle);
+            if (patientData != null) {
+                indexData.add(patientData);
+            }
+        }
+
+        indexData.forEach(patientData -> {
             final IndexData data = new IndexData(patientData.getId(), jsonGenerator.toString(patientData));
             client.index(INDEX_PATIENT, data);
-        }
+        });
     }
 }

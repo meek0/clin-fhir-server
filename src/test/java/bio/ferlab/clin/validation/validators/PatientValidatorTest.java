@@ -6,6 +6,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.*;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class PatientValidatorTest {
@@ -69,7 +70,11 @@ public class PatientValidatorTest {
             @Test
             @DisplayName("PatientValidator::validate should return false")
             public void validateShouldReturnFalse() {
-                patient.setBirthDate(null);
+                Date date = new Date();
+                final Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.add(Calendar.DATE, 1);
+                patient.setBirthDate(calendar.getTime());
                 Assertions.assertFalse(patientValidator.validate(patient));
             }
         }
