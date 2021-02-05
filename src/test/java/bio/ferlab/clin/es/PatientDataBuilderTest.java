@@ -94,7 +94,7 @@ public class PatientDataBuilderTest {
         when(this.practitionerDao.read(any())).thenReturn(this.practitioner);
         when(this.practitionerRoleDao.read(any())).thenReturn(this.practitionerRole);
 
-        this.patientDataConfiguration = new PatientDataConfiguration(null, null, this.organizationDao, this.practitionerDao, this.practitionerRoleDao);
+        this.patientDataConfiguration = new PatientDataConfiguration(null, null, this.organizationDao, this.practitionerDao, this.practitionerRoleDao, null);
         this.bundle = new Bundle();
         this.bundle.setId("bundle-id");
         this.bundle.addEntry().setResource(patient);
@@ -117,7 +117,7 @@ public class PatientDataBuilderTest {
         this.expectedPatientData.setEthnicity("European Caucasia");
         this.expectedPatientData.setPosition("Proband");
         this.expectedPatientData.setFamilyId("GR12345");
-        this.expectedPatientData.setFamilyType("trio");
+        this.expectedPatientData.setFamilyType("");
         this.expectedPatientData.setBirthDate(simpleDateFormat.format(patient.getBirthDate()));
         this.expectedPatientData.setRequest(String.format("ServiceRequest/%s", this.serviceRequest.getId()));
         this.expectedPatientData.setTest("WGS");
@@ -127,6 +127,7 @@ public class PatientDataBuilderTest {
         this.expectedPatientData.getPractitioner().setFirstName(practitioner.getName().get(0).getGiven().get(0).asStringValue());
         this.expectedPatientData.getOrganization().setId(organization.getId());
         this.expectedPatientData.getOrganization().setName(organization.getName());
+        this.expectedPatientData.setFetus(false);
     }
 
     @Nested
@@ -145,7 +146,7 @@ public class PatientDataBuilderTest {
 
             final String expectedJson = jsonGenerator.toString(expectedPatientData);
 
-            Assertions.assertTrue(expectedJson.contentEquals(output));
+            Assertions.assertEquals(expectedJson, output);
         }
     }
 

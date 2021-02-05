@@ -2,6 +2,7 @@ package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.ElasticsearchRestClient.IndexData;
+import bio.ferlab.clin.es.PatientDataExtractor;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.es.data.UpdateRequestData;
 import bio.ferlab.clin.es.data.builder.PatientDataBuilder;
@@ -17,12 +18,10 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.api.server.ResponseDetails;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,14 +33,14 @@ import java.util.List;
 public class IndexerInterceptor {
     private static final String INDEX_PATIENT = HapiProperties.getBioEsIndexPatient();
 
+    private final PatientDataExtractor patientDataExtractor;
     private final ElasticsearchRestClient client;
-    private final PatientDataBuilder patientDataBuilder;
     private final JsonGenerator jsonGenerator;
     private final IParser parser;
 
     public IndexerInterceptor(ApplicationContext appContext) {
+        this.patientDataExtractor = appContext.getBean(PatientDataExtractor.class);
         this.client = appContext.getBean(ElasticsearchRestClient.class);
-        this.patientDataBuilder = appContext.getBean(PatientDataBuilder.class);
         this.jsonGenerator = appContext.getBean(JsonGenerator.class);
         this.parser = appContext.getBean(FhirContext.class).newJsonParser();
     }
@@ -97,10 +96,11 @@ public class IndexerInterceptor {
 
 
     private void indexToEs(Bundle bundle) {
-        final PatientData patientData = this.patientDataBuilder.fromBundle(bundle);
-        if (patientData != null) {
+        final List<PatientData> indexData = patientDataExtractor.extract(bundle);
+
+        indexData.forEach(patientData -> {
             final IndexData data = new IndexData(patientData.getId(), jsonGenerator.toString(patientData));
             client.index(INDEX_PATIENT, data);
-        }
+        });
     }
 }

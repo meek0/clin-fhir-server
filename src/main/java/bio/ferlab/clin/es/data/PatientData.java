@@ -28,6 +28,7 @@ public class PatientData {
     private String request;
     private String timestamp;
     private boolean submitted;
+    private boolean fetus;
 
     public PatientData() {
         this.id = EMPTY_STRING;
@@ -36,7 +37,7 @@ public class PatientData {
         this.lastName = EMPTY_STRING;
         this.firstName = EMPTY_STRING;
         this.gender = EMPTY_STRING;
-        this.birthDate = EMPTY_STRING;
+        this.birthDate = null;
         this.practitioner = new Practitioner();
         this.test = EMPTY_STRING;
         this.prescription = null;
@@ -50,6 +51,7 @@ public class PatientData {
         this.request = EMPTY_STRING;
         this.timestamp = Instant.now().toString();
         this.submitted = false;
+        this.fetus = false;
     }
 
     @Data

@@ -25,10 +25,13 @@ public class PatientValidator extends SchemaValidator<Patient> {
     }
 
     private boolean validateBirthDate(Patient patient) {
-        return patient.hasBirthDate() && isValidBirthDate(patient.getBirthDate());
+        return isValidBirthDate(patient.getBirthDate());
     }
 
     private boolean isValidBirthDate(Date date) {
+        if (date == null) {
+            return true;
+        }
         final Date today = new Date();
         if (DateUtils.isSameDay(date, today)) {
             return true;
