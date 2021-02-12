@@ -1,81 +1,59 @@
-package bio.ferlab.clin.es.data.builder;
+package bio.ferlab.clin.es;
 
 import bio.ferlab.clin.es.config.PatientDataConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.utils.Extensions;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.starter.HapiProperties;
-import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class PatientDataBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(PatientDataBuilder.class);
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final String ID_SEPARATOR = "/";
 
-    private final List<Handle<?>> handles = Arrays.asList(
-            new Handle<>(Patient.class, this::handlePatient),
-            new Handle<>(ServiceRequest.class, this::handleServiceRequest),
-            new Handle<>(Group.class, this::handleFamilyGroup)
-    );
     private final PatientDataConfiguration configuration;
-    private final IParser parser;
 
-    private PatientData patientData;
-
-    public PatientDataBuilder(PatientDataConfiguration configuration, FhirContext context) {
+    public PatientDataBuilder(PatientDataConfiguration configuration) {
         this.configuration = configuration;
-        this.parser = context.newJsonParser();
     }
 
-    public PatientData fromJson(byte[] content) {
-        return this.fromJson(new String(content));
-    }
+    public List<PatientData> fromIds(Set<String> ids) {
+        final List<PatientData> patientDataList = new ArrayList<>();
+        for (final String patientId : ids) {
+            final PatientData patientData = new PatientData();
+            final Patient patient = this.configuration.patientDAO.read(new IdType(patientId));
 
-    public PatientData fromJson(String content) {
-        try {
-            return this.fromBundle(this.parser.parseResource(Bundle.class, content));
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public PatientData fromBundle(Bundle bundle) {
-        this.patientData = new PatientData();
-
-        final List<Bundle.BundleEntryComponent> entries = new ArrayList<>();
-
-        if (bundle.getId().contentEquals(HapiProperties.getBioEsRequestBundleId())) {
-            retrievePatientData(entries, bundle);
-        }
-
-        entries.addAll(bundle.getEntry());
-
-        for (Bundle.BundleEntryComponent entry : entries) {
-            final Resource resource = entry.getResource();
-            for (Handle handle : handles) {
-                if (handle.tClass.isInstance(resource)) {
-                    handle.callback.accept(handle.tClass.cast(resource));
-                }
+            this.handlePatient(patient, patientData);
+            if (patient.hasExtension(Extensions.FAMILY_ID)) {
+                final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
+                final Reference ref = (Reference) extension.getValue();
+                final Group group = this.configuration.groupDao.read(ref.getReferenceElement());
+                this.handleFamilyGroup(group, patientData);
             }
+
+            final SearchParameterMap searchMap = SearchParameterMap.newSynchronous("subject", new ReferenceParam(patientId));
+            final IBundleProvider srProvider = this.configuration.serviceRequestDAO.search(searchMap);
+
+            final List<ServiceRequest> serviceRequests = getListFromProvider(srProvider);
+            for (ServiceRequest serviceRequest : serviceRequests) {
+                patientData.getRequests().add(this.handleServiceRequest(serviceRequest));
+            }
+            patientDataList.add(patientData);
         }
-        return this.patientData;
+        return patientDataList;
     }
 
-
-    void handlePatient(Patient patient) {
-        patientData.setId(patient.getId());
+    void handlePatient(Patient patient, PatientData patientData) {
+        patientData.setId(patient.getIdElement().getIdPart());
         patientData.setMrn(patient.getIdentifier().get(0).getValue());
         patientData.setGender(patient.getGender().getDisplay());
 
@@ -152,29 +130,31 @@ public class PatientDataBuilder {
 
     }
 
-    void handleServiceRequest(ServiceRequest serviceRequest) {
-        patientData.setRequest(serviceRequest.getId());
-        patientData.setStatus(serviceRequest.getStatus().toCode());
+    PatientData.RequestData handleServiceRequest(ServiceRequest serviceRequest) {
+        final PatientData.RequestData requestData = new PatientData.RequestData();
+        requestData.setRequest(serviceRequest.getIdElement().getIdPart());
+        requestData.setStatus(serviceRequest.getStatus().toCode());
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {
-                patientData.setTest(code.getCoding().get(0).getCode());
+                requestData.setTest(code.getCoding().get(0).getCode());
             }
         }
 
         if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)) {
             final Extension extension = serviceRequest.getExtensionByUrl(Extensions.IS_SUBMITTED);
             final BooleanType valueBoolean = (BooleanType) extension.getValue();
-            patientData.setSubmitted(valueBoolean.getValue());
+            requestData.setSubmitted(valueBoolean.getValue());
         }
 
         if (serviceRequest.hasAuthoredOn()) {
-            patientData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
+            requestData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }
+        return requestData;
     }
 
-    void handleFamilyGroup(Group group) {
-        patientData.setFamilyId(group.getId());
+    void handleFamilyGroup(Group group, PatientData patientData) {
+        patientData.setFamilyId(group.getIdElement().getIdPart());
         if (group.hasExtension(Extensions.FAMILY_ID)) {
             final Extension extension = group.getExtensionByUrl(Extensions.FAMILY_ID);
             final Coding coding = (Coding) extension.getValue();
@@ -184,39 +164,20 @@ public class PatientDataBuilder {
         }
     }
 
-
-    private void retrievePatientData(List<Bundle.BundleEntryComponent> entries, Bundle bundle) {
-        if (bundle.getEntry().isEmpty()) {
-            throw new Error();
-        }
-
-        final Resource resource = bundle.getEntry().get(0).getResource();
-        if (!(resource instanceof ServiceRequest) && !(resource instanceof ClinicalImpression)) {
-            throw new Error();
-        }
-
-        final Reference reference = getPatientReference(resource);
-        final Patient patient = this.configuration.patientDAO.read(reference.getReferenceElement());
-        entries.add(new Bundle.BundleEntryComponent().setResource(patient));
-
-        if (patient.hasExtension(Extensions.FAMILY_ID)) {
-            final Extension extension = patient.getExtensionByUrl(Extensions.FAMILY_ID);
-            final Reference ref = (Reference) extension.getValue();
-            entries.add(new Bundle.BundleEntryComponent().setResource(this.configuration.groupDao.read(ref.getReferenceElement())));
-        }
-    }
-
-    private Reference getPatientReference(Resource resource) {
-        if (resource instanceof ServiceRequest) {
-            return ((ServiceRequest) resource).getSubject();
-        } else {
-            return ((ClinicalImpression) resource).getSubject();
-        }
-    }
-
     private static Name extractName(List<HumanName> humanNames) {
         final HumanName name = humanNames.get(0);
         return new Name(name.getFamily(), name.getGivenAsSingleString());
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends IBaseResource> List<T> getListFromProvider(IBundleProvider provider) {
+        final List<T> resources = new ArrayList<>();
+        if (!provider.isEmpty()) {
+            for (IBaseResource sr : provider.getResources(0, provider.size())) {
+                resources.add((T) sr);
+            }
+        }
+        return resources;
     }
 
     private static class Name {

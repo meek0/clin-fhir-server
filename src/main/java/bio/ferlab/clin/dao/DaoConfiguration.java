@@ -15,6 +15,10 @@ public class DaoConfiguration {
         return daoRegistry.getResourceDao(ServiceRequest.class);
     }
 
+    public IFhirResourceDao<ClinicalImpression> clinicalImpression(DaoRegistry daoRegistry) {
+        return daoRegistry.getResourceDao(ClinicalImpression.class);
+    }
+
     public IFhirResourceDao<Group> groupDao(DaoRegistry daoRegistry) {
         return daoRegistry.getResourceDao(Group.class);
     }
