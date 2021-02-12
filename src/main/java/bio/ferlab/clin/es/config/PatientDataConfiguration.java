@@ -15,7 +15,8 @@ public class PatientDataConfiguration {
     public PatientDataConfiguration(
             IFhirResourceDao<Patient> patientDAO,
             IFhirResourceDao<ServiceRequest> serviceRequestDAO,
-            IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO, IFhirResourceDao<Organization> organizationDAO,
+            IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO,
+            IFhirResourceDao<Organization> organizationDAO,
             IFhirResourceDao<Practitioner> practitionerDao,
             IFhirResourceDao<PractitionerRole> practitionerRoleDao,
             IFhirResourceDao<Group> groupDao) {
