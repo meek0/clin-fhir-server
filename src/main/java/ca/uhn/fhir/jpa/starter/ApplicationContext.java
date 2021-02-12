@@ -2,10 +2,10 @@ package ca.uhn.fhir.jpa.starter;
 
 import bio.ferlab.clin.audit.AuditTrail;
 import bio.ferlab.clin.dao.DaoConfiguration;
-import bio.ferlab.clin.es.PatientDataExtractor;
 import bio.ferlab.clin.es.config.ElasticsearchConfiguration;
 import bio.ferlab.clin.es.config.PatientDataConfiguration;
-import bio.ferlab.clin.es.data.builder.PatientDataBuilder;
+import bio.ferlab.clin.es.PatientDataBuilder;
+import bio.ferlab.clin.es.PatientIdExtractor;
 import bio.ferlab.clin.utils.JsonGenerator;
 import bio.ferlab.clin.utils.TokenDecoder;
 import bio.ferlab.clin.validation.ValidationConfiguration;
@@ -52,7 +52,7 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext {
     register(JsonGenerator.class);
     register(AuditTrail.class);
     register(TokenDecoder.class);
-    register(PatientDataExtractor.class);
+    register(PatientIdExtractor.class);
   }
 
 }

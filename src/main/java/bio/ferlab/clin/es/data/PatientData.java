@@ -4,20 +4,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class PatientData {
     private static final String EMPTY_STRING = "";
     private String id;
-    private String status;
     private Organization organization;
     private String lastName;
     private String firstName;
     private String gender;
     private String birthDate;
     private Practitioner practitioner;
-    private String test;
-    private String prescription;
     private String mrn;
     private String ramq;
     private String position;
@@ -25,22 +24,18 @@ public class PatientData {
     private String familyType;
     private String ethnicity;
     private String bloodRelationship;
-    private String request;
     private String timestamp;
-    private boolean submitted;
     private boolean fetus;
+    private List<RequestData> requests;
 
     public PatientData() {
         this.id = EMPTY_STRING;
-        this.status = EMPTY_STRING;
         this.organization = new Organization();
         this.lastName = EMPTY_STRING;
         this.firstName = EMPTY_STRING;
         this.gender = EMPTY_STRING;
         this.birthDate = null;
         this.practitioner = new Practitioner();
-        this.test = EMPTY_STRING;
-        this.prescription = null;
         this.mrn = EMPTY_STRING;
         this.ramq = EMPTY_STRING;
         this.position = EMPTY_STRING;
@@ -48,10 +43,9 @@ public class PatientData {
         this.familyType = EMPTY_STRING;
         this.ethnicity = EMPTY_STRING;
         this.bloodRelationship = EMPTY_STRING;
-        this.request = EMPTY_STRING;
         this.timestamp = Instant.now().toString();
-        this.submitted = false;
         this.fetus = false;
+        this.requests = new ArrayList<>();
     }
 
     @Data
@@ -67,5 +61,15 @@ public class PatientData {
         public String id = EMPTY_STRING;
         public String lastName = EMPTY_STRING;
         public String firstName = EMPTY_STRING;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class RequestData {
+        private String request = EMPTY_STRING;
+        private String status = EMPTY_STRING;
+        private String test = EMPTY_STRING;
+        private boolean submitted = false;
+        private String prescription = null;
     }
 }
