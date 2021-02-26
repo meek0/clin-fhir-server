@@ -9,9 +9,13 @@ import org.hl7.fhir.r4.model.StringType;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PatientValidator extends SchemaValidator<Patient> {
+    public static final String RAMQ_CODE = "JHN";
+    public static final String MRN_CODE = "MR";
+
     public PatientValidator() {
         super(Patient.class);
     }
@@ -43,24 +47,20 @@ public class PatientValidator extends SchemaValidator<Patient> {
             return false;
         }
 
-        final Identifier identifier = patient.getIdentifier().get(0);
-        final String mrn = identifier.getValue();
-
-        return mrn != null &&
-                mrn.length() > 0 &&
-                ValidatorUtils.isTrimmed(mrn) &&
-                !ValidatorUtils.hasSpecialCharacters(mrn);
+        return patient.getIdentifier().stream().filter(identifier -> identifier.getType().getCoding().get(0).getCode().contentEquals(MRN_CODE)).map(Identifier::getValue).noneMatch(mrn -> mrn == null || mrn.length() == 0 || !ValidatorUtils.isTrimmed(mrn) || ValidatorUtils.hasSpecialCharacters(mrn));
     }
 
     private boolean validateRAMQ(Patient patient) {
-        if (patient.getIdentifier().size() < 2) {
-            return true;
+        final Optional<Identifier> optionalRamq =
+                patient.getIdentifier().stream().filter(id -> id.getType().getCoding().get(0).getCode().contentEquals(RAMQ_CODE)).findFirst();
+        if (optionalRamq.isPresent()) {
+            final Identifier identifier = optionalRamq.get();
+            final String ramq = identifier.getValue();
+            return ramq != null &&
+                    ValidatorUtils.isTrimmed(ramq) &&
+                    ValidatorUtils.isValidRAMQ(ramq);
         }
-        final Identifier identifier = patient.getIdentifier().get(1);
-        final String ramq = identifier.getValue();
-        return ramq != null &&
-                ValidatorUtils.isTrimmed(ramq) &&
-                ValidatorUtils.isValidRAMQ(ramq);
+        return true;
     }
 
     private boolean validateNames(Patient patient) {

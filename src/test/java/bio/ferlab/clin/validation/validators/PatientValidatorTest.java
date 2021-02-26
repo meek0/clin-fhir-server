@@ -1,9 +1,7 @@
 package bio.ferlab.clin.validation.validators;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.*;
 
 import java.util.Calendar;
@@ -18,6 +16,7 @@ public class PatientValidatorTest {
         this.patient = new Patient();
         this.patient.addIdentifier()
                 .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                .setType(new CodeableConcept().addCoding(new Coding().setCode("MR")))
                 .setValue("12345");
 
 
@@ -54,6 +53,7 @@ public class PatientValidatorTest {
 
                 patient.addIdentifier()
                         .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                        .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                         .setValue("ABCD00000000");
                 Assertions.assertTrue(patientValidator.validate(patient));
             }
@@ -123,6 +123,7 @@ public class PatientValidatorTest {
                 public void validateShouldReturnFalse() {
                     patient.addIdentifier()
                             .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                            .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                             .setValue("ABC00000000 ");
                     Assertions.assertFalse(patientValidator.validate(patient));
                     patient.getIdentifier().get(1).setValue(" ABC00000000");
@@ -142,6 +143,7 @@ public class PatientValidatorTest {
                 public void validateShouldReturnFalse() {
                     patient.addIdentifier()
                             .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                            .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                             .setValue("ABC00000000");
                     Assertions.assertFalse(patientValidator.validate(patient));
                 }
