@@ -3,19 +3,19 @@ package bio.ferlab.clin.validation.validators;
 import bio.ferlab.clin.utils.Extensions;
 import bio.ferlab.clin.validation.utils.ValidatorUtils;
 import org.apache.commons.lang3.EnumUtils;
-import org.hl7.fhir.r4.model.Annotation;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.*;
 
 public class ObservationValidator extends SchemaValidator<Observation> {
     private static final String AGE_AT_ONSET_PREFIX_VALUE = "HP:";
+    public static final String ETHNICITY_SYSTEM = "http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity";
 
     private enum SupportedCodesEnum {
         CGH,
         INDIC,
         PHENO,
-        INVES
+        INVES,
+        ETH,
+        CONS,
     }
 
     private enum CghInterpretationEnum {
@@ -50,6 +50,10 @@ public class ObservationValidator extends SchemaValidator<Observation> {
                 return validatePhenotype(resource);
             case INVES:
                 return validateInvestigations(resource);
+            case ETH:
+                return validateEthnicity(resource);
+            case CONS:
+                return validateConsumption(resource);
             default:
                 return false;
         }
@@ -124,6 +128,24 @@ public class ObservationValidator extends SchemaValidator<Observation> {
 
     private boolean validateInvestigations(Observation resource) {
         return validateNote(resource);
+    }
+
+    private boolean validateEthnicity(Observation resource) {
+        try{
+            final CodeableConcept concept = (CodeableConcept) resource.getValue();
+            return !concept.getCoding().isEmpty() && concept.getCoding().get(0).getSystem().contentEquals(ETHNICITY_SYSTEM);
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    private boolean validateConsumption(Observation resource) {
+        try{
+            final BooleanType concept = (BooleanType) resource.getValue();
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 
     private String getCode(Observation resource) {
