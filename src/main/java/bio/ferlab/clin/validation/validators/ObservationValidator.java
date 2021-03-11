@@ -101,7 +101,7 @@ public class ObservationValidator extends SchemaValidator<Observation> {
 
     private boolean hasValidAgAtOnset(Observation observation) {
         if (!observation.hasExtension(Extensions.AGE_AT_ONSET)) {
-            return false;
+            return true;
         }
         final Coding coding = (Coding) observation.getExtensionByUrl(Extensions.AGE_AT_ONSET).getValue();
         return coding.getCode().startsWith(AGE_AT_ONSET_PREFIX_VALUE);
