@@ -1,13 +1,11 @@
 package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.context.ServiceContext;
+import bio.ferlab.clin.utils.TokenDecoder;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
-import ca.uhn.fhir.jpa.app.HapiProperties;
 import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -16,37 +14,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 
 @Interceptor
+@Service
 public class AccessTokenInterceptor {
-
-
-    private static final JwkProvider provider;
     public static final String FORBIDDEN = "Forbidden";
     private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
+    private final TokenDecoder decoder;
 
-    static {
-        if (HapiProperties.isSSLValidationDisabled()) {
-            getDisabledSSLContext();
-        }
-
-        String url = StringUtils.appendIfMissing(HapiProperties.getAuthServerUrl(), "/") + "auth/realms/" + HapiProperties.getAuthRealm() + "/protocol/openid-connect/certs";
-        try {
-            provider = new JwkProviderBuilder(new URL(url)).build();
-        } catch (MalformedURLException e) {
-            //Cannot acquire certificates to validate the tokens.  Fail.
-            throw new RuntimeException(e);
-        }
+    public AccessTokenInterceptor(TokenDecoder decoder) {
+        this.decoder = decoder;
     }
 
     @Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_PROCESSED)
@@ -69,7 +55,7 @@ public class AccessTokenInterceptor {
             //TODO: Add the roles so we can eventually use them to build a list of IAuthRule => https://hapifhir.io/hapi-fhir/docs/security/authorization_interceptor.html
 
             //Validate access token based on public key
-            Jwk jwk = provider.get(decodedJWT.getKeyId());
+            Jwk jwk = decoder.getProvider().get(decodedJWT.getKeyId());
             Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
             Verification verifier = JWT.require(algorithm);
 

@@ -7,8 +7,10 @@ import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Interceptor
+@Service
 public class ServiceContextCleanerInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);

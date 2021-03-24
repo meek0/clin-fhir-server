@@ -8,11 +8,13 @@ import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
+@Service
 public class ValidationInterceptor extends RequestValidatingInterceptor {
 
     @Hook(value = Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)

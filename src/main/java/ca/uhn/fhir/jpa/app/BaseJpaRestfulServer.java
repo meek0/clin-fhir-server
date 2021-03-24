@@ -1,5 +1,6 @@
 package ca.uhn.fhir.jpa.app;
 
+import bio.ferlab.clin.interceptors.*;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.cql.common.provider.CqlProviderLoader;
@@ -28,6 +29,7 @@ import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.*;
+import ca.uhn.fhir.rest.server.interceptor.consent.ConsentInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.partition.RequestTenantPartitionInterceptor;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import ca.uhn.fhir.rest.server.tenant.UrlBaseTenantIdentificationStrategy;
@@ -36,6 +38,7 @@ import ca.uhn.fhir.validation.ResultSeverityEnum;
 import com.google.common.base.Strings;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
@@ -100,6 +103,27 @@ public class BaseJpaRestfulServer extends RestfulServer {
   @Autowired(required = false)
   IRepositoryValidationInterceptorFactory factory;
 
+  @Autowired
+  FieldValidatorInterceptor fieldValidatorInterceptor;
+
+  @Autowired
+  AccessTokenInterceptor accessTokenInterceptor;
+
+  @Autowired
+  ConsentServiceInterceptor consentServiceInterceptor;
+
+  @Autowired
+  IndexerInterceptor indexerInterceptor;
+
+  @Value("${bio.elasticsearch.enabled}")
+  private boolean isBioEsEnabled;
+
+  @Value("${bio.auth.enabled}")
+  private boolean isAuthEnabled;
+
+  @Value("${bio.audits.enabled}")
+  private boolean isAuditsEnabled;
+
   // These are set only if the features are enabled
   private CqlProviderLoader cqlProviderLoader;
 
@@ -143,26 +167,26 @@ public class BaseJpaRestfulServer extends RestfulServer {
     if (fhirVersion == FhirVersionEnum.DSTU2) {
 
       JpaConformanceProviderDstu2 confProvider = new JpaConformanceProviderDstu2(this, fhirSystemDao,
-        daoConfig);
+              daoConfig);
       confProvider.setImplementationDescription("HAPI FHIR DSTU2 Server");
       setServerConformanceProvider(confProvider);
     } else {
       if (fhirVersion == FhirVersionEnum.DSTU3) {
 
         JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, fhirSystemDao,
-          daoConfig, searchParamRegistry);
+                daoConfig, searchParamRegistry);
         confProvider.setImplementationDescription("HAPI FHIR DSTU3 Server");
         setServerConformanceProvider(confProvider);
       } else if (fhirVersion == FhirVersionEnum.R4) {
 
         JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, fhirSystemDao,
-          daoConfig, searchParamRegistry);
+                daoConfig, searchParamRegistry);
         confProvider.setImplementationDescription("HAPI FHIR R4 Server");
         setServerConformanceProvider(confProvider);
       } else if (fhirVersion == FhirVersionEnum.R5) {
 
         JpaConformanceProviderR5 confProvider = new JpaConformanceProviderR5(this, fhirSystemDao,
-          daoConfig, searchParamRegistry);
+                daoConfig, searchParamRegistry);
         confProvider.setImplementationDescription("HAPI FHIR R5 Server");
         setServerConformanceProvider(confProvider);
       } else {
@@ -183,9 +207,9 @@ public class BaseJpaRestfulServer extends RestfulServer {
      */
     FhirContext ctx = getFhirContext();
     INarrativeGenerator theNarrativeGenerator =
-      appProperties.getNarrative_enabled() ?
-      new DefaultThymeleafNarrativeGenerator() :
-      new NullNarrativeGenerator();
+            appProperties.getNarrative_enabled() ?
+                    new DefaultThymeleafNarrativeGenerator() :
+                    new NullNarrativeGenerator();
     ctx.setNarrativeGenerator(theNarrativeGenerator);
 
     /*
@@ -277,7 +301,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
       config.addExposedHeader("Location");
       config.addExposedHeader("Content-Location");
       config.setAllowedMethods(
-        Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+              Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
       config.setAllowCredentials(appProperties.getCors().getAllow_Credentials());
 
       // Create the interceptor and register it
@@ -297,7 +321,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     if (appProperties.getAllow_cascading_deletes()) {
       CascadingDeleteInterceptor cascadingDeleteInterceptor = new CascadingDeleteInterceptor(ctx,
-        daoRegistry, interceptorBroadcaster);
+              daoRegistry, interceptorBroadcaster);
       getInterceptorService().registerInterceptor(cascadingDeleteInterceptor);
     }
 
@@ -356,18 +380,18 @@ public class BaseJpaRestfulServer extends RestfulServer {
     if (appProperties.getImplementationGuides() != null) {
       Map<String, AppProperties.ImplementationGuide> guides = appProperties.getImplementationGuides();
       for (Map.Entry<String, AppProperties.ImplementationGuide> guide : guides.entrySet()) {
-			packageInstallerSvc.install(new PackageInstallationSpec()
-				.setPackageUrl(guide.getValue().getUrl())
-				.setName(guide.getValue().getName())
-				.setVersion(guide.getValue().getVersion())
-				.setInstallMode(PackageInstallationSpec.InstallModeEnum.STORE_AND_INSTALL));
+        packageInstallerSvc.install(new PackageInstallationSpec()
+                .setPackageUrl(guide.getValue().getUrl())
+                .setName(guide.getValue().getName())
+                .setVersion(guide.getValue().getVersion())
+                .setInstallMode(PackageInstallationSpec.InstallModeEnum.STORE_AND_INSTALL));
 
       }
     }
 
-    if(factory != null) {
-		 interceptorService.registerInterceptor(factory.buildUsingStoredStructureDefinitions());
-	 }
+    if (factory != null) {
+      interceptorService.registerInterceptor(factory.buildUsingStoredStructureDefinitions());
+    }
 
 
     if (appProperties.getLastn_enabled()) {
@@ -375,5 +399,20 @@ public class BaseJpaRestfulServer extends RestfulServer {
     }
 
     daoConfig.getModelConfig().setNormalizedQuantitySearchLevel(appProperties.getNormalized_quantity_search_level());
+
+    // CLIN
+    registerInterceptor(fieldValidatorInterceptor);
+    registerInterceptor(new ValidationInterceptor());
+    if (isBioEsEnabled) {
+      registerInterceptor(indexerInterceptor);
+    }
+    if (isAuthEnabled) {
+      registerInterceptor(accessTokenInterceptor);
+    }
+    registerInterceptor(new ServiceContextCleanerInterceptor());
+
+    if (isAuditsEnabled) {
+      registerInterceptor(new ConsentInterceptor(consentServiceInterceptor));
+    }
   }
 }

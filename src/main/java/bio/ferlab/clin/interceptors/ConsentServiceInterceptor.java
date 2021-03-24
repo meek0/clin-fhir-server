@@ -18,21 +18,22 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Service
 public class ConsentServiceInterceptor implements IConsentService {
     private final static Logger logger = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
     private final AuditTrail auditTrail;
     private final TokenDecoder decoder;
 
-    public ConsentServiceInterceptor(ApplicationContext appCtx) {
-        this.auditTrail = appCtx.getBean(AuditTrail.class);
-        this.decoder = appCtx.getBean(TokenDecoder.class);
+    public ConsentServiceInterceptor(AuditTrail auditTrail, TokenDecoder decoder) {
+        this.auditTrail = auditTrail;
+        this.decoder = decoder;
     }
 
     @Override

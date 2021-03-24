@@ -2,7 +2,9 @@ package bio.ferlab.clin.es.config;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import org.hl7.fhir.r4.model.*;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class PatientDataConfiguration {
     public final IFhirResourceDao<Patient> patientDAO;
     public final IFhirResourceDao<ServiceRequest> serviceRequestDAO;
