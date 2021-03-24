@@ -1,8 +1,8 @@
 package bio.ferlab.clin.utils;
 
+import bio.ferlab.clin.BioProperties;
 import bio.ferlab.clin.context.ServiceContext;
 import bio.ferlab.clin.user.UserData;
-import ca.uhn.fhir.jpa.app.HapiProperties;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkProvider;
@@ -29,9 +29,14 @@ public class TokenDecoder {
     private static final String FORBIDDEN = "FORBIDDEN";
     private final JwkProvider provider;
 
-    public TokenDecoder() throws MalformedURLException {
-        String url = StringUtils.appendIfMissing(HapiProperties.getAuthServerUrl(), "/") + "auth/realms/" + HapiProperties.getAuthRealm() + "/protocol/openid-connect/certs";
+    public TokenDecoder(BioProperties bioProperties) throws MalformedURLException {
+        final String url = StringUtils.appendIfMissing(bioProperties.getAuthServerUrl(), "/") + "auth/realms/" + bioProperties.getAuthRealm()
+                + "/protocol/openid-connect/certs";
         this.provider = new JwkProviderBuilder(new URL(url)).build();
+    }
+
+    public JwkProvider getProvider() {
+        return provider;
     }
 
     public UserData decode(String bearer, Locale locale) throws AuthenticationException {
