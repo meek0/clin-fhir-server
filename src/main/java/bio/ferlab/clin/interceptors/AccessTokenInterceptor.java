@@ -1,5 +1,6 @@
 package bio.ferlab.clin.interceptors;
 
+import bio.ferlab.clin.BioProperties;
 import bio.ferlab.clin.context.ServiceContext;
 import bio.ferlab.clin.utils.TokenDecoder;
 import ca.uhn.fhir.interceptor.api.Hook;
@@ -31,7 +32,10 @@ public class AccessTokenInterceptor {
     private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
     private final TokenDecoder decoder;
 
-    public AccessTokenInterceptor(TokenDecoder decoder) {
+    public AccessTokenInterceptor(BioProperties bioProperties, TokenDecoder decoder) {
+        if(bioProperties.isDisableSslValidation()){
+            getDisabledSSLContext();
+        }
         this.decoder = decoder;
     }
 
