@@ -6,6 +6,7 @@ import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.AuditEvent.AuditEventAction;
 import org.hl7.fhir.r4.model.AuditEvent.AuditEventAgentComponent;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,8 +80,12 @@ public class AuditEventsBuilder {
         final AuditEvent.AuditEventEntityComponent target = new AuditEvent.AuditEventEntityComponent();
 
         target.setType(auditResource.getType());
-        if (!auditResource.isReadAll()) {
+        if (!auditResource.isReadAll() && auditResource.getResource() != null) {
             target.setWhat(auditResource.getReference());
+        }
+
+        if (auditResource.getQuery() != null) {
+            target.setQuery(auditResource.getQuery());
         }
 
         event.addEntity(target);
@@ -100,6 +105,7 @@ public class AuditEventsBuilder {
         private final AuditEventAction action;
         private Reference reference;
         private Coding type;
+        private byte[] query;
 
         public AuditResource(Resource resource, AuditEventAction action) {
             this.resource = resource;
@@ -112,7 +118,7 @@ public class AuditEventsBuilder {
 
         public static AuditResource fromReadAction(String url, String type) {
             final AuditResource auditResource = new AuditResource(null, AuditEventAction.R);
-            auditResource.setReference(new Reference(url));
+            auditResource.setQuery(url.getBytes(StandardCharsets.UTF_8));
             auditResource.setType(createTypeCoding().setCode(type));
             return auditResource;
         }

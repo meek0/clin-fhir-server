@@ -5,6 +5,7 @@ import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
@@ -13,12 +14,15 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class PatientDataBuilder {
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final String ID_SEPARATOR = "/";
+    public static final String MRN_CODE = "MR";
 
     private final PatientDataConfiguration configuration;
 
@@ -26,11 +30,11 @@ public class PatientDataBuilder {
         this.configuration = configuration;
     }
 
-    public List<PatientData> fromIds(Set<String> ids) {
+    public List<PatientData> fromIds(Set<String> ids, RequestDetails requestDetails) {
         final List<PatientData> patientDataList = new ArrayList<>();
         for (final String patientId : ids) {
             final PatientData patientData = new PatientData();
-            final Patient patient = this.configuration.patientDAO.read(new IdType(patientId));
+            final Patient patient = this.configuration.patientDAO.read(new IdType(patientId), requestDetails);
 
             this.handlePatient(patient, patientData);
             if (patient.hasExtension(Extensions.FAMILY_ID)) {
@@ -54,7 +58,11 @@ public class PatientDataBuilder {
 
     void handlePatient(Patient patient, PatientData patientData) {
         patientData.setId(patient.getIdElement().getIdPart());
-        patientData.setMrn(patient.getIdentifier().get(0).getValue());
+        final List<String> mrns = Objects.requireNonNull(patient.getIdentifier()).stream()
+                .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(MRN_CODE))
+                .map(Identifier::getValue).collect(Collectors.toList());
+
+        patientData.getMrn().addAll(mrns);
         patientData.setGender(patient.getGender().getDisplay());
 
         if (patient.hasName()) {

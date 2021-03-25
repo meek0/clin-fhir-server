@@ -17,7 +17,7 @@ public class PatientData {
     private String gender;
     private String birthDate;
     private Practitioner practitioner;
-    private String mrn;
+    private List<String> mrn;
     private String ramq;
     private String position;
     private String familyId;
@@ -36,7 +36,7 @@ public class PatientData {
         this.gender = EMPTY_STRING;
         this.birthDate = null;
         this.practitioner = new Practitioner();
-        this.mrn = EMPTY_STRING;
+        this.mrn = new ArrayList<>();
         this.ramq = EMPTY_STRING;
         this.position = EMPTY_STRING;
         this.familyId = EMPTY_STRING;
