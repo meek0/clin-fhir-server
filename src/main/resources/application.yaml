@@ -33,7 +33,7 @@ spring:
 hapi:
   fhir:
     ### enable to set the Server URL
-    #    server_address: http://hapi.fhir.org/baseR4
+    server_address: 'http://localhost:8080/hapi/fhir'
     ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
     fhir_version: R4
       #    defer_indexing_for_codesystems_of_size: 101
@@ -78,10 +78,11 @@ hapi:
     #  partitioning_include_in_search_hashes: false
     cors:
       enabled: true
-      allow_Credentials: true
+      allow_Credentials: false
       # Supports multiple, comma separated allowed origin entries
       # cors.allowed_origin=http://localhost:8080,https://localhost:8080,https://fhirtest.uhn.ca
       allowed_origin:
+        - "*"
         - 'http://localhost:2000'
 
     #    logger:
@@ -150,13 +151,11 @@ hapi:
 #  username: SomeUsername
 
 bio:
-  auth_server_url: 'https://auth.qa.cqdg.ferlab.ca.uhn.fhir.jpa.starter.bio'
-  auth_realm: 'clin'
   elasticsearch:
     host: "elasticsearch-workers"
     port: 9200
     scheme: "http"
-    patient-index: "patient-list"
+    patient-index: "prescriptions"
     enabled: true
   auth:
     server-url: https://auth.qa.cqdg.ferlab.ca.uhn.fhir.jpa.starter.bio
