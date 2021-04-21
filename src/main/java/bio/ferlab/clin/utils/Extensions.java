@@ -9,4 +9,5 @@ public class Extensions {
     public static final String FM_STRUCTURE = "http://fhir.cqgc.ferlab.bio/StructureDefinition/fm-structure";
     public static final String AGE_AT_ONSET = "http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset";
     public static final String IS_SUBMITTED = "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted";
+    public static final String CLINICAL_IMPRESSION_REF = "http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression";
 }

@@ -13,7 +13,8 @@ public class BioProperties {
     private final String esHost;
     private final int esPort;
     private final String esScheme;
-    private final String esPatientIndex;
+    private final String esPatientsIndex;
+    private final String esPrescriptionsIndex;
     private final boolean isAuthEnabled;
     private final String authServerUrl;
     private final String authRealm;
@@ -25,7 +26,8 @@ public class BioProperties {
             @Value("${bio.elasticsearch.host}") String esHost,
             @Value("${bio.elasticsearch.port}") int esPort,
             @Value("${bio.elasticsearch.scheme}") String esScheme,
-            @Value("${bio.elasticsearch.patient-index}") String esPatientIndex,
+            @Value("${bio.elasticsearch.patients-index}") String esPatientsIndex,
+            @Value("${bio.elasticsearch.prescriptions-index}") String esPrescriptionsIndex,
             @Value("${bio.auth.enabled}") boolean isAuthEnabled,
             @Value("${bio.auth.server-url}") String authServerUrl,
             @Value("${bio.auth.realm}") String authRealm,
@@ -36,7 +38,8 @@ public class BioProperties {
         this.esHost = esHost;
         this.esPort = esPort;
         this.esScheme = esScheme;
-        this.esPatientIndex = esPatientIndex;
+        this.esPatientsIndex = esPatientsIndex;
+        this.esPrescriptionsIndex = esPrescriptionsIndex;
         this.isAuthEnabled = isAuthEnabled;
         this.authServerUrl = authServerUrl;
         this.authRealm = authRealm;

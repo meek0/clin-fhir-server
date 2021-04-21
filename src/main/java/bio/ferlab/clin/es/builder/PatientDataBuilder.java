@@ -1,6 +1,6 @@
-package bio.ferlab.clin.es;
+package bio.ferlab.clin.es.builder;
 
-import bio.ferlab.clin.es.config.PatientDataConfiguration;
+import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -24,9 +24,9 @@ public class PatientDataBuilder {
     private static final String ID_SEPARATOR = "/";
     public static final String MRN_CODE = "MR";
 
-    private final PatientDataConfiguration configuration;
+    private final ResourceDaoConfiguration configuration;
 
-    public PatientDataBuilder(PatientDataConfiguration configuration) {
+    public PatientDataBuilder(ResourceDaoConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -168,7 +168,7 @@ public class PatientDataBuilder {
             final Coding coding = (Coding) extension.getValue();
             patientData.setFamilyType(coding.getDisplay());
         } else {
-            patientData.setFamilyType("Solo");
+            patientData.setFamilyType("solo");
         }
     }
 

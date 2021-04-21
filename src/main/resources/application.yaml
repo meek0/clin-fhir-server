@@ -155,7 +155,8 @@ bio:
     host: "elasticsearch-workers"
     port: 9200
     scheme: "http"
-    patient-index: "prescriptions"
+    patients-index: "patients"
+    prescriptions-index: "prescriptions"
     enabled: true
   auth:
     server-url: https://auth.qa.cqdg.ferlab.ca.uhn.fhir.jpa.starter.bio
