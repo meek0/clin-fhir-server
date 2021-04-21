@@ -5,7 +5,7 @@ import org.hl7.fhir.r4.model.*;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class PatientDataConfiguration {
+public class ResourceDaoConfiguration {
     public final IFhirResourceDao<Patient> patientDAO;
     public final IFhirResourceDao<ServiceRequest> serviceRequestDAO;
     public final IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO;
@@ -13,15 +13,17 @@ public class PatientDataConfiguration {
     public final IFhirResourceDao<Practitioner> practitionerDao;
     public final IFhirResourceDao<PractitionerRole> practitionerRoleDao;
     public final IFhirResourceDao<Group> groupDao;
+    public final IFhirResourceDao<Observation> observationDao;
 
-    public PatientDataConfiguration(
+    public ResourceDaoConfiguration(
             IFhirResourceDao<Patient> patientDAO,
             IFhirResourceDao<ServiceRequest> serviceRequestDAO,
             IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO,
             IFhirResourceDao<Organization> organizationDAO,
             IFhirResourceDao<Practitioner> practitionerDao,
             IFhirResourceDao<PractitionerRole> practitionerRoleDao,
-            IFhirResourceDao<Group> groupDao) {
+            IFhirResourceDao<Group> groupDao,
+            IFhirResourceDao<Observation> observationDao) {
         this.patientDAO = patientDAO;
         this.serviceRequestDAO = serviceRequestDAO;
         this.clinicalImpressionDAO = clinicalImpressionDAO;
@@ -29,5 +31,6 @@ public class PatientDataConfiguration {
         this.practitionerDao = practitionerDao;
         this.practitionerRoleDao = practitionerRoleDao;
         this.groupDao = groupDao;
+        this.observationDao = observationDao;
     }
 }

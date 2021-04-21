@@ -34,4 +34,8 @@ public class DaoConfiguration {
     public IFhirResourceDao<AuditEvent> auditEventDao(DaoRegistry daoRegistry) {
         return daoRegistry.getResourceDao(AuditEvent.class);
     }
+
+    public IFhirResourceDao<Observation> observationDao(DaoRegistry daoRegistry) {
+        return daoRegistry.getResourceDao(Observation.class);
+    }
 }
