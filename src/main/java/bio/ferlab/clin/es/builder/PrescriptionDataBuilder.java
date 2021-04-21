@@ -59,14 +59,6 @@ public class PrescriptionDataBuilder {
         return prescriptionDataList;
     }
 
-    private boolean isObservationOfCode(Observation observation, String code) {
-        final List<Coding> coding = observation.getCode().getCoding();
-        if (coding.isEmpty()) {
-            return false;
-        }
-        return coding.get(0).getCode().contentEquals(code);
-    }
-
     void handlePatient(Patient patient, PrescriptionData.PatientInformation patientInfo) {
         patientInfo.setId(patient.getIdElement().getIdPart());
         final List<String> mrns = Objects.requireNonNull(patient.getIdentifier()).stream()
@@ -136,8 +128,7 @@ public class PrescriptionDataBuilder {
 
         if (serviceRequest.hasRequester()) {
             final String id = serviceRequest.getRequester().getReference();
-            final PractitionerRole practitionerRole = configuration.practitionerRoleDao.read(new IdType(id));
-            final Practitioner practitioner = configuration.practitionerDao.read(practitionerRole.getPractitioner().getReferenceElement());
+            final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
             final Name name = extractName(practitioner.getName());
             prescriptionData.getPractitioner().setId(id);
             prescriptionData.getPractitioner().setLastName(name.lastName);
