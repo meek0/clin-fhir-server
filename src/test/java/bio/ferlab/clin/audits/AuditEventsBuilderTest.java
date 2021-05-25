@@ -1,7 +1,7 @@
 package bio.ferlab.clin.audits;
 
 import bio.ferlab.clin.audit.AuditEventsBuilder;
-import bio.ferlab.clin.user.UserData;
+import bio.ferlab.clin.user.RequesterData;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AuditEventsBuilderTest {
     private AuditEventsBuilder auditEventsBuilder;
-    private UserData userData;
+    private RequesterData requesterData;
 
     @BeforeEach
     public void setup() {
-        this.userData = new UserData();
-        this.userData.setName("FirstName LastName");
+        this.requesterData = new RequesterData();
+        this.requesterData.setName("FirstName LastName");
     }
 
     @Nested
@@ -28,7 +28,7 @@ public class AuditEventsBuilderTest {
         @Test
         @DisplayName("From a bundle")
         public void createAuditEventFromBundle() {
-            auditEventsBuilder = new AuditEventsBuilder(userData);
+            auditEventsBuilder = new AuditEventsBuilder(requesterData);
             final Bundle bundle = new Bundle();
             final Patient patient = new Patient();
             patient.setId("Patient/TestId");
@@ -49,7 +49,7 @@ public class AuditEventsBuilderTest {
         @Test
         @DisplayName("From a specific resource")
         public void createAuditEventFromResource() {
-            auditEventsBuilder = new AuditEventsBuilder(userData);
+            auditEventsBuilder = new AuditEventsBuilder(requesterData);
             final Patient patient = new Patient();
             patient.setIdElement(new IdType().setValue("Patient/TestId"));
             final String patientId = patient.getId();
@@ -64,7 +64,7 @@ public class AuditEventsBuilderTest {
         @Test
         @DisplayName("From all resources")
         public void createAuditEventFromReadAction() {
-            auditEventsBuilder = new AuditEventsBuilder(userData);
+            auditEventsBuilder = new AuditEventsBuilder(requesterData);
 
             final List<AuditEvent> events = auditEventsBuilder.addReadAction("Patient").build();
             final String type = events.get(0).getEntity().get(0).getType().getCode();
@@ -83,7 +83,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Read")
             public void createReadAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Patient patient = new Patient();
                 patient.setIdElement(new IdType().setValue("Patient/TestId"));
 
@@ -96,7 +96,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Create")
             public void createWriteAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Patient patient = new Patient();
                 patient.setIdElement(new IdType().setValue("Patient/TestId"));
 
@@ -110,7 +110,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Update")
             public void createUpdateAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Patient patient = new Patient();
                 patient.setIdElement(new IdType().setValue("Patient/TestId"));
 
@@ -123,7 +123,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Delete")
             public void createDeleteAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Patient patient = new Patient();
                 patient.setIdElement(new IdType().setValue("Patient/TestId"));
 
@@ -140,7 +140,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Read")
             public void createReadAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Bundle bundle = new Bundle();
 
                 final Patient patient = new Patient();
@@ -158,7 +158,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Create")
             public void createWriteAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Bundle bundle = new Bundle();
 
                 final Patient patient = new Patient();
@@ -174,7 +174,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Update")
             public void createUpdateAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Bundle bundle = new Bundle();
 
                 final Patient patient = new Patient();
@@ -190,7 +190,7 @@ public class AuditEventsBuilderTest {
             @Test
             @DisplayName("Delete")
             public void createDeleteAuditEvent() {
-                auditEventsBuilder = new AuditEventsBuilder(userData);
+                auditEventsBuilder = new AuditEventsBuilder(requesterData);
                 final Bundle bundle = new Bundle();
 
                 final Patient patient = new Patient();

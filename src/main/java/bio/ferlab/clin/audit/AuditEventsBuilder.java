@@ -1,6 +1,6 @@
 package bio.ferlab.clin.audit;
 
-import bio.ferlab.clin.user.UserData;
+import bio.ferlab.clin.user.RequesterData;
 import lombok.Data;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.AuditEvent.AuditEventAction;
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 public class AuditEventsBuilder {
     public static final String UNKNOWN_HTTP_VERB = "Unknown http verb";
     private final List<AuditResource> resources = new ArrayList<>();
-    private final UserData userData;
+    private final RequesterData requesterData;
 
-    public AuditEventsBuilder(UserData userData) {
-        this.userData = userData;
+    public AuditEventsBuilder(RequesterData requesterData) {
+        this.requesterData = requesterData;
     }
 
     private AuditEventAction getActionFromBundleVerb(Bundle.HTTPVerb verb) {
@@ -73,8 +73,16 @@ public class AuditEventsBuilder {
         event.setRecorded(Date.from(Instant.now()));
 
         final AuditEventAgentComponent agent = new AuditEventAgentComponent();
-        agent.setName(userData.getName());
-        agent.setWho(new Reference().setReference(String.format("Practitioner/%s", userData.getPractitionerId())));
+
+        if (requesterData.getName() != null) {
+            agent.setName(requesterData.getName());
+        } else {
+            agent.setName(requesterData.getUsername());
+        }
+
+        if (requesterData.getPractitionerId() != null) {
+            agent.setWho(new Reference().setReference(String.format("Practitioner/%s", requesterData.getPractitionerId())));
+        }
         event.addAgent(agent);
 
         final AuditEvent.AuditEventEntityComponent target = new AuditEvent.AuditEventEntityComponent();

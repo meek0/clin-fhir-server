@@ -2,11 +2,12 @@ package bio.ferlab.clin.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class UserData {
+public class RequesterData {
     @JsonProperty("email")
     private String email;
     @JsonProperty("preferred_username")
@@ -40,5 +41,13 @@ public class UserData {
     public static class Account {
         @JsonProperty("roles")
         private String[] roles;
+    }
+
+    public static RequesterData fromServiceAccount(JsonNode node){
+        final var userData = new RequesterData();
+        final var username = node.get("preferred_username").asText();
+        userData.setName(username);
+        userData.setPractitionerId(username);
+        return userData;
     }
 }

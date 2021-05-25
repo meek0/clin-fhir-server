@@ -1,6 +1,6 @@
 package bio.ferlab.clin.interceptors;
 
-import bio.ferlab.clin.BioProperties;
+import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.indexer.PatientIndexer;
 import bio.ferlab.clin.es.indexer.ServiceRequestIndexer;
