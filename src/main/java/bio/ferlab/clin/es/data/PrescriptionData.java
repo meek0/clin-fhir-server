@@ -13,6 +13,7 @@ public class PrescriptionData {
     private static final String EMPTY_STRING = "";
 
     private String id = EMPTY_STRING;
+    private String mrn = EMPTY_STRING;
     private String ethnicity = EMPTY_STRING;
     private boolean bloodRelationship = false;
     private String timestamp = Instant.now().toString();
