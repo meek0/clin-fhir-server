@@ -1,8 +1,8 @@
 package bio.ferlab.clin.utils;
 
-import bio.ferlab.clin.BioProperties;
 import bio.ferlab.clin.context.ServiceContext;
-import bio.ferlab.clin.user.UserData;
+import bio.ferlab.clin.properties.BioProperties;
+import bio.ferlab.clin.user.RequesterData;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkProvider;
@@ -30,7 +30,7 @@ public class TokenDecoder {
     private final JwkProvider provider;
 
     public TokenDecoder(BioProperties bioProperties) throws MalformedURLException {
-        final String url = StringUtils.appendIfMissing(bioProperties.getAuthServerUrl(), "/") + "auth/realms/" + bioProperties.getAuthRealm()
+        final String url = StringUtils.appendIfMissing(bioProperties.getAuthServerUrl(), "/") + "realms/" + bioProperties.getAuthRealm()
                 + "/protocol/openid-connect/certs";
         this.provider = new JwkProviderBuilder(new URL(url)).build();
     }
@@ -39,7 +39,7 @@ public class TokenDecoder {
         return provider;
     }
 
-    public UserData decode(String bearer, Locale locale) throws AuthenticationException {
+    public RequesterData decode(String bearer, Locale locale) throws AuthenticationException {
         String accessToken = null;
         if (StringUtils.isNotBlank(bearer)) {
             accessToken = bearer.split(" ")[1];
@@ -58,7 +58,7 @@ public class TokenDecoder {
 
             verifier.build().verify(decodedJWT);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
-            return new ObjectMapper().readValue(decodedBody, UserData.class);
+            return new ObjectMapper().readValue(decodedBody, RequesterData.class);
         } catch (Exception e) {
             logger.warn("Exception during authentication", e);
             throw new AuthenticationException(FORBIDDEN, e);

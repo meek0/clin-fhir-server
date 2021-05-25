@@ -1,17 +1,11 @@
 package bio.ferlab.clin.interceptors;
 
-import bio.ferlab.clin.BioProperties;
-import bio.ferlab.clin.context.ServiceContext;
+import bio.ferlab.clin.properties.BioProperties;
+import bio.ferlab.clin.utils.Constants;
 import bio.ferlab.clin.utils.TokenDecoder;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
-import com.auth0.jwk.Jwk;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
 
 @Interceptor
 @Service
@@ -33,7 +26,7 @@ public class AccessTokenInterceptor {
     private final TokenDecoder decoder;
 
     public AccessTokenInterceptor(BioProperties bioProperties, TokenDecoder decoder) {
-        if(bioProperties.isDisableSslValidation()){
+        if (bioProperties.isDisableSslValidation()) {
             getDisabledSSLContext();
         }
         this.decoder = decoder;
@@ -41,34 +34,9 @@ public class AccessTokenInterceptor {
 
     @Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_PROCESSED)
     public void validateToken(HttpServletRequest request, HttpServletResponse response) {
-        String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String accessToken = null;
-        if (StringUtils.isNotBlank(bearer)) {
-            //The access token is always preceeded by "Bearer "
-            accessToken = bearer.split(" ")[1];
-        }
-        if (accessToken == null) {
-            logger.info("No access token provided in header");
-            throw new ca.uhn.fhir.rest.server.exceptions.AuthenticationException(FORBIDDEN);
-        }
-        try {
-            DecodedJWT decodedJWT = JWT.decode(accessToken);
-
-            //Save user info in ThreadLocal for later use
-            ServiceContext.build(decodedJWT.getSubject(), request.getLocale());
-            //TODO: Add the roles so we can eventually use them to build a list of IAuthRule => https://hapifhir.io/hapi-fhir/docs/security/authorization_interceptor.html
-
-            //Validate access token based on public key
-            Jwk jwk = decoder.getProvider().get(decodedJWT.getKeyId());
-            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
-            Verification verifier = JWT.require(algorithm);
-
-            //Will throw exception if invalid
-            verifier.build().verify(decodedJWT);
-        } catch (Exception e) {
-            logger.warn("Exception during authentication", e);
-            throw new ca.uhn.fhir.rest.server.exceptions.AuthenticationException(FORBIDDEN, e);
-        }
+        final var bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final var requesterData = decoder.decode(bearer, request.getLocale());
+        request.setAttribute(Constants.REQUESTER_DATA_KEY, requesterData);
     }
 
     /**

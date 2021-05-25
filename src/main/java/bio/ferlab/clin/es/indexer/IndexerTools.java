@@ -1,6 +1,6 @@
 package bio.ferlab.clin.es.indexer;
 
-import bio.ferlab.clin.BioProperties;
+import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.utils.JsonGenerator;
 import org.springframework.stereotype.Component;

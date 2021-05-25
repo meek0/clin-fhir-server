@@ -1,4 +1,4 @@
-package bio.ferlab.clin;
+package bio.ferlab.clin.properties;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,9 @@ public class BioProperties {
     private final String authRealm;
     private final boolean isDisableSslValidation;
     private final boolean isAuditsEnabled;
+    private final boolean isAuthorizationEnabled;
+    private final String authClientId;
+    private final String authClientSecret;
 
     public BioProperties(
             @Value("${bio.elasticsearch.enabled}") boolean isBioEsEnabled,
@@ -32,7 +35,10 @@ public class BioProperties {
             @Value("${bio.auth.server-url}") String authServerUrl,
             @Value("${bio.auth.realm}") String authRealm,
             @Value("${bio.auth.disable-ssl-validation}") boolean isDisableSslValidation,
-            @Value("${bio.audits.enabled}") boolean isAuditsEnabled
+            @Value("${bio.audits.enabled}") boolean isAuditsEnabled,
+            @Value("${bio.auth.authorization.enabled}") boolean isAuthorizationEnabled,
+            @Value("${bio.auth.authorization.client-id}") String authClientId,
+            @Value("${bio.auth.authorization.client-secret}") String authClientSecret
     ) {
         this.isBioEsEnabled = isBioEsEnabled;
         this.esHost = esHost;
@@ -45,5 +51,8 @@ public class BioProperties {
         this.authRealm = authRealm;
         this.isDisableSslValidation = isDisableSslValidation;
         this.isAuditsEnabled = isAuditsEnabled;
+        this.isAuthorizationEnabled = isAuthorizationEnabled;
+        this.authClientId = authClientId;
+        this.authClientSecret = authClientSecret;
     }
 }

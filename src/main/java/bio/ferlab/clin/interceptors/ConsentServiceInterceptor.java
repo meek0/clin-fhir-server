@@ -2,8 +2,8 @@ package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.audit.AuditEventsBuilder;
 import bio.ferlab.clin.audit.AuditTrail;
-import bio.ferlab.clin.user.UserData;
-import bio.ferlab.clin.utils.TokenDecoder;
+import bio.ferlab.clin.user.RequesterData;
+import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -11,7 +11,6 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.interceptor.consent.ConsentOutcome;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentContextServices;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentService;
-import com.google.common.net.HttpHeaders;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
@@ -22,18 +21,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class ConsentServiceInterceptor implements IConsentService {
     private final static Logger logger = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
     private final AuditTrail auditTrail;
-    private final TokenDecoder decoder;
 
-    public ConsentServiceInterceptor(AuditTrail auditTrail, TokenDecoder decoder) {
+    public ConsentServiceInterceptor(AuditTrail auditTrail) {
         this.auditTrail = auditTrail;
-        this.decoder = decoder;
     }
 
     @Override
@@ -69,8 +65,8 @@ public class ConsentServiceInterceptor implements IConsentService {
 
     private boolean logOperation(RequestDetails requestDetails, boolean successful) {
         final IBaseResource resource = requestDetails.getResource();
-        final UserData userData = this.decoder.decode(requestDetails.getHeader(HttpHeaders.AUTHORIZATION), new Locale("en"));
-        final AuditEventsBuilder builder = new AuditEventsBuilder(userData);
+        final RequesterData requesterData = (RequesterData) requestDetails.getAttribute(Constants.REQUESTER_DATA_KEY);
+        final AuditEventsBuilder builder = new AuditEventsBuilder(requesterData);
         final List<AuditEvent> events = new ArrayList<>();
 
         if (requestDetails.getRequestType() == RequestTypeEnum.GET) {

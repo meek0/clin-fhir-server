@@ -1,6 +1,6 @@
 package bio.ferlab.clin.es.config;
 
-import bio.ferlab.clin.BioProperties;
+import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.data.ElasticsearchData;
 import org.apache.http.HttpHost;

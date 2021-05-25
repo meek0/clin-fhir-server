@@ -1,7 +1,8 @@
 package ca.uhn.fhir.jpa.app;
 
-import bio.ferlab.clin.BioProperties;
+import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.interceptors.*;
+import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.cql.common.provider.CqlProviderLoader;
@@ -39,7 +40,6 @@ import ca.uhn.fhir.validation.ResultSeverityEnum;
 import com.google.common.base.Strings;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
@@ -115,6 +115,9 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     @Autowired
     IndexerInterceptor indexerInterceptor;
+
+    @Autowired
+    BioAuthInterceptor bioAuthInterceptor;
 
     @Autowired
     BioProperties bioProperties;
@@ -289,6 +292,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
             config.addAllowedHeader("x-fhir-starter");
             config.addAllowedHeader("X-Requested-With");
             config.addAllowedHeader("Prefer");
+            config.addAllowedHeader(Constants.RPT_HEADER);
             List<String> allAllowedCORSOrigins = appProperties.getCors().getAllowed_origin();
             allAllowedCORSOrigins.forEach(config::addAllowedOrigin);
 
@@ -398,6 +402,9 @@ public class BaseJpaRestfulServer extends RestfulServer {
         // CLIN
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(new ValidationInterceptor());
+        if (bioProperties.isAuthorizationEnabled()) {
+            registerInterceptor(bioAuthInterceptor);
+        }
         if (bioProperties.isBioEsEnabled()) {
             registerInterceptor(indexerInterceptor);
         }

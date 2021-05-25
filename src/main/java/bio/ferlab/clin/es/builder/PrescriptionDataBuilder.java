@@ -134,6 +134,13 @@ public class PrescriptionDataBuilder {
             prescriptionData.getPractitioner().setLastName(name.lastName);
             prescriptionData.getPractitioner().setFirstName(name.firstName);
         }
+
+        if (serviceRequest.hasIdentifier()) {
+            final var identifier = serviceRequest.getIdentifier().get(0);
+            if (identifier.hasValue()) {
+                prescriptionData.setMrn(identifier.getValue());
+            }
+        }
     }
 
     void handleFamilyGroup(Group group, PrescriptionData.FamilyGroupInfo familyGroupInfo) {
