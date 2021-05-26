@@ -68,6 +68,6 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     public List<IAuthRule> buildRuleList(RequestDetails requestDetails) {
         final var permissions = this.permissionExtractor.extract(requestDetails);
         final var ruleBuilder = this.handleUserPermissions(permissions);
-        return ruleBuilder.allowAll().build();
+        return ruleBuilder.denyAll().build();
     }
 }
