@@ -29,7 +29,10 @@ public class UserPermissionsBuilder {
         PRACTITIONER(Practitioner.class),
         PRACTITIONER_ROLE(PractitionerRole.class),
         ORGANIZATION(Organization.class),
-        BUNDLE(Bundle.class);
+        BUNDLE(Bundle.class),
+        SPECIMEN(Specimen.class),
+        DOCUMENT_REFERENCE(DocumentReference.class),
+        TASK(Task.class);
 
         public final Class<? extends Resource> type;
         private String id;
@@ -48,12 +51,28 @@ public class UserPermissionsBuilder {
     }
 
     private final Map<AuthPermission, Set<Scope>> permissions = new HashMap<>();
+
+    private final List<Pair<AuthPermission, Scope>> defaultRules = List.of(
+            Pair.of(AuthPermission.BUNDLE, Scope.READ),
+            Pair.of(AuthPermission.SPECIMEN, Scope.READ),
+            Pair.of(AuthPermission.SPECIMEN, Scope.UPDATE),
+            Pair.of(AuthPermission.SPECIMEN, Scope.CREATE),
+            Pair.of(AuthPermission.SPECIMEN, Scope.DELETE),
+            Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.READ),
+            Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.UPDATE),
+            Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.CREATE),
+            Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.DELETE),
+            Pair.of(AuthPermission.TASK, Scope.READ),
+            Pair.of(AuthPermission.TASK, Scope.UPDATE),
+            Pair.of(AuthPermission.TASK, Scope.CREATE),
+            Pair.of(AuthPermission.TASK, Scope.DELETE)
+    );
+
     private final Map<String, List<Pair<AuthPermission, Scope>>> permissionRules = Map.ofEntries(
             Map.entry(AuthResources.PATIENT_LIST, List.of(
                     Pair.of(AuthPermission.PATIENT, Scope.READ),
                     Pair.of(AuthPermission.GROUP, Scope.READ),
-                    Pair.of(AuthPermission.ORGANIZATION, Scope.READ),
-                    Pair.of(AuthPermission.BUNDLE, Scope.READ)
+                    Pair.of(AuthPermission.ORGANIZATION, Scope.READ)
             )),
             Map.entry(AuthResources.CREATE_PATIENT, List.of(
                     Pair.of(AuthPermission.PATIENT, Scope.CREATE),
@@ -106,6 +125,7 @@ public class UserPermissionsBuilder {
         return this;
     }
 
+
     public UserPermissionsBuilder allowPermission(AuthPermission permission, Scope scope) {
         this.permissions.putIfAbsent(permission, new HashSet<>());
         this.permissions.get(permission).add(scope);
@@ -123,8 +143,13 @@ public class UserPermissionsBuilder {
         );
     }
 
+    private void addDefaultPermissions() {
+        this.defaultRules.forEach(entry -> this.allowPermission(entry.getFirst(), entry.getSecond()));
+    }
+
     @SuppressWarnings("unchecked")
     public UserPermissions build() {
+        this.addDefaultPermissions();
         final var resources = this.permissions.entrySet().stream().map(this::permissionsFromScopes).collect(Collectors.toList());
         return new UserPermissions(resources.toArray(Permission[]::new));
     }
