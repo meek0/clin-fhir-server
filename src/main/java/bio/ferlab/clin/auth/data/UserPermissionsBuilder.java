@@ -27,7 +27,9 @@ public class UserPermissionsBuilder {
         FAMILY_HISTORY(FamilyMemberHistory.class),
         GROUP(Group.class),
         PRACTITIONER(Practitioner.class),
-        PRACTITIONER_ROLE(PractitionerRole.class);
+        PRACTITIONER_ROLE(PractitionerRole.class),
+        ORGANIZATION(Organization.class),
+        BUNDLE(Bundle.class);
 
         public final Class<? extends Resource> type;
         private String id;
@@ -49,7 +51,9 @@ public class UserPermissionsBuilder {
     private final Map<String, List<Pair<AuthPermission, Scope>>> permissionRules = Map.ofEntries(
             Map.entry(AuthResources.PATIENT_LIST, List.of(
                     Pair.of(AuthPermission.PATIENT, Scope.READ),
-                    Pair.of(AuthPermission.GROUP, Scope.READ)
+                    Pair.of(AuthPermission.GROUP, Scope.READ),
+                    Pair.of(AuthPermission.ORGANIZATION, Scope.READ),
+                    Pair.of(AuthPermission.BUNDLE, Scope.READ)
             )),
             Map.entry(AuthResources.CREATE_PATIENT, List.of(
                     Pair.of(AuthPermission.PATIENT, Scope.CREATE),
