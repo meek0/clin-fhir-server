@@ -32,7 +32,7 @@ spring:
 
 hapi:
   fhir:
-#    graphql_enabled: true
+    graphql_enabled: true
     ### enable to set the Server URL
     server_address: 'http://localhost:8080/hapi/fhir'
     ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
