@@ -32,7 +32,8 @@ public class UserPermissionsBuilder {
         BUNDLE(Bundle.class),
         SPECIMEN(Specimen.class),
         DOCUMENT_REFERENCE(DocumentReference.class),
-        TASK(Task.class);
+        TASK(Task.class),
+        SEARCH_PARAMETER(SearchParameter.class);
 
         public final Class<? extends Resource> type;
         private String id;
@@ -62,6 +63,10 @@ public class UserPermissionsBuilder {
             Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.UPDATE),
             Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.CREATE),
             Pair.of(AuthPermission.DOCUMENT_REFERENCE, Scope.DELETE),
+            Pair.of(AuthPermission.SEARCH_PARAMETER, Scope.READ),
+            Pair.of(AuthPermission.SEARCH_PARAMETER, Scope.UPDATE),
+            Pair.of(AuthPermission.SEARCH_PARAMETER, Scope.CREATE),
+            Pair.of(AuthPermission.SEARCH_PARAMETER, Scope.DELETE),
             Pair.of(AuthPermission.TASK, Scope.READ),
             Pair.of(AuthPermission.TASK, Scope.UPDATE),
             Pair.of(AuthPermission.TASK, Scope.CREATE),
