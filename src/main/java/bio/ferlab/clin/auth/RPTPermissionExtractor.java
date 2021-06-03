@@ -24,7 +24,7 @@ public class RPTPermissionExtractor {
         }
 
         final var builder = new UserPermissionsBuilder();
-        response.getPermissions().forEach(permission -> builder.allowResource(permission.getResourceName()));
+        response.getPermissions().forEach(permission -> builder.allowResource(permission.getResourceName(), permission.getScopes()));
         return builder.build();
     }
 }
