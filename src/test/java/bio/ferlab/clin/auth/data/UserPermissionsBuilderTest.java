@@ -1,227 +1,203 @@
 package bio.ferlab.clin.auth.data;
 
-import bio.ferlab.clin.utils.AuthResources;
 import org.hl7.fhir.r4.model.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.util.Arrays;
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class UserPermissionsBuilderTest {
     private final UserPermissionsBuilder builder = new UserPermissionsBuilder();
+    private final Set<String> allScopes = new HashSet<>();
 
+    @BeforeEach
+    void setup() {
+        allScopes.clear();
+        allScopes.addAll(List.of("create", "read", "update", "delete"));
+    }
 
-    private void validatePermissions(UserPermissions userPermissions,
-                                     Function<Permission<? extends Resource>, Boolean> func,
-                                     int count) {
-        Assertions.assertEquals(Arrays.stream(userPermissions.getPermissions()).filter(func::apply).count(), count);
+    public void validateScopes(Permission<? extends BaseResource> permission, Set<String> scopes) {
+        scopes.forEach(scope -> {
+            switch (scope) {
+                case "create":
+                    Assertions.assertTrue(permission.isCreate());
+                    break;
+                case "read":
+                    Assertions.assertTrue(permission.isRead());
+                    break;
+                case "update":
+                    Assertions.assertTrue(permission.isUpdate());
+                    break;
+                case "delete":
+                    Assertions.assertTrue(permission.isDelete());
+                    break;
+            }
+        });
+        allScopes.removeAll(scopes);
+        allScopes.forEach(scope -> {
+            switch (scope) {
+                case "create":
+                    Assertions.assertFalse(permission.isCreate());
+                    break;
+                case "read":
+                    Assertions.assertFalse(permission.isRead());
+                    break;
+                case "update":
+                    Assertions.assertFalse(permission.isUpdate());
+                    break;
+                case "delete":
+                    Assertions.assertFalse(permission.isDelete());
+                    break;
+            }
+        });
+    }
+
+    private void validatePermission(Class<? extends BaseResource> resource, Set<String> scopes) {
+        final var userPermissions = builder
+                .allowResource(resource.getSimpleName(), scopes)
+                .build();
+        Assertions.assertEquals(1, userPermissions.getPermissions().length);
+        final var permission = userPermissions.getPermissions()[0];
+        Assertions.assertSame(permission.resourceType, resource);
+        validateScopes(permission, scopes);
     }
 
     @Nested
     @DisplayName("Patient Permissions")
     class Patients {
-
-        public static final int FHIR_RESOURCES_PER_PERMISSION = 2;
-
-        @Test
-        @DisplayName("Read")
-        void permissionReadPatientList() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.PATIENT_LIST)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Patient.class || permission.resourceType == Group.class).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
-        }
-
-
         @Test
         @DisplayName("Create")
         void permissionCreatePatient() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.CREATE_PATIENT)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Patient.class || permission.resourceType == Group.class).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, 0);
-            validatePermissions(userPermissions, permission -> permission.create, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
+            validatePermission(Patient.class, Set.of("create"));
         }
 
         @Test
-        @DisplayName("Update and Delete")
-        void permissionUpdateAndDeletePatient() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.UPDATE_PATIENT)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Patient.class || permission.resourceType == Group.class).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, 0);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.delete, FHIR_RESOURCES_PER_PERMISSION);
+        @DisplayName("Read")
+        void permissionReadPatient() {
+            validatePermission(Patient.class, Set.of("read"));
+        }
+
+        @Test
+        @DisplayName("Update")
+        void permissionUpdatePatient() {
+            validatePermission(Patient.class, Set.of("update"));
+        }
+
+        @Test
+        @DisplayName("Delete")
+        void permissionDeletePatient() {
+            validatePermission(Patient.class, Set.of("delete"));
+        }
+
+        @Test
+        @DisplayName("No Permissions")
+        void noPatientPermissions() {
+            validatePermission(Patient.class, Set.of());
         }
     }
 
     @Nested
-    @DisplayName("Prescription Permissions")
-    class Prescriptions {
-
-        public static final int FHIR_RESOURCES_PER_PERMISSION = 4;
-
-        @Test
-        @DisplayName("Read")
-        void permissionReadPrescriptionList() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.PATIENT_PRESCRIPTIONS)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == ServiceRequest.class ||
-                                    permission.resourceType == ClinicalImpression.class ||
-                                    permission.resourceType == Observation.class ||
-                                    permission.resourceType == FamilyMemberHistory.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
-        }
-
-
+    @DisplayName("ServiceRequests Permissions")
+    class ServiceRequests {
         @Test
         @DisplayName("Create")
-        void permissionCreatePrescription() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.CREATE_PRESCRIPTION)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == ServiceRequest.class ||
-                                    permission.resourceType == ClinicalImpression.class ||
-                                    permission.resourceType == Observation.class ||
-                                    permission.resourceType == FamilyMemberHistory.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, 0);
-            validatePermissions(userPermissions, permission -> permission.create, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
+        void permissionCreateServiceRequest() {
+            validatePermission(ServiceRequest.class, Set.of("create"));
         }
-
-        @Test
-        @DisplayName("Update and Delete")
-        void permissionUpdateAndDeletePrescription() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.UPDATE_PRESCRIPTION)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == ServiceRequest.class ||
-                                    permission.resourceType == ClinicalImpression.class ||
-                                    permission.resourceType == Observation.class ||
-                                    permission.resourceType == FamilyMemberHistory.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, 0);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
-        }
-    }
-
-    @Nested
-    @DisplayName("Practitioner/PractitionerRole Permissions")
-    class Practitioners {
-
-        public static final int FHIR_RESOURCES_PER_PERMISSION = 2;
 
         @Test
         @DisplayName("Read")
-        void permissionReadPrescriptionList() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.READ_PRACTITIONER)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Practitioner.class ||
-                                    permission.resourceType == PractitionerRole.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
+        void permissionReadServiceRequest() {
+            validatePermission(ServiceRequest.class, Set.of("read"));
+        }
+
+        @Test
+        @DisplayName("Update")
+        void permissionUpdateServiceRequest() {
+            validatePermission(ServiceRequest.class, Set.of("update"));
+        }
+
+        @Test
+        @DisplayName("Delete")
+        void permissionDeleteServiceRequest() {
+            validatePermission(ServiceRequest.class, Set.of("delete"));
+        }
+
+        @Test
+        @DisplayName("No Permissions")
+        void noServiceRequestPermissions() {
+            validatePermission(ServiceRequest.class, Set.of());
         }
     }
 
+
     @Nested
-    @DisplayName("Family Group Permissions")
-    class FamilyGroup {
-
-        public static final int FHIR_RESOURCES_PER_PERMISSION = 1;
-
+    @DisplayName("ServiceRequests Permissions")
+    class ClinicalImpressions {
         @Test
-        @DisplayName("Read")
-        void permissionReadPrescriptionList() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.PATIENT_FAMILY)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Group.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.create, 0);
-            validatePermissions(userPermissions, permission -> permission.update, 0);
-            validatePermissions(userPermissions, permission -> permission.delete, 0);
+        @DisplayName("Create")
+        void permissionCreateClinicalImpression() {
+            validatePermission(ClinicalImpression.class, Set.of("create"));
         }
 
         @Test
-        @DisplayName("Create, Update and Delete")
-        void permissionCreatePrescription() {
-            final var userPermissions = builder
-                    .allowResource(AuthResources.UPDATE_FAMILY)
-                    .build();
-            Assertions.assertEquals(FHIR_RESOURCES_PER_PERMISSION, userPermissions.getPermissions().length);
-            Assertions.assertEquals(
-                    FHIR_RESOURCES_PER_PERMISSION,
-                    Arrays.stream(userPermissions.getPermissions()).filter(permission ->
-                            permission.resourceType == Group.class
-                    ).count()
-            );
-            validatePermissions(userPermissions, permission -> permission.read, 0);
-            validatePermissions(userPermissions, permission -> permission.create, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.update, FHIR_RESOURCES_PER_PERMISSION);
-            validatePermissions(userPermissions, permission -> permission.delete, FHIR_RESOURCES_PER_PERMISSION);
+        @DisplayName("Read")
+        void permissionReadClinicalImpression() {
+            validatePermission(ClinicalImpression.class, Set.of("read"));
+        }
+
+        @Test
+        @DisplayName("Update")
+        void permissionUpdateClinicalImpression() {
+            validatePermission(ClinicalImpression.class, Set.of("update"));
+        }
+
+        @Test
+        @DisplayName("Delete")
+        void permissionDeleteClinicalImpression() {
+            validatePermission(ClinicalImpression.class, Set.of("delete"));
+        }
+
+        @Test
+        @DisplayName("No Permissions")
+        void noClinicalImpressionPermissions() {
+            validatePermission(ClinicalImpression.class, Set.of());
+        }
+    }
+
+
+    @Nested
+    @DisplayName("ServiceRequests Permissions")
+    class Groups {
+        @Test
+        @DisplayName("Create")
+        void permissionCreateGroup() {
+            validatePermission(Group.class, Set.of("create"));
+        }
+
+        @Test
+        @DisplayName("Read")
+        void permissionReadGroup() {
+            validatePermission(Group.class, Set.of("read"));
+        }
+
+        @Test
+        @DisplayName("Update")
+        void permissionUpdateGroup() {
+            validatePermission(Group.class, Set.of("update"));
+        }
+
+        @Test
+        @DisplayName("Delete")
+        void permissionDeleteGroup() {
+            validatePermission(Group.class, Set.of("delete"));
+        }
+
+        @Test
+        @DisplayName("No Permissions")
+        void noGroupPermissions() {
+            validatePermission(Group.class, Set.of());
         }
     }
 }
