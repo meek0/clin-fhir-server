@@ -398,6 +398,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         daoConfig.getModelConfig().setNormalizedQuantitySearchLevel(appProperties.getNormalized_quantity_search_level());
 
         // CLIN
+        daoConfig.setEnforceReferentialIntegrityOnWrite(false);
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(new ValidationInterceptor());
         if (bioProperties.isAuthorizationEnabled()) {
