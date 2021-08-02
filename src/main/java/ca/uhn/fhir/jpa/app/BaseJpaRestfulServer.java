@@ -399,17 +399,22 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
         // CLIN
         daoConfig.setEnforceReferentialIntegrityOnWrite(false);
+        registerInterceptor(new LogInterceptor());
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(new ValidationInterceptor());
+
         if (bioProperties.isAuthorizationEnabled()) {
             registerInterceptor(bioAuthInterceptor);
         }
+
         if (bioProperties.isBioEsEnabled()) {
             registerInterceptor(indexerInterceptor);
         }
+
         if (bioProperties.isAuthEnabled()) {
             registerInterceptor(accessTokenInterceptor);
         }
+
         registerInterceptor(new ServiceContextCleanerInterceptor());
 
         if (bioProperties.isAuditsEnabled()) {
