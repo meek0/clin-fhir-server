@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class LogInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
 
-    @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
+    @Hook(Pointcut.SERVER_PRE_PROCESS_OUTGOING_EXCEPTION)
     public void log(RequestDetails request) {
         final var requestContent = request.getRequestContentsIfLoaded();
         if(requestContent != null){
