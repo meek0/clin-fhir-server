@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 public class LogInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
 
-    @Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_HANDLED)
+    @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
     public void log(RequestDetails request) {
-        final var body = new String(request.getRequestContentsIfLoaded());
-        logger.info(body);
+        final var requestContent = request.getRequestContentsIfLoaded();
+        if(requestContent != null){
+            logger.info(new String(requestContent));
+        }
     }
 }
