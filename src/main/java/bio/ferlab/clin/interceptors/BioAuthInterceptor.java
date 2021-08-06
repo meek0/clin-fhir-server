@@ -77,6 +77,10 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
         ruleBuilder.allow().operation().named(Constants.VALIDATE_OPERATION).onAnyType().andRequireExplicitResponseAuthorization().andThen();
     }
 
+    private void applyRulesOnExport(IAuthRuleBuilder ruleBuilder) {
+        ruleBuilder.allow().operation().named(Constants.EXPORT_OPERATION).onAnyType().andRequireExplicitResponseAuthorization().andThen();
+    }
+
     @Override
     public List<IAuthRule> buildRuleList(RequestDetails requestDetails) {
         final var permissions = this.permissionExtractor.extract(requestDetails);
@@ -84,6 +88,7 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
         this.applyRulesOnTransactions(ruleBuilder);
         this.applyRulesOnGraphql(ruleBuilder);
         this.applyRulesOnValidate(ruleBuilder);
+        this.applyRulesOnExport(ruleBuilder);
         return ruleBuilder.denyAll().build();
     }
 }
