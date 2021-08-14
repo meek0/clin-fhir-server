@@ -399,7 +399,6 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
         // CLIN
         daoConfig.setEnforceReferentialIntegrityOnWrite(false);
-        registerInterceptor(new LogInterceptor());
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(new ValidationInterceptor());
 
@@ -420,5 +419,6 @@ public class BaseJpaRestfulServer extends RestfulServer {
         if (bioProperties.isAuditsEnabled()) {
             registerInterceptor(new ConsentInterceptor(consentServiceInterceptor));
         }
+        registerInterceptor(new DeleteConflictInterceptor());
     }
 }
