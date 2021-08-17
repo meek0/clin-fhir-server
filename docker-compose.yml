@@ -24,5 +24,6 @@ services:
       POSTGRES_PASSWORD: 'admin'
     volumes:
       - hapi-fhir-postgres:/var/lib/postgresql/data
+      - "./backup:/root/backup"
 volumes:
   hapi-fhir-postgres:
