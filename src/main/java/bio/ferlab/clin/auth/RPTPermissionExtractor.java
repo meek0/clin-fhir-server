@@ -8,6 +8,9 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Optional;
+
 
 @Component
 public class RPTPermissionExtractor {
@@ -28,10 +31,12 @@ public class RPTPermissionExtractor {
             }
 
             final var builder = new UserPermissionsBuilder();
-            response.getPermissions().forEach(permission -> builder.allowResource(permission.getResourceName(), permission.getScopes()));
+            Optional.ofNullable(response.getPermissions())
+                    .orElse(Collections.emptyList())
+                    .forEach(permission -> builder.allowResource(permission.getResourceName(), permission.getScopes()));
             return builder.build();
         } catch (Exception e) {
-            throw new RptIntrospectionException("");
+            throw new RptIntrospectionException(e.getMessage());
         }
     }
 }

@@ -3,16 +3,20 @@ package bio.ferlab.clin.interceptors;
 import bio.ferlab.clin.auth.RPTPermissionExtractor;
 import bio.ferlab.clin.auth.data.Permission;
 import bio.ferlab.clin.auth.data.UserPermissions;
+import bio.ferlab.clin.auth.data.custom.Export;
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRuleBuilder;
 import ca.uhn.fhir.rest.server.interceptor.auth.RuleBuilder;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BioAuthInterceptor extends AuthorizationInterceptor {
@@ -60,7 +64,11 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     private IAuthRuleBuilder handleUserPermissions(UserPermissions userPermissions) {
         final var builder = new RuleBuilder();
         for (Permission<? extends Resource> permission : userPermissions.getPermissions()) {
-            handlePermission(builder, permission);
+            if(permission.resourceType.equals(Export.class)) {
+                applyRulesOnExport(builder);
+            } else {
+                handlePermission(builder, permission);
+            }
         }
         return builder;
     }
@@ -78,7 +86,11 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     }
 
     private void applyRulesOnExport(IAuthRuleBuilder ruleBuilder) {
-        ruleBuilder.allow().operation().named(Constants.EXPORT_OPERATION).onAnyType().andRequireExplicitResponseAuthorization().andThen();
+        // first allow export and status operations during SERVER_INCOMING_REQUEST_PRE_HANDLED
+        ruleBuilder.allow().operation().named(Constants.EXPORT_OPERATION).onServer().andRequireExplicitResponseAuthorization().andThen();
+        ruleBuilder.allow().operation().named(Constants.EXPORT_STATUS_OPERATION).onServer().andRequireExplicitResponseAuthorization().andThen();
+        // then allow bulk export for all types during STORAGE_INITIATE_BULK_EXPORT
+        ruleBuilder.allow().bulkExport().any().andThen();
     }
 
     @Override
@@ -88,7 +100,6 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
         this.applyRulesOnTransactions(ruleBuilder);
         this.applyRulesOnGraphql(ruleBuilder);
         this.applyRulesOnValidate(ruleBuilder);
-        this.applyRulesOnExport(ruleBuilder);
         return ruleBuilder.denyAll().build();
     }
 }
