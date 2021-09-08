@@ -32,12 +32,14 @@ public class RequesterData {
     private String azp;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Access {
         @JsonProperty("account")
         private Account account;
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Account {
         @JsonProperty("roles")
         private String[] roles;

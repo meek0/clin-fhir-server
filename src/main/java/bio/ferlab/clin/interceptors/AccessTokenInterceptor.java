@@ -18,10 +18,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-@Interceptor
 @Service
 public class AccessTokenInterceptor {
-    public static final String FORBIDDEN = "Forbidden";
     private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
     private final TokenDecoder decoder;
 
@@ -44,7 +42,7 @@ public class AccessTokenInterceptor {
      *
      * @return All-trusting SSLContext
      */
-    private static SSLContext getDisabledSSLContext() {
+    private SSLContext getDisabledSSLContext() {
         //Disable SSL Validation during local development with self signed certificates.
         SSLContext sc = null;
         try {
@@ -79,7 +77,7 @@ public class AccessTokenInterceptor {
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
+            logger.error("Failed to get disabled SSL context", e);
         }
 
         return sc;
