@@ -63,7 +63,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BaseJpaRestfulServer extends RestfulServer {
-    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(BaseJpaRestfulServer.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BaseJpaRestfulServer.class);
 
     private static final long serialVersionUID = 1L;
     @Autowired
@@ -288,7 +288,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         // showing a typical setup. You should customize this
         // to your specific needs
         if (appProperties.getCors() != null) {
-            ourLog.info("CORS is enabled on this server");
+            log.info("CORS is enabled on this server");
             CorsConfiguration config = new CorsConfiguration();
             config.addAllowedHeader(HttpHeaders.ORIGIN);
             config.addAllowedHeader(HttpHeaders.ACCEPT);
@@ -301,7 +301,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
             List<String> allAllowedCORSOrigins = appProperties.getCors().getAllowed_origin();
             allAllowedCORSOrigins.forEach(config::addAllowedOriginPattern);
-            ourLog.info("CORS allows the following origins: " + String.join(", ", allAllowedCORSOrigins));
+            log.info("CORS allows the following origins: " + String.join(", ", allAllowedCORSOrigins));
 
             config.addExposedHeader("Location");
             config.addExposedHeader("Content-Location");
@@ -313,7 +313,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
             CorsInterceptor interceptor = new CorsInterceptor(config);
             registerInterceptor(interceptor);
         } else {
-            ourLog.info("CORS is disabled on this server");
+            log.info("CORS is disabled on this server");
         }
 
         // If subscriptions are enabled, we want to register the interceptor that

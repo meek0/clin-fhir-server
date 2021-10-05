@@ -20,7 +20,7 @@ import java.security.cert.X509Certificate;
 
 @Service
 public class AccessTokenInterceptor {
-    private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
+    private final Logger log = LoggerFactory.getLogger(AccessTokenInterceptor.class);
     private final TokenDecoder decoder;
 
     public AccessTokenInterceptor(BioProperties bioProperties, TokenDecoder decoder) {
@@ -77,7 +77,7 @@ public class AccessTokenInterceptor {
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            logger.error("Failed to get disabled SSL context", e);
+            log.error("Failed to get disabled SSL context", e);
         }
 
         return sc;

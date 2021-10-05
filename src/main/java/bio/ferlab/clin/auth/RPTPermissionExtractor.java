@@ -5,6 +5,7 @@ import bio.ferlab.clin.auth.data.UserPermissionsBuilder;
 import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.utils.Helpers;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Component
 public class RPTPermissionExtractor {
     private final KeycloakClient client;
-
+    private static final String BEARER_TOKEN_ERROR_MSG = "Failed to extract user perms from token: %s";
     public RPTPermissionExtractor(KeycloakClient client) {
         this.client = client;
     }
@@ -25,9 +26,17 @@ public class RPTPermissionExtractor {
             final var bearer = requestDetails.getHeader(HttpHeaders.AUTHORIZATION);
             final var rpt = Helpers.extractAccessTokenFromBearer(bearer);
             final var response = this.client.introspectRpt(rpt);
+            
+            if (Optional.ofNullable(response.getPermissions()).isEmpty()) {
+                throw new AuthenticationException("RPT token is required");
+            }
 
-            if (!response.getActive()) {
-                throw new RptIntrospectionException(rpt);
+            if (!response.isActive()) {
+                throw new AuthenticationException("not-active");
+            }
+
+            if (response.isExpired()) {
+                throw new AuthenticationException("expired");
             }
 
             final var builder = new UserPermissionsBuilder();
@@ -36,7 +45,7 @@ public class RPTPermissionExtractor {
                     .forEach(permission -> builder.allowResource(permission.getResourceName(), permission.getScopes()));
             return builder.build();
         } catch (Exception e) {
-            throw new RptIntrospectionException(e.getMessage());
+            throw new RptIntrospectionException(String.format(BEARER_TOKEN_ERROR_MSG, e.getMessage()));
         }
     }
 }

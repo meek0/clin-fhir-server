@@ -10,7 +10,7 @@ import org.springframework.http.HttpMethod;
 import java.io.IOException;
 
 public class ElasticsearchRestClient {
-    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchRestClient.class);
+    private static final Logger log = LoggerFactory.getLogger(ElasticsearchRestClient.class);
     public static final String FAILED_TO_SAVE_RESOURCE = "Failed to save resource";
     public static final String FAILED_TO_DELETE_RESOURCE = "Failed to delete resource";
     private final ElasticsearchData data;
@@ -21,7 +21,7 @@ public class ElasticsearchRestClient {
 
     public void index(String index, IndexData data) {
         final String id = data.id;
-        logger.info(String.format("Indexing resource id[%s]", id));
+        log.info(String.format("Indexing resource id[%s]", id));
         try {
             final Request request = new Request(
                     HttpMethod.PUT.name(),
@@ -30,14 +30,14 @@ public class ElasticsearchRestClient {
             request.setJsonEntity(data.jsonContent);
             this.data.client.performRequest(request);
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
             throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_SAVE_RESOURCE);
         }
     }
 
     public void update(String index, IndexData data) {
         final String id = data.id;
-        logger.info(String.format("Updating resource id[%s]", id));
+        log.info(String.format("Updating resource id[%s]", id));
         try {
             final Request request = new Request(
                     HttpMethod.POST.name(),
@@ -46,13 +46,13 @@ public class ElasticsearchRestClient {
             request.setJsonEntity(data.jsonContent);
             this.data.client.performRequest(request);
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
             throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_SAVE_RESOURCE);
         }
     }
 
     public void delete(String index, String id) {
-        logger.info(String.format("Deleting resource id[%s]", id));
+        log.info(String.format("Deleting resource id[%s]", id));
         try {
             final Request request = new Request(
                     HttpMethod.DELETE.name(),
@@ -60,12 +60,12 @@ public class ElasticsearchRestClient {
             );
             this.data.client.performRequest(request);
         } catch (ResponseException e) {
-            logger.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
             if (e.getResponse().getStatusLine().getStatusCode() != 404) {
                 throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_DELETE_RESOURCE);
             }
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
             throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_DELETE_RESOURCE);
         }
     }

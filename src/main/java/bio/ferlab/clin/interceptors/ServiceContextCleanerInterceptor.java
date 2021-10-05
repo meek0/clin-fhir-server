@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServiceContextCleanerInterceptor {
 
-    private final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
+    private final Logger log = LoggerFactory.getLogger(AccessTokenInterceptor.class);
 
     @Hook( Pointcut.SERVER_PROCESSING_COMPLETED )
     public void clean( RequestDetails theRequestDetails ){
-        logger.debug("Cleaning thread local service context.");
+        log.debug("Cleaning thread local service context.");
         ThreadLocalServiceContext.clear();
     }
 
