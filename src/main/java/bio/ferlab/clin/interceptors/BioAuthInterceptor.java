@@ -4,6 +4,7 @@ import bio.ferlab.clin.auth.RPTPermissionExtractor;
 import bio.ferlab.clin.auth.data.Permission;
 import bio.ferlab.clin.auth.data.UserPermissions;
 import bio.ferlab.clin.auth.data.custom.Export;
+import bio.ferlab.clin.auth.data.custom.Metadata;
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
@@ -64,8 +65,10 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     private IAuthRuleBuilder handleUserPermissions(UserPermissions userPermissions) {
         final var builder = new RuleBuilder();
         for (Permission<? extends Resource> permission : userPermissions.getPermissions()) {
-            if(permission.resourceType.equals(Export.class)) {
+            if (permission.resourceType.equals(Export.class)) {
                 applyRulesOnExport(builder);
+            } else if (permission.resourceType.equals(Metadata.class)) {
+                applyRulesOnMetadata(builder);
             } else {
                 handlePermission(builder, permission);
             }
@@ -91,6 +94,10 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
         ruleBuilder.allow().operation().named(Constants.EXPORT_STATUS_OPERATION).onServer().andRequireExplicitResponseAuthorization().andThen();
         // then allow bulk export for all types during STORAGE_INITIATE_BULK_EXPORT
         ruleBuilder.allow().bulkExport().any().andThen();
+    }
+
+    private void applyRulesOnMetadata(IAuthRuleBuilder ruleBuilder) {
+        ruleBuilder.allow().metadata().andThen();
     }
 
     @Override
