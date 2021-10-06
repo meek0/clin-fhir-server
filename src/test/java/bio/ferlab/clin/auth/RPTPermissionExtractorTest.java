@@ -34,7 +34,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().contains("Missing bearer token in header"));
+      assertTrue(ex.getMessage().equals("Missing bearer token in header"));
     }
     @Test
     void rpt_token_required() {
@@ -46,7 +46,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().contains("RPT token is required"));
+      assertTrue(ex.getMessage().equals("rpt token is required"));
     }
     @Test
     void not_active() {
@@ -59,7 +59,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().contains("not-active"));
+      assertTrue(ex.getMessage().equals("token is not active"));
     }
     @Test
     void expired() {
@@ -73,7 +73,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().contains("expired"));
+      assertTrue(ex.getMessage().equals("token is expired"));
     }
   }
 

@@ -1,21 +1,20 @@
 package bio.ferlab.clin.utils;
 
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class Helpers {
+    
+    public static final String BEARER = "Bearer ";
 
     @NotNull
     public static String extractAccessTokenFromBearer(String bearer) {
-        String authorization = null;
-        if (StringUtils.isNotBlank(bearer)) {
-            authorization = bearer.split(" ")[1];
+        
+        if (StringUtils.isBlank(bearer) || !bearer.startsWith(BEARER)) {
+            throw new RptIntrospectionException("Missing bearer token in header");
         }
-        if (authorization == null) {
-            throw new AuthenticationException("Missing bearer token in header");
-        }
-
-        return authorization;
+        
+        return bearer.split(" ")[1];
     }
 }

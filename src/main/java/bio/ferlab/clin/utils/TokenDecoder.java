@@ -15,6 +15,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
@@ -30,14 +31,13 @@ import java.util.Locale;
 
 @Component
 public class TokenDecoder {
-    private static final String BEARER_TOKEN_ERROR_MSG = "Failed to decode bearer token: %s";
     private final JwkProviderService provider;
 
     public TokenDecoder(JwkProviderService jwkProviderService) {   
         this.provider = jwkProviderService;
     }
 
-    public RequesterData decode(String authorization, Locale locale) throws AuthenticationException {
+    public RequesterData decode(String authorization, Locale locale) {
         try {
             final var accessToken = Helpers.extractAccessTokenFromBearer(authorization);
             final DecodedJWT decodedJWT = JWT.decode(accessToken);
@@ -50,11 +50,10 @@ public class TokenDecoder {
             verifier.build().verify(decodedJWT);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
-            
-        }catch (JWTDecodeException e) {
-            throw new RptIntrospectionException(String.format(BEARER_TOKEN_ERROR_MSG, "malformed token"));
-        } catch (Exception e) {
-            throw new RptIntrospectionException(String.format(BEARER_TOKEN_ERROR_MSG, e.getMessage()));
+        } catch (JwkException e) {
+            throw new RptIntrospectionException("token from another provider");
+        } catch (JWTDecodeException | JsonProcessingException e) {
+            throw new RptIntrospectionException("malformed token");
         }
     }
 }
