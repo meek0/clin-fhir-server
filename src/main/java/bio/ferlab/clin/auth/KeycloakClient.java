@@ -24,10 +24,6 @@ public class KeycloakClient {
     }
 
     public TokenIntrospectionResponse introspectRpt(String rpt) {
-        try {
-            return this.authzClient.protection().introspectRequestingPartyToken(rpt);
-        } catch (Exception e) {
-            throw new AuthenticationException("Failed to introspect bearer token: " + e.getMessage());
-        }
+        return this.authzClient.protection().introspectRequestingPartyToken(rpt);
     }
 }
