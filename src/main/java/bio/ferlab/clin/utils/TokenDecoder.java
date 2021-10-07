@@ -13,6 +13,8 @@ import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +56,8 @@ public class TokenDecoder {
             throw new RptIntrospectionException("token from another provider");
         } catch (JWTDecodeException | JsonProcessingException e) {
             throw new RptIntrospectionException("malformed token");
+        } catch (JWTVerificationException e) {
+            throw new RptIntrospectionException("token is expired");
         }
     }
 }

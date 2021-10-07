@@ -12,6 +12,7 @@ import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.JavaMailEmailSender;
 import com.google.common.base.Strings;
 import org.hl7.fhir.dstu2.model.Subscription;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @EnableTransactionManagement
 public class FhirServerConfigCommon {
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FhirServerConfigCommon.class);
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(FhirServerConfigCommon.class);
 
 
   public FhirServerConfigCommon(AppProperties appProperties) {

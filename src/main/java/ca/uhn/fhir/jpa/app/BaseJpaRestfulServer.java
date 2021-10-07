@@ -49,6 +49,7 @@ import ca.uhn.fhir.validation.IValidatorModule;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
 import com.google.common.base.Strings;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
@@ -63,7 +64,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BaseJpaRestfulServer extends RestfulServer {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BaseJpaRestfulServer.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(BaseJpaRestfulServer.class);
 
     private static final long serialVersionUID = 1L;
     @Autowired
