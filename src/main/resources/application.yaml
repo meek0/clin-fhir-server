@@ -167,6 +167,5 @@ bio:
     authorization:
       enabled: true
       client-id: clin-acl
-      client-secret: "818d5d2c-286d-4d0f-ae31-c17a6381709a"
   audits:
     enabled: true

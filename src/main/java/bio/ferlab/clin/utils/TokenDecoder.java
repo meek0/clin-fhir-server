@@ -1,16 +1,24 @@
 package bio.ferlab.clin.utils;
 
+import bio.ferlab.clin.auth.JwkProviderService;
 import bio.ferlab.clin.context.ServiceContext;
+import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.user.RequesterData;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -23,24 +31,15 @@ import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Locale;
 
-import static bio.ferlab.clin.utils.Helpers.FORBIDDEN;
-
 @Component
 public class TokenDecoder {
-    private static final Logger logger = LoggerFactory.getLogger(TokenDecoder.class);
-    private final JwkProvider provider;
+    private final JwkProviderService provider;
 
-    public TokenDecoder(BioProperties bioProperties) throws MalformedURLException {
-        final String url = StringUtils.appendIfMissing(bioProperties.getAuthServerUrl(), "/") + "realms/" + bioProperties.getAuthRealm()
-                + "/protocol/openid-connect/certs";
-        this.provider = new JwkProviderBuilder(new URL(url)).build();
+    public TokenDecoder(JwkProviderService jwkProviderService) {   
+        this.provider = jwkProviderService;
     }
 
-    public JwkProvider getProvider() {
-        return provider;
-    }
-
-    public RequesterData decode(String authorization, Locale locale) throws AuthenticationException {
+    public RequesterData decode(String authorization, Locale locale) {
         try {
             final var accessToken = Helpers.extractAccessTokenFromBearer(authorization);
             final DecodedJWT decodedJWT = JWT.decode(accessToken);
@@ -53,10 +52,12 @@ public class TokenDecoder {
             verifier.build().verify(decodedJWT);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
-        } catch (Exception e) {
-            logger.warn("Exception during authentication", e);
-            throw new AuthenticationException(FORBIDDEN, e);
+        } catch (JwkException e) {
+            throw new RptIntrospectionException("token from another provider");
+        } catch (JWTDecodeException | JsonProcessingException e) {
+            throw new RptIntrospectionException("malformed token");
+        } catch (JWTVerificationException e) {
+            throw new RptIntrospectionException("token is expired");
         }
     }
-
 }

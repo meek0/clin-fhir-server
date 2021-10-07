@@ -24,7 +24,7 @@ import java.util.List;
 
 @Service
 public class ConsentServiceInterceptor implements IConsentService {
-    private final static Logger logger = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
+    private final static Logger log = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
     private final AuditTrail auditTrail;
 
@@ -51,16 +51,16 @@ public class ConsentServiceInterceptor implements IConsentService {
     public void completeOperationSuccess(RequestDetails requestDetails, IConsentContextServices contextServices) {
         final boolean result = this.logOperation(requestDetails, true);
         if (result) {
-            logger.info(String.format("Successful operation [%s] logged.", requestDetails.getRestOperationType()));
+            log.info(String.format("Successful operation [%s] logged.", requestDetails.getRestOperationType()));
         } else {
-            logger.info(String.format("Successful operation [%s] not logged.", requestDetails.getRestOperationType()));
+            log.info(String.format("Successful operation [%s] not logged.", requestDetails.getRestOperationType()));
         }
     }
 
     @Override
     public void completeOperationFailure(RequestDetails requestDetails, BaseServerResponseException theException, IConsentContextServices contextServices) {
         this.logOperation(requestDetails, false);
-        logger.info(String.format("Failed operation [%s] logged.", requestDetails.getRestOperationType()));
+        log.info(String.format("Failed operation [%s] logged.", requestDetails.getRestOperationType()));
     }
 
     private boolean logOperation(RequestDetails requestDetails, boolean successful) {

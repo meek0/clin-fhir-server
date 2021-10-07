@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PrescriptionDataBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(PrescriptionDataBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(PrescriptionDataBuilder.class);
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final String ID_SEPARATOR = "/";
@@ -39,7 +39,7 @@ public class PrescriptionDataBuilder {
 
             final ServiceRequest serviceRequest = this.configuration.serviceRequestDAO.read(new IdType(serviceRequestId), requestDetails);
             if (!serviceRequest.hasSubject()) {
-                logger.error(String.format("Cannot index ServiceRequest [%s]: resource has no subject.", serviceRequestId));
+                log.error(String.format("Cannot index ServiceRequest [%s]: resource has no subject.", serviceRequestId));
                 continue;
             }
             final Reference subject = serviceRequest.getSubject();

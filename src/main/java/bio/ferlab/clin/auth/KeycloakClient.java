@@ -2,7 +2,7 @@ package bio.ferlab.clin.auth;
 
 import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
@@ -24,13 +24,6 @@ public class KeycloakClient {
     }
 
     public TokenIntrospectionResponse introspectRpt(String rpt) {
-        if (StringUtils.isBlank(rpt)) {
-            throw new RptIntrospectionException(rpt);
-        }
-        try {
-            return this.authzClient.protection().introspectRequestingPartyToken(rpt);
-        } catch (Exception e) {
-            throw new RptIntrospectionException(rpt);
-        }
+        return this.authzClient.protection().introspectRequestingPartyToken(rpt);
     }
 }
