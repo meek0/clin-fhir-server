@@ -76,7 +76,7 @@ public class ConsentServiceInterceptor implements IConsentService {
 
         if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
             final String resourceName = requestDetails.getRequestPath();
-            if (StringUtils.isNotBlank(resourceName) && !AUDIT_EVENT_RESOURCE_TYPE.contentEquals(resourceName)) {
+            if (StringUtils.isNotBlank(resourceName) && !AUDIT_EVENT_RESOURCE_TYPE.equals(resourceName)) {
                 events.addAll(builder.addReadAction(resourceName).build());
             }
         } else {

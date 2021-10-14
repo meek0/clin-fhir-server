@@ -96,12 +96,12 @@ public class AuditEventsBuilder {
         final AuditEvent.AuditEventEntityComponent target = new AuditEvent.AuditEventEntityComponent();
 
         target.setType(auditResource.getType());
-        if (!AuditEventAction.D.equals(auditResource.action)) { // anything but DELETE, setWhat will not find it
-            if (!auditResource.isReadAll() && auditResource.getResource() != null) {
+        if( auditResource.getReference() != null) {
+            if (isPersistent(auditResource)) {
                 target.setWhat(auditResource.getReference());
+            } else {
+                target.setDescription(auditResource.getReference().getReference());
             }
-        } else if (auditResource.getReference() != null) {
-            target.setDescription(auditResource.getReference().getReference());
         }
 
         if (auditResource.getQuery() != null) {
@@ -112,6 +112,11 @@ public class AuditEventsBuilder {
         event.setAction(auditResource.getAction());
 
         return event;
+    }
+    
+    private boolean isPersistent(AuditResource auditResource) {
+        // DELETE isn't because already deleted from the DB at this step.
+        return !AuditEventAction.D.equals(auditResource.action) && !auditResource.isReadAll() && auditResource.getResource() != null;
     }
 
     public List<AuditEvent> build() {

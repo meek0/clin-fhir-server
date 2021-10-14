@@ -77,7 +77,7 @@ public class AuditEventsBuilderTest {
 
         @Test
         @DisplayName("From Id and Action type")
-        public void deleteAuditEventFromIdAndActonType() {
+        public void deleteAuditEventFromIdAndActionType() {
             auditEventsBuilder = new AuditEventsBuilder(requesterData);
             final IIdType idType = new IdDt("Task/001");
             final List<AuditEvent> events = auditEventsBuilder.addByIdAndActionType(idType, AuditEvent.AuditEventAction.D).build();
