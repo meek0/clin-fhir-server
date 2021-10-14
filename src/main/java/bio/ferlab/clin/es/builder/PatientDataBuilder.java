@@ -12,10 +12,7 @@ import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,7 +60,7 @@ public class PatientDataBuilder {
                 .map(Identifier::getValue).collect(Collectors.toList());
 
         patientData.getMrn().addAll(mrns);
-        patientData.setGender(patient.getGender().getDisplay());
+        patientData.setGender(Optional.ofNullable(patient.getGender()).map(Enumerations.AdministrativeGender::getDisplay).orElse(null));
 
         if (patient.hasName()) {
             final Name name = extractName(patient.getName());

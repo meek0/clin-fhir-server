@@ -11,9 +11,12 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.interceptor.consent.ConsentOutcome;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentContextServices;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentService;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class ConsentServiceInterceptor implements IConsentService {
@@ -71,15 +76,19 @@ public class ConsentServiceInterceptor implements IConsentService {
 
         if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
             final String resourceName = requestDetails.getRequestPath();
-            if (!resourceName.contentEquals(AUDIT_EVENT_RESOURCE_TYPE)) {
+            if (StringUtils.isNotBlank(resourceName) && !AUDIT_EVENT_RESOURCE_TYPE.contentEquals(resourceName)) {
                 events.addAll(builder.addReadAction(resourceName).build());
             }
         } else {
             if (resource instanceof Bundle) {
                 events.addAll(builder.addBundle((Bundle) resource).build());
-            } else if (resource instanceof Resource) {
+            } else {
                 final AuditEvent.AuditEventAction action = getActionFromRestOperationType(requestDetails.getRestOperationType());
-                events.addAll(builder.addResource((Resource) resource, action).build());
+                if (resource instanceof Resource) {
+                    events.addAll(builder.addResource((Resource) resource, action).build());
+                } else if (requestDetails.getId() != null){
+                    events.addAll(builder.addByIdAndActionType(requestDetails.getId(), action).build());
+                }
             }
         }
 

@@ -2,6 +2,8 @@ package bio.ferlab.clin.audits;
 
 import bio.ferlab.clin.audit.AuditEventsBuilder;
 import bio.ferlab.clin.user.RequesterData;
+import ca.uhn.fhir.model.primitive.IdDt;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,6 +73,18 @@ public class AuditEventsBuilderTest {
 
             assertEquals(events.size(), 1);
             assertSame(ResourceType.Patient.toString(), type);
+        }
+
+        @Test
+        @DisplayName("From Id and Action type")
+        public void deleteAuditEventFromIdAndActonType() {
+            auditEventsBuilder = new AuditEventsBuilder(requesterData);
+            final IIdType idType = new IdDt("Task/001");
+            final List<AuditEvent> events = auditEventsBuilder.addByIdAndActionType(idType, AuditEvent.AuditEventAction.D).build();
+            assertEquals(events.size(), 1);
+            final AuditEvent.AuditEventEntityComponent entity = events.get(0).getEntity().get(0);
+            assertEquals(idType.getValue(), entity.getDescription());
+            assertEquals(ResourceType.Task.toString(), entity.getType().getCode());
         }
     }
 
