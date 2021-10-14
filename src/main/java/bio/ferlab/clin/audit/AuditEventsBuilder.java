@@ -2,6 +2,7 @@ package bio.ferlab.clin.audit;
 
 import bio.ferlab.clin.user.RequesterData;
 import lombok.Data;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.AuditEvent.AuditEventAction;
 import org.hl7.fhir.r4.model.AuditEvent.AuditEventAgentComponent;
@@ -65,6 +66,11 @@ public class AuditEventsBuilder {
         return this;
     }
 
+    public AuditEventsBuilder addByIdAndActionType(IIdType idType, AuditEventAction action) {
+        this.resources.add(AuditResource.fromIdAndActionType(idType, action));
+        return this;
+    }
+
     public AuditEventsBuilder addReadAction(String resource) {
         this.resources.add(AuditResource.fromReadAllAction(resource));
         return this;
@@ -90,8 +96,12 @@ public class AuditEventsBuilder {
         final AuditEvent.AuditEventEntityComponent target = new AuditEvent.AuditEventEntityComponent();
 
         target.setType(auditResource.getType());
-        if (!auditResource.isReadAll() && auditResource.getResource() != null) {
-            target.setWhat(auditResource.getReference());
+        if( auditResource.getReference() != null) {
+            if (isPersistent(auditResource)) {
+                target.setWhat(auditResource.getReference());
+            } else {
+                target.setDescription(auditResource.getReference().getReference());
+            }
         }
 
         if (auditResource.getQuery() != null) {
@@ -102,6 +112,11 @@ public class AuditEventsBuilder {
         event.setAction(auditResource.getAction());
 
         return event;
+    }
+    
+    private boolean isPersistent(AuditResource auditResource) {
+        // DELETE isn't because already deleted from the DB at this step.
+        return !AuditEventAction.D.equals(auditResource.action) && !auditResource.isReadAll() && auditResource.getResource() != null;
     }
 
     public List<AuditEvent> build() {
@@ -139,6 +154,13 @@ public class AuditEventsBuilder {
         public static AuditResource fromReadAllAction(String type) {
             final AuditResource auditResource = new AuditResource(null, AuditEventAction.R);
             auditResource.setType(createTypeCoding().setCode(type));
+            return auditResource;
+        }
+
+        public static AuditResource fromIdAndActionType(IIdType idType, AuditEventAction action) {
+            final AuditResource auditResource = new AuditResource(null, action);
+            auditResource.setType(createTypeCoding().setCode(idType.getResourceType()));
+            auditResource.setReference(new Reference(idType));
             return auditResource;
         }
 
