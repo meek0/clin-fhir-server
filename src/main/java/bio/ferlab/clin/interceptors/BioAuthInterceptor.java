@@ -11,13 +11,10 @@ import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRuleBuilder;
 import ca.uhn.fhir.rest.server.interceptor.auth.RuleBuilder;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BioAuthInterceptor extends AuthorizationInterceptor {
@@ -33,12 +30,12 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     }
 
     private <T extends Resource> void
-    allowWritePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
+    allowCreatePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
         builder.allow().create().resourcesOfType(resourceType).withAnyId().andThen();
     }
 
     private <T extends Resource> void
-    allowUpdatePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
+    allowWritePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
         builder.allow().write().resourcesOfType(resourceType).withAnyId().andThen();
     }
 
@@ -47,33 +44,35 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
         builder.allow().delete().resourcesOfType(resourceType).withAnyId().andThen();
     }
 
-    private void handlePermission(IAuthRuleBuilder builder, Permission<? extends Resource> permission) {
+    private void handlePermission(IAuthRuleBuilder builder,
+                                  IAuthRuleBuilder createBuilder,
+                                  IAuthRuleBuilder writeBuilder,Permission<? extends Resource> permission) {
         if (permission.isRead()) {
             allowReadPermissionByType(builder, permission.getResourceType());
         }
         if (permission.isUpdate()) {
-            allowUpdatePermissionByType(builder, permission.getResourceType());
+            allowWritePermissionByType(writeBuilder, permission.getResourceType());
         }
         if (permission.isCreate()) {
-            allowWritePermissionByType(builder, permission.getResourceType());
+            allowCreatePermissionByType(createBuilder, permission.getResourceType());
         }
         if (permission.isDelete()) {
             allowDeletePermissionByType(builder, permission.getResourceType());
         }
     }
 
-    private IAuthRuleBuilder handleUserPermissions(UserPermissions userPermissions) {
-        final var builder = new RuleBuilder();
+    private void handleUserPermissions(IAuthRuleBuilder ruleBuilder,
+                                       IAuthRuleBuilder createBuilder,
+                                       IAuthRuleBuilder writeBuilder, UserPermissions userPermissions) {
         for (Permission<? extends Resource> permission : userPermissions.getPermissions()) {
             if (permission.resourceType.equals(Export.class)) {
-                applyRulesOnExport(builder);
+                applyRulesOnExport(ruleBuilder);
             } else if (permission.resourceType.equals(Metadata.class)) {
-                applyRulesOnMetadata(builder);
+                applyRulesOnMetadata(ruleBuilder);
             } else {
-                handlePermission(builder, permission);
+                handlePermission(ruleBuilder, createBuilder, writeBuilder, permission);
             }
         }
-        return builder;
     }
 
     private void applyRulesOnTransactions(IAuthRuleBuilder ruleBuilder) {
@@ -102,11 +101,26 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
 
     @Override
     public List<IAuthRule> buildRuleList(RequestDetails requestDetails) {
+        final var ruleBuilder = new RuleBuilder();
+        // one builder can be in create or write mode but not both, so we use 2 of them.
+        // source: hapi-fhir-server/src/main/java/ca/uhn/fhir/rest/server/interceptor/auth/RuleBuilder.java
+        final var createBuilder = new RuleBuilder();
+        final var writeBuilder = new RuleBuilder();
+        final var denyAllBuilder = new RuleBuilder();
+        
         final var permissions = this.permissionExtractor.extract(requestDetails);
-        final var ruleBuilder = this.handleUserPermissions(permissions);
+        this.handleUserPermissions(ruleBuilder, createBuilder, writeBuilder, permissions);
         this.applyRulesOnTransactions(ruleBuilder);
         this.applyRulesOnGraphql(ruleBuilder);
         this.applyRulesOnValidate(ruleBuilder);
-        return ruleBuilder.denyAll().build();
+
+        denyAllBuilder.denyAll().andThen();
+
+        List<IAuthRule> rules = ruleBuilder.build();
+        rules.addAll(createBuilder.build());
+        rules.addAll(writeBuilder.build());
+        rules.addAll(denyAllBuilder.build());   // deny all at the end
+        
+        return rules;
     }
 }
