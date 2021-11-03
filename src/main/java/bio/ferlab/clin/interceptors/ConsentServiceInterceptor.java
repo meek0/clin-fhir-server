@@ -82,7 +82,7 @@ public class ConsentServiceInterceptor implements IConsentService {
         } else {
             if (resource instanceof Bundle) {
                 events.addAll(builder.addBundle((Bundle) resource).build());
-            } else {
+            } else if (requestDetails.getRestOperationType() != null) {
                 final AuditEvent.AuditEventAction action = getActionFromRestOperationType(requestDetails.getRestOperationType());
                 if (resource instanceof Resource) {
                     events.addAll(builder.addResource((Resource) resource, action).build());
