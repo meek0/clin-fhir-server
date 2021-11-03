@@ -1,22 +1,20 @@
-name: Publish Image Using Tag Name
+name: Publish Image Using Sha and Timestamp
 
 on:
   push:
-    tags:
-      - v*
+    branches:
+      - master
 
 jobs:
   push:
-    name: Publish Image using tags
+    name: Publish Image using commit sha and timestamp
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Push the image on the registry
-        uses: Ferlab-Ste-Justine/action-push-image@master
+        uses: Ferlab-Ste-Justine/action-push-image@v2
         with:
           username: ${{ secrets.FERLAB_DOCKER_HUB_USER }}
           password: ${{ secrets.FERLAB_DOCKER_HUB_TOKEN }}
           image: ferlabcrsj/clin-fhir-server
-          tag_source: ref
-          location: .
-          dockerfile: Dockerfile
+          tag_format: "{sha}-{timestamp}"
