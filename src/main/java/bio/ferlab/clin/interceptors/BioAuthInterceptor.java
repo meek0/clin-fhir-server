@@ -11,13 +11,10 @@ import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRuleBuilder;
 import ca.uhn.fhir.rest.server.interceptor.auth.RuleBuilder;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BioAuthInterceptor extends AuthorizationInterceptor {
@@ -33,13 +30,19 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     }
 
     private <T extends Resource> void
-    allowWritePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
-        builder.allow().create().resourcesOfType(resourceType).withAnyId().andThen();
+    allowCreatePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
+        // don't use the default allow() because internally it 
+        // can only contain rules for create() or write() but not both
+        builder.allow("create").create().resourcesOfType(resourceType).withAnyId().andThen();
+        // this one will contain all our rules with 'create' scope only
     }
 
     private <T extends Resource> void
-    allowUpdatePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
-        builder.allow().write().resourcesOfType(resourceType).withAnyId().andThen();
+    allowWritePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
+        // don't use the default allow() because internally it
+        // can only contain rules for create() or write() but not both
+        builder.allow("write").write().resourcesOfType(resourceType).withAnyId().andThen();
+        // this one will contain all our rules with 'update' scope only
     }
 
     private <T extends Resource> void
@@ -52,10 +55,10 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
             allowReadPermissionByType(builder, permission.getResourceType());
         }
         if (permission.isUpdate()) {
-            allowUpdatePermissionByType(builder, permission.getResourceType());
+            allowWritePermissionByType(builder, permission.getResourceType());
         }
         if (permission.isCreate()) {
-            allowWritePermissionByType(builder, permission.getResourceType());
+            allowCreatePermissionByType(builder, permission.getResourceType());
         }
         if (permission.isDelete()) {
             allowDeletePermissionByType(builder, permission.getResourceType());
