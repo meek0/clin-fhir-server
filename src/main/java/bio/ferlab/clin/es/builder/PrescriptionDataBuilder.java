@@ -95,7 +95,7 @@ public class PrescriptionDataBuilder {
         if (patient.hasManagingOrganization()) {
             final String id = patient.getManagingOrganization().getReference();
             final Organization organization = configuration.organizationDAO.read(new IdType(id));
-            patientInfo.getOrganization().setCid(id);
+            patientInfo.getOrganization().setCid(organization.getIdElement().getIdPart());
             patientInfo.getOrganization().setName(organization.hasName() ? organization.getName() : "");
         }
 
@@ -143,7 +143,7 @@ public class PrescriptionDataBuilder {
             final String id = serviceRequest.getRequester().getReference();
             final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
             final Name name = extractName(practitioner.getName());
-            prescriptionData.getPrescriber().setCid(id);
+            prescriptionData.getPrescriber().setCid(practitioner.getIdElement().getIdPart());
             prescriptionData.getPrescriber().setLastName(name.lastName);
             prescriptionData.getPrescriber().setFirstName(name.firstName);
             prescriptionData.getPrescriber().setLastNameFirstName(name.lastNameFirstName);
@@ -157,7 +157,7 @@ public class PrescriptionDataBuilder {
             if (identifier.hasAssigner()) {
                 final String id = identifier.getAssigner().getReference();
                 final Organization organization = configuration.organizationDAO.read(new IdType(id));
-                prescriptionData.getOrganization().setCid(id);
+                prescriptionData.getOrganization().setCid(organization.getIdElement().getIdPart());
                 prescriptionData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
             }
         }

@@ -118,7 +118,7 @@ public class PatientDataBuilder {
             final PractitionerRole practitionerRole = configuration.practitionerRoleDao.read(new IdType(id));
             final Practitioner practitioner = configuration.practitionerDao.read(practitionerRole.getPractitioner().getReferenceElement());
             final Name name = extractName(practitioner.getName());
-            patientData.getPractitioner().setCid(id);
+            patientData.getPractitioner().setCid(practitioner.getIdElement().getIdPart());
             patientData.getPractitioner().setLastName(name.lastName);
             patientData.getPractitioner().setFirstName(name.firstName);
             patientData.getPractitioner().setLastNameFirstName(name.lastNameFirstName);
@@ -127,7 +127,7 @@ public class PatientDataBuilder {
         if (patient.hasManagingOrganization()) {
             final String id = patient.getManagingOrganization().getReference();
             final Organization organization = configuration.organizationDAO.read(new IdType(id));
-            patientData.getOrganization().setCid(id);
+            patientData.getOrganization().setCid(organization.getIdElement().getIdPart());
             patientData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
         }
 
