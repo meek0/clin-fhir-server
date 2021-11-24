@@ -109,7 +109,7 @@ public class PatientDataBuilderTest {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         this.expectedPatientData = new PatientData();
-        this.expectedPatientData.setId(String.format("Patient/%s", patient.getId()));
+        this.expectedPatientData.setCid(patient.getId());
         this.expectedPatientData.getMrn().add(patient.getIdentifier().get(0).getValue());
 //        this.expectedPatientData.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED.toCode());
         this.expectedPatientData.setGender("Male");
@@ -125,10 +125,10 @@ public class PatientDataBuilderTest {
 //        this.expectedPatientData.setRequest(String.format("ServiceRequest/%s", this.serviceRequest.getId()));
 //        this.expectedPatientData.setTest("WGS");
 //        this.expectedPatientData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
-        this.expectedPatientData.getPractitioner().setId(practitioner.getId());
+        this.expectedPatientData.getPractitioner().setCid(practitioner.getId());
         this.expectedPatientData.getPractitioner().setLastName(practitioner.getName().get(0).getFamily());
         this.expectedPatientData.getPractitioner().setFirstName(practitioner.getName().get(0).getGiven().get(0).asStringValue());
-        this.expectedPatientData.getOrganization().setId(organization.getId());
+        this.expectedPatientData.getOrganization().setCid(organization.getId());
         this.expectedPatientData.getOrganization().setName(organization.getName());
         this.expectedPatientData.setFetus(false);
     }

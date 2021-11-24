@@ -10,10 +10,11 @@ import java.util.List;
 @Data
 public class PatientData {
     private static final String EMPTY_STRING = "";
-    private String id;
+    private String cid;
     private Organization organization;
     private String lastName;
     private String firstName;
+    private String lastNameFirstName;
     private String gender;
     private String birthDate;
     private Practitioner practitioner;
@@ -29,10 +30,11 @@ public class PatientData {
     private List<RequestData> requests;
 
     public PatientData() {
-        this.id = EMPTY_STRING;
+        this.cid = EMPTY_STRING;
         this.organization = new Organization();
         this.lastName = EMPTY_STRING;
         this.firstName = EMPTY_STRING;
+        this.lastNameFirstName = EMPTY_STRING;
         this.gender = EMPTY_STRING;
         this.birthDate = null;
         this.practitioner = new Practitioner();
@@ -51,16 +53,17 @@ public class PatientData {
     @Data
     @NoArgsConstructor
     public static class Organization {
-        public String id = EMPTY_STRING;
+        public String cid = EMPTY_STRING;
         public String name = EMPTY_STRING;
     }
 
     @Data
     @NoArgsConstructor
     public static class Practitioner {
-        public String id = EMPTY_STRING;
+        public String cid = EMPTY_STRING;
         public String lastName = EMPTY_STRING;
         public String firstName = EMPTY_STRING;
+        public String lastNameFirstName = EMPTY_STRING;
     }
 
     @Data
