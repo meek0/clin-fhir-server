@@ -23,7 +23,6 @@ public class PrescriptionDataBuilder {
     private static final Logger log = LoggerFactory.getLogger(PrescriptionDataBuilder.class);
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static final String ID_SEPARATOR = "/";
     public static final String MRN_CODE = "MR";
 
     private final ResourceDaoConfiguration configuration;
@@ -44,7 +43,6 @@ public class PrescriptionDataBuilder {
             }
             final Reference subject = serviceRequest.getSubject();
             final Patient patient = this.configuration.patientDAO.read(new IdType(subject.getReference()), requestDetails);
-            final String patientId = patient.getIdElement().getIdPart();
 
             this.handlePatient(patient, prescriptionData.getPatientInfo());
             this.handleServiceRequest(serviceRequest, prescriptionData);
@@ -60,7 +58,7 @@ public class PrescriptionDataBuilder {
     }
 
     void handlePatient(Patient patient, PrescriptionData.PatientInformation patientInfo) {
-        patientInfo.setId(patient.getIdElement().getIdPart());
+        patientInfo.setCid(patient.getIdElement().getIdPart());
         final List<String> mrns = Objects.requireNonNull(patient.getIdentifier()).stream()
                 .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(MRN_CODE))
                 .map(Identifier::getValue).collect(Collectors.toList());
@@ -72,6 +70,7 @@ public class PrescriptionDataBuilder {
             final Name name = extractName(patient.getName());
             patientInfo.setLastName(name.lastName);
             patientInfo.setFirstName(name.firstName);
+            patientInfo.setLastNameFirstName(name.lastNameFirstName);
         }
         if (patient.getIdentifier().size() > 1) {
             patientInfo.setRamq(patient.getIdentifier().get(1).getValue());
@@ -96,7 +95,7 @@ public class PrescriptionDataBuilder {
         if (patient.hasManagingOrganization()) {
             final String id = patient.getManagingOrganization().getReference();
             final Organization organization = configuration.organizationDAO.read(new IdType(id));
-            patientInfo.getOrganization().setId(id);
+            patientInfo.getOrganization().setCid(id);
             patientInfo.getOrganization().setName(organization.hasName() ? organization.getName() : "");
         }
 
@@ -107,12 +106,14 @@ public class PrescriptionDataBuilder {
     }
 
     void handleServiceRequest(ServiceRequest serviceRequest, PrescriptionData prescriptionData) {
-        prescriptionData.setId(serviceRequest.getIdElement().getIdPart());
+        prescriptionData.setCid(serviceRequest.getIdElement().getIdPart());
         prescriptionData.setStatus(serviceRequest.getStatus().toCode());
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {
-                prescriptionData.setTest(code.getCoding().get(0).getCode());
+                final Coding coding = code.getCoding().get(0);
+                prescriptionData.getAnalysis().setCode(coding.getCode());
+                prescriptionData.getAnalysis().setDisplay(coding.getDisplay());
             }
         }
 
@@ -120,6 +121,18 @@ public class PrescriptionDataBuilder {
             final Extension extension = serviceRequest.getExtensionByUrl(Extensions.IS_SUBMITTED);
             final BooleanType valueBoolean = (BooleanType) extension.getValue();
             prescriptionData.setSubmitted(valueBoolean.getValue());
+        }
+        
+        if (serviceRequest.hasExtension(Extensions.PROCEDURE_DIRECTED_BY)) {
+            final Extension extension = serviceRequest.getExtensionByUrl(Extensions.PROCEDURE_DIRECTED_BY);
+            final Reference ref = (Reference) extension.getValue();
+            final PractitionerRole role = this.configuration.practitionerRoleDao.read(ref.getReferenceElement());
+            final Practitioner practitioner = this.configuration.practitionerDao.read(role.getPractitioner().getReferenceElement());
+            final Name name = extractName(practitioner.getName());
+            prescriptionData.getApprover().setCid(practitioner.getIdElement().getIdPart());
+            prescriptionData.getApprover().setFirstName(name.firstName);
+            prescriptionData.getApprover().setLastName(name.lastName);
+            prescriptionData.getApprover().setLastNameFirstName(name.lastNameFirstName);
         }
 
         if (serviceRequest.hasAuthoredOn()) {
@@ -130,9 +143,10 @@ public class PrescriptionDataBuilder {
             final String id = serviceRequest.getRequester().getReference();
             final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
             final Name name = extractName(practitioner.getName());
-            prescriptionData.getPractitioner().setId(id);
-            prescriptionData.getPractitioner().setLastName(name.lastName);
-            prescriptionData.getPractitioner().setFirstName(name.firstName);
+            prescriptionData.getPrescriber().setCid(id);
+            prescriptionData.getPrescriber().setLastName(name.lastName);
+            prescriptionData.getPrescriber().setFirstName(name.firstName);
+            prescriptionData.getPrescriber().setLastNameFirstName(name.lastNameFirstName);
         }
 
         if (serviceRequest.hasIdentifier()) {
@@ -140,11 +154,17 @@ public class PrescriptionDataBuilder {
             if (identifier.hasValue()) {
                 prescriptionData.setMrn(identifier.getValue());
             }
+            if (identifier.hasAssigner()) {
+                final String id = identifier.getAssigner().getReference();
+                final Organization organization = configuration.organizationDAO.read(new IdType(id));
+                prescriptionData.getOrganization().setCid(id);
+                prescriptionData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
+            }
         }
     }
 
     void handleFamilyGroup(Group group, PrescriptionData.FamilyGroupInfo familyGroupInfo) {
-        familyGroupInfo.setId(group.getIdElement().getIdPart());
+        familyGroupInfo.setCid(group.getIdElement().getIdPart());
         if (group.hasExtension(Extensions.FAMILY_ID)) {
             final Extension extension = group.getExtensionByUrl(Extensions.FAMILY_ID);
             final Coding coding = (Coding) extension.getValue();
@@ -173,10 +193,12 @@ public class PrescriptionDataBuilder {
     private static class Name {
         public final String lastName;
         public final String firstName;
+        public final String lastNameFirstName;
 
         public Name(String lastName, String firstName) {
             this.lastName = lastName;
             this.firstName = firstName;
+            this.lastNameFirstName = lastName + ", " + firstName;
         }
     }
 }

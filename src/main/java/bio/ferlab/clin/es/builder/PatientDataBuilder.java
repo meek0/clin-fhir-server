@@ -54,7 +54,7 @@ public class PatientDataBuilder {
     }
 
     void handlePatient(Patient patient, PatientData patientData) {
-        patientData.setId(patient.getIdElement().getIdPart());
+        patientData.setCid(patient.getIdElement().getIdPart());
         final List<String> mrns = Objects.requireNonNull(patient.getIdentifier()).stream()
                 .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(MRN_CODE))
                 .map(Identifier::getValue).collect(Collectors.toList());
@@ -66,6 +66,7 @@ public class PatientDataBuilder {
             final Name name = extractName(patient.getName());
             patientData.setLastName(name.lastName);
             patientData.setFirstName(name.firstName);
+            patientData.setLastNameFirstName(name.lastNameFirstName);
         }
         if (patient.getIdentifier().size() > 1) {
             patientData.setRamq(patient.getIdentifier().get(1).getValue());
@@ -117,15 +118,16 @@ public class PatientDataBuilder {
             final PractitionerRole practitionerRole = configuration.practitionerRoleDao.read(new IdType(id));
             final Practitioner practitioner = configuration.practitionerDao.read(practitionerRole.getPractitioner().getReferenceElement());
             final Name name = extractName(practitioner.getName());
-            patientData.getPractitioner().setId(id);
+            patientData.getPractitioner().setCid(id);
             patientData.getPractitioner().setLastName(name.lastName);
             patientData.getPractitioner().setFirstName(name.firstName);
+            patientData.getPractitioner().setLastNameFirstName(name.lastNameFirstName);
         }
 
         if (patient.hasManagingOrganization()) {
             final String id = patient.getManagingOrganization().getReference();
             final Organization organization = configuration.organizationDAO.read(new IdType(id));
-            patientData.getOrganization().setId(id);
+            patientData.getOrganization().setCid(id);
             patientData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
         }
 
@@ -188,10 +190,12 @@ public class PatientDataBuilder {
     private static class Name {
         public final String lastName;
         public final String firstName;
+        public final String lastNameFirstName;
 
         public Name(String lastName, String firstName) {
             this.lastName = lastName;
             this.firstName = firstName;
+            this.lastNameFirstName = lastName + ", " + firstName;
         }
     }
 }

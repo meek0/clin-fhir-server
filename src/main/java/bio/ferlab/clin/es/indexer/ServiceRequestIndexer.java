@@ -35,7 +35,7 @@ public class ServiceRequestIndexer extends Indexer {
 
     private void indexToEs(PrescriptionData prescriptionData) {
         final ElasticsearchRestClient.IndexData data = new ElasticsearchRestClient.IndexData(
-                prescriptionData.getId(),
+                prescriptionData.getCid(),
                 tools.jsonGenerator.toString(prescriptionData)
         );
         tools.client.index(tools.bioProperties.getEsPrescriptionsIndex(), data);

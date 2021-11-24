@@ -37,7 +37,7 @@ public class PatientIndexer extends Indexer {
 
     private void indexToEs(PatientData patientData) {
         final ElasticsearchRestClient.IndexData data = new ElasticsearchRestClient.IndexData(
-                patientData.getId(),
+                patientData.getCid(),
                 tools.jsonGenerator.toString(patientData)
         );
         tools.client.index(tools.bioProperties.getEsPatientsIndex(), data);
