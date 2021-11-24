@@ -109,7 +109,7 @@ public class PatientDataBuilderTest {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         this.expectedPatientData = new PatientData();
-        this.expectedPatientData.setCid(String.format("Patient/%s", patient.getId()));
+        this.expectedPatientData.setCid(patient.getId());
         this.expectedPatientData.getMrn().add(patient.getIdentifier().get(0).getValue());
 //        this.expectedPatientData.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED.toCode());
         this.expectedPatientData.setGender("Male");
