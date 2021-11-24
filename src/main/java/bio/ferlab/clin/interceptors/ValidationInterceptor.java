@@ -30,7 +30,7 @@ public class ValidationInterceptor extends RequestValidatingInterceptor {
         FhirInstanceValidator module = new FhirInstanceValidator(chain);
         module.setAnyExtensionsAllowed(false);
         module.setErrorForUnknownProfiles(true);
-        module.setNoTerminologyChecks(true);
+        module.setNoTerminologyChecks(false);
         module.setAssumeValidRestReferences(true);
         setValidatorModules(Collections.singletonList(module));
         return super.incomingRequestPostProcessed(requestDetails, request, response);
