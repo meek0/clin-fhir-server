@@ -106,7 +106,7 @@ class ServiceRequestPerformerInterceptorTest {
     when(bundle.isEmpty()).thenReturn(false);
     final OrganizationAffiliation affiliation = new OrganizationAffiliation().setParticipatingOrganization(new Reference("bar"));
     when(bundle.getAllResources()).thenReturn(List.of(affiliation));
-    interceptor.updated(requestDetails, serviceRequest);
+    interceptor.updated(requestDetails, null, serviceRequest);
     assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
   }
 

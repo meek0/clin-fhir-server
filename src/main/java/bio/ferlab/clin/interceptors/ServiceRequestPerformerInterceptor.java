@@ -37,8 +37,8 @@ public class ServiceRequestPerformerInterceptor {
   }
 
   @Hook(Pointcut.STORAGE_PRESTORAGE_RESOURCE_UPDATED)
-  public void updated(RequestDetails requestDetails, IBaseResource resource) {
-    this.handleRequestAndResource(requestDetails, resource);
+  public void updated(RequestDetails requestDetails, IBaseResource oldResource, IBaseResource newResource) {
+    this.handleRequestAndResource(requestDetails, newResource);
   }
   
   private boolean isValidRequestAndResource(RequestDetails requestDetails, IBaseResource resource) {
