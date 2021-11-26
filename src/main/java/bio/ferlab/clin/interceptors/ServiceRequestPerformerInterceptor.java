@@ -12,11 +12,11 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.r5.model.StructureDefinition;
+import org.hl7.fhir.r4.model.OrganizationAffiliation;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -55,9 +55,6 @@ public class ServiceRequestPerformerInterceptor {
   }
   
   private OrganizationAffiliation findOrganizationAffiliationByCode(String code) {
-    if (StringUtils.isBlank(code)) {
-      throw new InvalidRequestException("Invalid search parameter: code can't be empty");
-    }
     final IBundleProvider searchResultBundle = this.configuration.organizationAffiliationDAO
         .search(new SearchParameterMap().add(OrganizationAffiliation.SP_SPECIALTY, new TokenParam(code)));
     if (searchResultBundle.isEmpty()) {
