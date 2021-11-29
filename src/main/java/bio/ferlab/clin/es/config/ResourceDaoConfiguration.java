@@ -10,6 +10,7 @@ public class ResourceDaoConfiguration {
     public final IFhirResourceDao<ServiceRequest> serviceRequestDAO;
     public final IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO;
     public final IFhirResourceDao<Organization> organizationDAO;
+    public final IFhirResourceDao<OrganizationAffiliation> organizationAffiliationDAO;
     public final IFhirResourceDao<Practitioner> practitionerDao;
     public final IFhirResourceDao<PractitionerRole> practitionerRoleDao;
     public final IFhirResourceDao<Group> groupDao;
@@ -20,6 +21,7 @@ public class ResourceDaoConfiguration {
             IFhirResourceDao<ServiceRequest> serviceRequestDAO,
             IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO,
             IFhirResourceDao<Organization> organizationDAO,
+            IFhirResourceDao<OrganizationAffiliation> organizationAffiliationDAO,
             IFhirResourceDao<Practitioner> practitionerDao,
             IFhirResourceDao<PractitionerRole> practitionerRoleDao,
             IFhirResourceDao<Group> groupDao,
@@ -28,6 +30,7 @@ public class ResourceDaoConfiguration {
         this.serviceRequestDAO = serviceRequestDAO;
         this.clinicalImpressionDAO = clinicalImpressionDAO;
         this.organizationDAO = organizationDAO;
+        this.organizationAffiliationDAO = organizationAffiliationDAO;
         this.practitionerDao = practitionerDao;
         this.practitionerRoleDao = practitionerRoleDao;
         this.groupDao = groupDao;

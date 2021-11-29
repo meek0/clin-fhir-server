@@ -134,6 +134,10 @@ public class PrescriptionDataBuilder {
             prescriptionData.getApprover().setLastName(name.lastName);
             prescriptionData.getApprover().setLastNameFirstName(name.lastNameFirstName);
         }
+        
+        if (serviceRequest.hasPerformer()) {
+            prescriptionData.setLaboratory(serviceRequest.getPerformer().get(0).getReference());
+        }
 
         if (serviceRequest.hasAuthoredOn()) {
             prescriptionData.setAuthoredOn(simpleDateFormat.format(serviceRequest.getAuthoredOn()));

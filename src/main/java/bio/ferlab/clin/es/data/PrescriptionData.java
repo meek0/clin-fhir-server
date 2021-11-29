@@ -21,6 +21,7 @@ public class PrescriptionData {
     private Analysis analysis = new Analysis();
     private boolean submitted = false;
     private String authoredOn = null;
+    private String laboratory = EMPTY_STRING;
     private Practitioner prescriber = new Practitioner();
     private Practitioner approver = new Practitioner();
     private Organization organization = new Organization();

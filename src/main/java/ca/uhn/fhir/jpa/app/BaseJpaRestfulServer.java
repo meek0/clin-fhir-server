@@ -103,6 +103,9 @@ public class BaseJpaRestfulServer extends RestfulServer {
     ApplicationContext myApplicationContext;
     @Autowired(required = false)
     IRepositoryValidationInterceptorFactory factory;
+    
+    @Autowired
+    ServiceRequestPerformerInterceptor serviceRequestPerformerInterceptor;
 
     @Autowired
     FieldValidatorInterceptor fieldValidatorInterceptor;
@@ -416,6 +419,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         daoConfig.setEnforceReferentialIntegrityOnWrite(false);
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(new ValidationInterceptor());
+        registerInterceptor(serviceRequestPerformerInterceptor);
 
         if (bioProperties.isAuthorizationEnabled()) {
             registerInterceptor(bioAuthInterceptor);
