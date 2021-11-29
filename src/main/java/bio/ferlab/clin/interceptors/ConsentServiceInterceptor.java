@@ -71,30 +71,32 @@ public class ConsentServiceInterceptor implements IConsentService {
     private boolean logOperation(RequestDetails requestDetails, boolean successful) {
         final IBaseResource resource = requestDetails.getResource();
         final RequesterData requesterData = (RequesterData) requestDetails.getAttribute(Constants.REQUESTER_DATA_KEY);
-        final AuditEventsBuilder builder = new AuditEventsBuilder(requesterData);
-        final List<AuditEvent> events = new ArrayList<>();
+        if (requesterData != null) {
+            final AuditEventsBuilder builder = new AuditEventsBuilder(requesterData);
+            final List<AuditEvent> events = new ArrayList<>();
 
-        if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
-            final String resourceName = requestDetails.getRequestPath();
-            if (StringUtils.isNotBlank(resourceName) && !AUDIT_EVENT_RESOURCE_TYPE.equals(resourceName)) {
-                events.addAll(builder.addReadAction(resourceName).build());
-            }
-        } else {
-            if (resource instanceof Bundle) {
-                events.addAll(builder.addBundle((Bundle) resource).build());
-            } else if (requestDetails.getRestOperationType() != null) {
-                final AuditEvent.AuditEventAction action = getActionFromRestOperationType(requestDetails.getRestOperationType());
-                if (resource instanceof Resource) {
-                    events.addAll(builder.addResource((Resource) resource, action).build());
-                } else if (requestDetails.getId() != null){
-                    events.addAll(builder.addByIdAndActionType(requestDetails.getId(), action).build());
+            if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
+                final String resourceName = requestDetails.getRequestPath();
+                if (StringUtils.isNotBlank(resourceName) && !AUDIT_EVENT_RESOURCE_TYPE.equals(resourceName)) {
+                    events.addAll(builder.addReadAction(resourceName).build());
+                }
+            } else {
+                if (resource instanceof Bundle) {
+                    events.addAll(builder.addBundle((Bundle) resource).build());
+                } else if (requestDetails.getRestOperationType() != null) {
+                    final AuditEvent.AuditEventAction action = getActionFromRestOperationType(requestDetails.getRestOperationType());
+                    if (resource instanceof Resource) {
+                        events.addAll(builder.addResource((Resource) resource, action).build());
+                    } else if (requestDetails.getId() != null) {
+                        events.addAll(builder.addByIdAndActionType(requestDetails.getId(), action).build());
+                    }
                 }
             }
-        }
 
-        if (!events.isEmpty()) {
-            auditTrail.auditEvents(events, successful);
-            return true;
+            if (!events.isEmpty()) {
+                auditTrail.auditEvents(events, successful);
+                return true;
+            }
         }
         return false;
     }

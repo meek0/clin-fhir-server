@@ -56,7 +56,7 @@ public class ServiceRequestPerformerInterceptor {
   
   private OrganizationAffiliation findOrganizationAffiliationByCode(String code) {
     final IBundleProvider searchResultBundle = this.configuration.organizationAffiliationDAO
-        .search(new SearchParameterMap().add(OrganizationAffiliation.SP_SPECIALTY, new TokenParam(code)));
+        .search(SearchParameterMap.newSynchronous().add(OrganizationAffiliation.SP_SPECIALTY, new TokenParam(code)));
     if (searchResultBundle.isEmpty()) {
       throw new InvalidRequestException("Can't find organization affiliation attached to code " + code);
     }
