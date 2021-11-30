@@ -82,8 +82,11 @@
             "prescription": {
               "type": "date"
             },
-            "request": {
+            "cid": {
               "type": "keyword"
+            },
+            "authoredOn": {
+              "type": "date"
             },
             "status": {
               "type": "keyword"
@@ -91,8 +94,63 @@
             "submitted": {
               "type": "boolean"
             },
-            "test": {
+            "mrn": {
               "type": "keyword"
+            },
+            "laboratory": {
+              "type": "boolean"
+            },
+            "prescriber": {
+              "properties": {
+                "cid": {
+                  "type": "keyword"
+                },
+                "firstName": {
+                  "type": "keyword"
+                },
+                "lastName": {
+                  "type": "keyword"
+                },
+                "lastNameFirstName": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "approver": {
+              "properties": {
+                "cid": {
+                  "type": "keyword"
+                },
+                "firstName": {
+                  "type": "keyword"
+                },
+                "lastName": {
+                  "type": "keyword"
+                },
+                "lastNameFirstName": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "organization": {
+              "properties": {
+                "cid": {
+                  "type": "keyword"
+                },
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "analysis": {
+              "properties": {
+                "code": {
+                  "type": "keyword"
+                },
+                "display": {
+                  "type": "keyword"
+                }
+              }
             }
           }
         },
