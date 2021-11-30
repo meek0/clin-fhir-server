@@ -139,13 +139,17 @@ public class PatientDataBuilder {
 
     PatientData.RequestData handleServiceRequest(ServiceRequest serviceRequest) {
         final PatientData.RequestData requestData = new PatientData.RequestData();
-        requestData.setRequest(serviceRequest.getIdElement().getIdPart());
+        requestData.setCid(serviceRequest.getIdElement().getIdPart());
         requestData.setStatus(serviceRequest.getStatus().toCode());
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {
                 requestData.setTest(code.getCoding().get(0).getCode());
             }
+        }
+
+        if (serviceRequest.hasAuthoredOn()) {
+            requestData.setAuthoredOn(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }
 
         if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)) {
@@ -157,6 +161,55 @@ public class PatientDataBuilder {
         if (serviceRequest.hasAuthoredOn()) {
             requestData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }
+        
+        if (serviceRequest.hasPerformer()) {
+            requestData.setLaboratory(serviceRequest.getPerformer().get(0).getReference());
+        }
+
+        if (serviceRequest.hasRequester()) {
+            final String id = serviceRequest.getRequester().getReference();
+            final Practitioner practitioner = configuration.practitionerDao.read(new IdType(id));
+            final Name name = extractName(practitioner.getName());
+            requestData.getPrescriber().setCid(practitioner.getIdElement().getIdPart());
+            requestData.getPrescriber().setLastName(name.lastName);
+            requestData.getPrescriber().setFirstName(name.firstName);
+            requestData.getPrescriber().setLastNameFirstName(name.lastNameFirstName);
+        }
+
+        if (serviceRequest.hasExtension(Extensions.PROCEDURE_DIRECTED_BY)) {
+            final Extension extension = serviceRequest.getExtensionByUrl(Extensions.PROCEDURE_DIRECTED_BY);
+            final Reference ref = (Reference) extension.getValue();
+            final PractitionerRole role = this.configuration.practitionerRoleDao.read(ref.getReferenceElement());
+            final Practitioner practitioner = this.configuration.practitionerDao.read(role.getPractitioner().getReferenceElement());
+            final Name name = extractName(practitioner.getName());
+            requestData.getApprover().setCid(practitioner.getIdElement().getIdPart());
+            requestData.getApprover().setFirstName(name.firstName);
+            requestData.getApprover().setLastName(name.lastName);
+            requestData.getApprover().setLastNameFirstName(name.lastNameFirstName);
+        }
+
+        if (serviceRequest.hasCode()) {
+            final CodeableConcept code = serviceRequest.getCode();
+            if (code.hasCoding()) {
+                final Coding coding = code.getCoding().get(0);
+                requestData.getAnalysis().setCode(coding.getCode());
+                requestData.getAnalysis().setDisplay(coding.getDisplay());
+            }
+        }
+
+        if (serviceRequest.hasIdentifier()) {
+            final var identifier = serviceRequest.getIdentifier().get(0);
+            if (identifier.hasValue()) {
+                requestData.setMrn(identifier.getValue());
+            }
+            if (identifier.hasAssigner()) {
+                final String id = identifier.getAssigner().getReference();
+                final Organization organization = configuration.organizationDAO.read(new IdType(id));
+                requestData.getOrganization().setCid(organization.getIdElement().getIdPart());
+                requestData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
+            }
+        }
+        
         return requestData;
     }
 

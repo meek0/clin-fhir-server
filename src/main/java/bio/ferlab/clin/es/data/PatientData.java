@@ -69,10 +69,25 @@ public class PatientData {
     @Data
     @NoArgsConstructor
     public static class RequestData {
-        private String request = EMPTY_STRING;
+        private String cid = EMPTY_STRING;
+        private String mrn = EMPTY_STRING;
         private String status = EMPTY_STRING;
         private String test = EMPTY_STRING;
         private boolean submitted = false;
+        private String authoredOn = null;
         private String prescription = null;
+        private String laboratory = EMPTY_STRING;
+        private Practitioner prescriber = new Practitioner();
+        private Practitioner approver = new Practitioner();
+        private Analysis analysis = new Analysis();
+        private Organization organization = new Organization();
     }
+
+    @Data
+    @NoArgsConstructor
+    public static class Analysis {
+        public String code = EMPTY_STRING;
+        public String display = EMPTY_STRING;
+    }
+
 }
