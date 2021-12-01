@@ -194,15 +194,6 @@ public class PatientDataBuilder {
             requestData.getApprover().setLastNameFirstName(name.lastNameFirstName);
         }
 
-        if (serviceRequest.hasCode()) {
-            final CodeableConcept code = serviceRequest.getCode();
-            if (code.hasCoding()) {
-                final Coding coding = code.getCoding().get(0);
-                requestData.getAnalysis().setCode(coding.getCode());
-                requestData.getAnalysis().setDisplay(coding.getDisplay());
-            }
-        }
-
         if (serviceRequest.hasIdentifier()) {
             final var identifier = serviceRequest.getIdentifier().get(0);
             if (identifier.hasValue()) {
