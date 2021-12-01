@@ -1,6 +1,8 @@
 package bio.ferlab.clin.es.builder;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
+import bio.ferlab.clin.es.data.FamilyGroupInfoData;
+import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
@@ -35,7 +37,6 @@ public class PrescriptionDataBuilder {
         final List<PrescriptionData> prescriptionDataList = new ArrayList<>();
         for (final String serviceRequestId : ids) {
             final PrescriptionData prescriptionData = new PrescriptionData();
-
             final ServiceRequest serviceRequest = this.configuration.serviceRequestDAO.read(new IdType(serviceRequestId), requestDetails);
             if (!serviceRequest.hasSubject()) {
                 log.error(String.format("Cannot index ServiceRequest [%s]: resource has no subject.", serviceRequestId));
@@ -52,12 +53,15 @@ public class PrescriptionDataBuilder {
                 final Group group = this.configuration.groupDao.read(ref.getReferenceElement());
                 this.handleFamilyGroup(group, prescriptionData.getFamilyInfo());
             }
+            // clean-up + full text
+            prescriptionData.getPatientInfo().setRequests(null);
+            prescriptionData.applyFullText();
             prescriptionDataList.add(prescriptionData);
         }
         return prescriptionDataList;
     }
 
-    void handlePatient(Patient patient, PrescriptionData.PatientInformation patientInfo) {
+    void handlePatient(Patient patient, PatientData patientInfo) {
         patientInfo.setCid(patient.getIdElement().getIdPart());
         final List<String> mrns = Objects.requireNonNull(patient.getIdentifier()).stream()
                 .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(MRN_CODE))
@@ -167,7 +171,7 @@ public class PrescriptionDataBuilder {
         }
     }
 
-    void handleFamilyGroup(Group group, PrescriptionData.FamilyGroupInfo familyGroupInfo) {
+    void handleFamilyGroup(Group group, FamilyGroupInfoData familyGroupInfo) {
         familyGroupInfo.setCid(group.getIdElement().getIdPart());
         if (group.hasExtension(Extensions.FAMILY_ID)) {
             final Extension extension = group.getExtensionByUrl(Extensions.FAMILY_ID);

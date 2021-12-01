@@ -18,6 +18,9 @@
         "cid": {
           "type": "keyword"
         },
+        "cidText": {
+          "type": "text"
+        },
         "ethnicity": {
           "type": "keyword"
         },
@@ -25,6 +28,9 @@
           "properties": {
             "cid": {
               "type": "keyword"
+            },
+            "cidText": {
+              "type": "text"
             },
             "type": {
               "type": "keyword"
@@ -34,6 +40,9 @@
         "mrn": {
           "type": "keyword"
         },
+        "mrnText": {
+          "type": "text"
+        },
         "patientInfo": {
           "properties": {
             "birthDate": {
@@ -41,6 +50,9 @@
             },
             "cid": {
               "type": "keyword"
+            },
+            "cidText": {
+              "type": "text"
             },
             "fetus": {
               "type": "boolean"
@@ -60,10 +72,25 @@
             "mrn": {
               "type": "keyword"
             },
+            "mrnText": {
+              "type": "text"
+            },
+            "firstNameText": {
+              "type": "text"
+            },
+            "lastNameText": {
+              "type": "text"
+            },
+            "lastNameFirstNameText": {
+              "type": "text"
+            },
             "organization": {
               "properties": {
                 "cid": {
                   "type": "keyword"
+                },
+                "cidText": {
+                  "type": "text"
                 },
                 "name": {
                   "type": "keyword"
@@ -86,6 +113,9 @@
             "cid": {
               "type": "keyword"
             },
+            "cidText": {
+              "type": "text"
+            },
             "firstName": {
               "type": "keyword"
             },
@@ -94,6 +124,15 @@
             },
             "lastNameFirstName": {
               "type": "keyword"
+            },
+            "firstNameText": {
+              "type": "text"
+            },
+            "lastNameText": {
+              "type": "text"
+            },
+            "lastNameFirstNameText": {
+              "type": "text"
             }
           }
         },
@@ -102,6 +141,9 @@
             "cid": {
               "type": "keyword"
             },
+            "cidText": {
+              "type": "text"
+            },
             "firstName": {
               "type": "keyword"
             },
@@ -110,6 +152,15 @@
             },
             "lastNameFirstName": {
               "type": "keyword"
+            },
+            "firstNameText": {
+              "type": "text"
+            },
+            "lastNameText": {
+              "type": "text"
+            },
+            "lastNameFirstNameText": {
+              "type": "text"
             }
           }
         },
@@ -117,6 +168,9 @@
           "properties": {
             "cid": {
               "type": "keyword"
+            },
+            "cidText": {
+              "type": "text"
             },
             "name": {
               "type": "keyword"

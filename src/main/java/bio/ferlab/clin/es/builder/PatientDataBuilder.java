@@ -2,6 +2,7 @@ package bio.ferlab.clin.es.builder;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
+import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
@@ -48,6 +49,9 @@ public class PatientDataBuilder {
             for (ServiceRequest serviceRequest : serviceRequests) {
                 patientData.getRequests().add(this.handleServiceRequest(serviceRequest));
             }
+            // clean-up + full text
+            patientData.getRequests().forEach(r -> r.setPatientInfo(null));
+            patientData.applyFullText();
             patientDataList.add(patientData);
         }
         return patientDataList;
@@ -137,14 +141,16 @@ public class PatientDataBuilder {
 
     }
 
-    PatientData.RequestData handleServiceRequest(ServiceRequest serviceRequest) {
-        final PatientData.RequestData requestData = new PatientData.RequestData();
+    PrescriptionData handleServiceRequest(ServiceRequest serviceRequest) {
+        final PrescriptionData requestData = new PrescriptionData();
         requestData.setCid(serviceRequest.getIdElement().getIdPart());
         requestData.setStatus(serviceRequest.getStatus().toCode());
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {
-                requestData.setTest(code.getCoding().get(0).getCode());
+                final Coding coding = code.getCoding().get(0);
+                requestData.getAnalysis().setCode(coding.getCode());
+                requestData.getAnalysis().setDisplay(coding.getDisplay());
             }
         }
 
@@ -159,7 +165,7 @@ public class PatientDataBuilder {
         }
 
         if (serviceRequest.hasAuthoredOn()) {
-            requestData.setPrescription(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
+            requestData.setAuthoredOn(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
         }
         
         if (serviceRequest.hasPerformer()) {
@@ -186,15 +192,6 @@ public class PatientDataBuilder {
             requestData.getApprover().setFirstName(name.firstName);
             requestData.getApprover().setLastName(name.lastName);
             requestData.getApprover().setLastNameFirstName(name.lastNameFirstName);
-        }
-
-        if (serviceRequest.hasCode()) {
-            final CodeableConcept code = serviceRequest.getCode();
-            if (code.hasCoding()) {
-                final Coding coding = code.getCoding().get(0);
-                requestData.getAnalysis().setCode(coding.getCode());
-                requestData.getAnalysis().setDisplay(coding.getDisplay());
-            }
         }
 
         if (serviceRequest.hasIdentifier()) {

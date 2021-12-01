@@ -5,6 +5,8 @@ import org.elasticsearch.client.RestClient;
 import java.io.IOException;
 
 public class ElasticsearchData {
+    public static final String EMPTY_STRING = "";
+    
     public final RestClient client;
     public final String host;
 
