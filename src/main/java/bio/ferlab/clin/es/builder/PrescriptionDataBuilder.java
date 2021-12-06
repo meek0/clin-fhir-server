@@ -169,6 +169,8 @@ public class PrescriptionDataBuilder {
                 prescriptionData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
             }
         }
+
+        prescriptionData.buildState();
     }
 
     void handleFamilyGroup(Group group, FamilyGroupInfoData familyGroupInfo) {

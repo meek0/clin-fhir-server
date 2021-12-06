@@ -180,6 +180,9 @@
         "status": {
           "type": "keyword"
         },
+        "state": {
+          "type": "keyword"
+        },
         "submitted": {
           "type": "boolean"
         },
