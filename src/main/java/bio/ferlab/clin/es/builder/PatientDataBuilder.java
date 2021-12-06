@@ -206,7 +206,7 @@ public class PatientDataBuilder {
                 requestData.getOrganization().setName(organization.hasName() ? organization.getName() : "");
             }
         }
-        
+        requestData.buildState();
         return requestData;
     }
 
