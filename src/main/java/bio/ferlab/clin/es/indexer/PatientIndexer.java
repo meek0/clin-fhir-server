@@ -9,6 +9,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -23,14 +24,18 @@ public class PatientIndexer extends Indexer {
         this.patientDataBuilder = patientDataBuilder;
         this.tools = tools;
     }
+    
+    public void doIndex(Set<String> ids, RequestDetails requestDetails) {
+        if (ids != null && !ids.isEmpty()) {
+            final List<PatientData> patientDataList = this.patientDataBuilder.fromIds(ids, requestDetails);
+            patientDataList.forEach(this::indexToEs);
+        }
+    }
 
     @Override
     protected void doIndex(RequestDetails requestDetails, IBaseResource resource) {
         final Set<String> ids = this.patientIdExtractor.extract(resource);
-        if (ids != null) {
-            final List<PatientData> patientDataList = this.patientDataBuilder.fromIds(ids, requestDetails);
-            patientDataList.forEach(this::indexToEs);
-        }
+        doIndex(ids, requestDetails);
     }
 
     private void indexToEs(PatientData patientData) {

@@ -10,17 +10,23 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class ServiceRequestIndexer extends Indexer {
     private final ServiceRequestIdExtractor serviceRequestIdExtractor;
     private final PrescriptionDataBuilder prescriptionDataBuilder;
     private final IndexerTools tools;
+    private final PatientIndexer patientIndexer;
 
-    public ServiceRequestIndexer(ServiceRequestIdExtractor serviceRequestIdExtractor, PrescriptionDataBuilder prescriptionDataBuilder, IndexerTools tools) {
+    public ServiceRequestIndexer(ServiceRequestIdExtractor serviceRequestIdExtractor, 
+                                 PrescriptionDataBuilder prescriptionDataBuilder, 
+                                 IndexerTools tools,
+                                 PatientIndexer patientIndexer) {
         this.tools = tools;
         this.serviceRequestIdExtractor = serviceRequestIdExtractor;
         this.prescriptionDataBuilder = prescriptionDataBuilder;
+        this.patientIndexer = patientIndexer;
     }
 
     @Override
@@ -29,6 +35,10 @@ public class ServiceRequestIndexer extends Indexer {
         if (ids != null && !ids.isEmpty()) {
             final List<PrescriptionData> prescriptionDataList = this.prescriptionDataBuilder.fromIds(ids, requestDetails);
             prescriptionDataList.forEach(this::indexToEs);
+            // re-index the patients linked to these prescriptions
+            final Set<String> patientIds = prescriptionDataList.stream().map(p -> "Patient/" + p.getPatientInfo().getCid())
+                .collect(Collectors.toSet());
+            this.patientIndexer.doIndex(patientIds, requestDetails);
         }
     }
 
