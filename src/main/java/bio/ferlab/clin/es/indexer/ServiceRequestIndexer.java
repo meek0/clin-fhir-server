@@ -28,7 +28,6 @@ public class ServiceRequestIndexer extends Indexer {
         final Set<String> ids = this.serviceRequestIdExtractor.extract(resource);
         if (ids != null && !ids.isEmpty()) {
             final List<PrescriptionData> prescriptionDataList = this.prescriptionDataBuilder.fromIds(ids, requestDetails);
-            prescriptionDataList.forEach(System.out::println);
             prescriptionDataList.forEach(this::indexToEs);
         }
     }

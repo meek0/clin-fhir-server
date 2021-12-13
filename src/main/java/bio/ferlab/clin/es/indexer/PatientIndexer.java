@@ -29,8 +29,6 @@ public class PatientIndexer extends Indexer {
         final Set<String> ids = this.patientIdExtractor.extract(resource);
         if (ids != null) {
             final List<PatientData> patientDataList = this.patientDataBuilder.fromIds(ids, requestDetails);
-            patientDataList.forEach(System.out::println);
-
             patientDataList.forEach(this::indexToEs);
         }
     }
