@@ -36,7 +36,7 @@ public class ServiceRequestIndexer extends Indexer {
             final List<PrescriptionData> prescriptionDataList = this.prescriptionDataBuilder.fromIds(ids, requestDetails);
             prescriptionDataList.forEach(this::indexToEs);
             // re-index the patients linked to these prescriptions
-            final Set<String> patientIds = prescriptionDataList.stream().map(p -> "Patient/" + p.getPatientInfo().getCid())
+            final Set<String> patientIds = prescriptionDataList.stream().map(p -> p.getPatientInfo().getCid())
                 .collect(Collectors.toSet());
             this.patientIndexer.doIndex(patientIds, requestDetails);
         }
