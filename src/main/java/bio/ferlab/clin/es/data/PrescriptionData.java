@@ -50,9 +50,9 @@ public class PrescriptionData implements WithFullText{
     public void buildState() {
         if ("on-hold".equals(status)) {
             if (submitted) {
-                this.state = State.incomplete;
-            } else {
                 this.state = State.submitted;
+            } else {
+                this.state = State.incomplete;
             }
         } else if ("active".equals(status)) {
             this.state = State.active;
