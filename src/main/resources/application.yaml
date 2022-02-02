@@ -152,6 +152,8 @@ hapi:
 #  username: SomeUsername
 
 bio:
+  tagging: 
+    enabled: true
   elasticsearch:
     host: "elasticsearch-workers"
     port: 9200
@@ -167,5 +169,6 @@ bio:
     authorization:
       enabled: true
       client-id: clin-acl
+      system-id: clin-system
   audits:
     enabled: true
