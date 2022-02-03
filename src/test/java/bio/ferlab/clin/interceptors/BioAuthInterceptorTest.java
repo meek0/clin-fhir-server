@@ -3,6 +3,8 @@ package bio.ferlab.clin.interceptors;
 import bio.ferlab.clin.auth.RPTPermissionExtractor;
 import bio.ferlab.clin.auth.data.Permission;
 import bio.ferlab.clin.auth.data.UserPermissions;
+import bio.ferlab.clin.interceptors.metatag.MetaTagAuthRuleTester;
+import bio.ferlab.clin.properties.BioProperties;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule;
 import org.hl7.fhir.r4.model.Patient;
@@ -19,8 +21,9 @@ import static org.mockito.Mockito.when;
 
 class BioAuthInterceptorTest {
   
+  final MetaTagAuthRuleTester metaTagAuthRuleTester = Mockito.mock(MetaTagAuthRuleTester.class);
   final RPTPermissionExtractor rptPermissionExtractor = Mockito.mock(RPTPermissionExtractor.class);
-  final BioAuthInterceptor bioAuthInterceptor = new BioAuthInterceptor(rptPermissionExtractor);
+  final BioAuthInterceptor bioAuthInterceptor = new BioAuthInterceptor(rptPermissionExtractor, metaTagAuthRuleTester);
   
   private static final boolean testRule(IAuthRule rule, String operation, Class<? extends Resource> clazz) {
     final String ruleStr = rule.toString();

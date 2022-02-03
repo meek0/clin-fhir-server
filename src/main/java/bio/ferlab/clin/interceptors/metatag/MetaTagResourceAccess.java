@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class MetaTagResourceAccess {
 
-  // all meta/tags compatible resources, adding one need an implementation bellow
+  // all meta/tags compatible resources, adding one need an implementation in MetaTagResourceVisitor
   private static final List<String> RESOURCES_WITH_TAGS = List.of("ServiceRequest");
   private static final String TOKEN_ATTR_FHIR_ORG_ID = "fhir_organization_id";
   private static final String USER_ALL_TAGS = "*";
@@ -55,7 +56,7 @@ public class MetaTagResourceAccess {
     if (isSystem) {
       tags.add(USER_ALL_TAGS);
     } else {
-      tags.add(Optional.ofNullable(jwt.getClaim(TOKEN_ATTR_FHIR_ORG_ID)).map(Claim::asString)
+      tags.addAll(Optional.ofNullable(jwt.getClaim(TOKEN_ATTR_FHIR_ORG_ID)).map(c -> c.asList(String.class))
           .orElseThrow(() -> new RptIntrospectionException("missing " + TOKEN_ATTR_FHIR_ORG_ID)));
     }
 
@@ -63,7 +64,7 @@ public class MetaTagResourceAccess {
   }
 
   public boolean isResourceWithTags(String resourceName) {
-    return resourceName !=null && RESOURCES_WITH_TAGS.contains(resourceName);
+    return StringUtils.isNotBlank(resourceName) && RESOURCES_WITH_TAGS.contains(resourceName);
   }
 
   public boolean isResourceWithTags(IBaseResource resource) {
