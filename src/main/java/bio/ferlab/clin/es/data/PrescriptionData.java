@@ -38,6 +38,7 @@ public class PrescriptionData implements WithFullText{
     private PatientData patientInfo = new PatientData();
     private FamilyGroupInfoData familyInfo = new FamilyGroupInfoData();
     private State state = null;
+    private List<String> securityTags = new ArrayList<>();
 
     /*
      * The following fields will be copied with the same value

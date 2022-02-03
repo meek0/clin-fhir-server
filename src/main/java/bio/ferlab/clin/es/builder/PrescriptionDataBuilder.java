@@ -7,6 +7,7 @@ import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -56,6 +57,7 @@ public class PrescriptionDataBuilder {
             // clean-up + full text
             prescriptionData.getPatientInfo().setRequests(null);
             prescriptionData.applyFullText();
+            prescriptionData.getSecurityTags().addAll(extractMetaTags(serviceRequest));
             prescriptionDataList.add(prescriptionData);
         }
         return prescriptionDataList;
@@ -69,6 +71,7 @@ public class PrescriptionDataBuilder {
 
         patientInfo.getMrn().addAll(mrns);
         patientInfo.setGender(patient.getGender().getDisplay());
+        patientInfo.getSecurityTags().addAll(extractMetaTags(patient));
 
         if (patient.hasName()) {
             final Name name = extractName(patient.getName());
@@ -198,6 +201,10 @@ public class PrescriptionDataBuilder {
             }
         }
         return resources;
+    }
+
+    private List<String> extractMetaTags(IBaseResource resource) {
+        return resource.getMeta().getTag().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
     }
 
     private static class Name {

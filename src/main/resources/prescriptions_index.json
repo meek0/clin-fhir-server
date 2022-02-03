@@ -9,6 +9,9 @@
         "enabled": true
       },
       "properties": {
+        "securityTags": {
+          "type": "keyword"
+        },
         "authoredOn": {
           "type": "date"
         },
@@ -47,6 +50,9 @@
           "properties": {
             "birthDate": {
               "type": "date"
+            },
+            "securityTags": {
+              "type": "keyword"
             },
             "cid": {
               "type": "keyword"

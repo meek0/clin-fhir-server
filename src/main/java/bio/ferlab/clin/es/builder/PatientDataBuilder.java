@@ -8,6 +8,7 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,7 @@ public class PatientDataBuilder {
             // clean-up + full text
             patientData.getRequests().forEach(r -> r.setPatientInfo(null));
             patientData.applyFullText();
+            patientData.getSecurityTags().addAll(extractMetaTags(patient));
             patientDataList.add(patientData);
         }
         return patientDataList;
@@ -145,6 +147,7 @@ public class PatientDataBuilder {
         final PrescriptionData requestData = new PrescriptionData();
         requestData.setCid(serviceRequest.getIdElement().getIdPart());
         requestData.setStatus(serviceRequest.getStatus().toCode());
+        requestData.getSecurityTags().addAll(extractMetaTags(serviceRequest));
         if (serviceRequest.hasCode()) {
             final CodeableConcept code = serviceRequest.getCode();
             if (code.hasCoding()) {
@@ -235,6 +238,10 @@ public class PatientDataBuilder {
             }
         }
         return resources;
+    }
+    
+    private List<String> extractMetaTags(IBaseResource resource) {
+        return resource.getMeta().getTag().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
     }
 
     private static class Name {
