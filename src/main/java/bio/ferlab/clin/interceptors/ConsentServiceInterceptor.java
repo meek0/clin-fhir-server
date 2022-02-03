@@ -2,6 +2,7 @@ package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.audit.AuditEventsBuilder;
 import bio.ferlab.clin.audit.AuditTrail;
+import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
 import bio.ferlab.clin.user.RequesterData;
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
@@ -28,11 +29,11 @@ public class ConsentServiceInterceptor implements IConsentService {
     private final static Logger log = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
     private final AuditTrail auditTrail;
-    private final MetaTagInterceptor metaTagInterceptor;
+    private final MetaTagResourceAccess metaTagResourceAccess;
 
-    public ConsentServiceInterceptor(AuditTrail auditTrail, MetaTagInterceptor metaTagInterceptor) {
+    public ConsentServiceInterceptor(AuditTrail auditTrail, MetaTagResourceAccess metaTagResourceAccess) {
         this.auditTrail = auditTrail;
-        this.metaTagInterceptor = metaTagInterceptor;
+        this.metaTagResourceAccess = metaTagResourceAccess;
     }
 
     @Override
@@ -42,8 +43,8 @@ public class ConsentServiceInterceptor implements IConsentService {
 
     @Override
     public ConsentOutcome canSeeResource(RequestDetails requestDetails, IBaseResource theResource, IConsentContextServices contextServices) {
-        if (!metaTagInterceptor.canSeeResource(requestDetails, theResource)) {
-            return ConsentOutcome.REJECT;
+        if (!metaTagResourceAccess.canSeeResource(requestDetails, theResource)) {
+           return ConsentOutcome.REJECT;
         }
         return ConsentOutcome.PROCEED;
     }
