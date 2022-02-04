@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetaTagAuthRuleTester implements IAuthRuleTester {
   
-  private BioProperties bioProperties;
+  private final BioProperties bioProperties;
   
   public MetaTagAuthRuleTester(BioProperties bioProperties) {
     this.bioProperties = bioProperties;

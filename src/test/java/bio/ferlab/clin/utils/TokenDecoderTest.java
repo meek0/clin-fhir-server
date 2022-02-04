@@ -4,6 +4,8 @@ import bio.ferlab.clin.auth.JwkProviderService;
 import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,7 +18,8 @@ import static org.mockito.Mockito.*;
 
 public class TokenDecoderTest {
   
-  final String mockTokenJohnDoe = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+  final String mockTokenJohnDoe = "Bearer " + JWT.create().withClaim("name", "John Doe")
+      .sign(Algorithm.HMAC256("secret"));
   final JwkProviderService jwkProviderService = Mockito.mock(JwkProviderService.class);
   final Jwk jwk = Mockito.mock(Jwk.class);
   final TokenDecoder decoder = new TokenDecoder(jwkProviderService);

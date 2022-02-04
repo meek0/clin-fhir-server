@@ -4,7 +4,9 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.BaseReference;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.stereotype.Component;
 
@@ -37,23 +39,28 @@ public class MetaTagResourceVisitor {
   private String extractEpCode(ServiceRequest resource) {
     return Optional.ofNullable(resource.getIdentifier()).orElse(Collections.emptyList()).stream()
         .filter(i -> i.getType().getCoding().stream().anyMatch(c -> "MR".equals(c.getCode())))
-        .findFirst().map(p -> p.getAssigner().getReference().split("/")[1])
+        .findFirst().map(p -> getReferenceId(p.getAssigner()))
         .orElseThrow(() -> formatExtractException(resource, "identifier of type MR"));
   }
 
   private String extractEpCode(Patient resource) {
-    return Optional.ofNullable(resource.getManagingOrganization()).map(org -> org.getReference().split("/")[1])
+    return Optional.ofNullable(resource.getManagingOrganization()).map(this::getReferenceId)
         .orElseThrow(() -> formatExtractException(resource, "managing organization"));
   }
 
   private String extractLdmCode(ServiceRequest resource) {
     return Optional.ofNullable(resource.getPerformer()).orElse(Collections.emptyList()).stream()
         .filter(p -> StringUtils.isNotBlank(p.getReference()))
-        .map(p -> p.getReference().split("/")[1])
+        .map(this::getReferenceId)
         .findFirst().orElseThrow(() -> formatExtractException(resource, "performer"));
   }
   
+  private String getReferenceId(Reference reference) {
+   return Optional.ofNullable(reference).map(Reference::getReference)
+        .map(r -> r.split("/")).filter(s -> s.length > 1).map(s -> s[1]).orElse(null);
+  }
+  
   private InvalidRequestException formatExtractException(IBaseResource resource, String missingField) {
-    return new InvalidRequestException(String.format("Resource %s field %s is required for meta tag ", resource.getClass().getSimpleName(), missingField));
+    return new InvalidRequestException(String.format("Resource '%s' field '%s' is required for meta tag", resource.getClass().getSimpleName(), missingField));
   }
 }
