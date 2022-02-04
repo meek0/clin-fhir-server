@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class MetaTagResourceAccess {
 
   // all meta/tags compatible resources, adding one need an implementation in MetaTagResourceVisitor
-  private static final List<String> RESOURCES_WITH_TAGS = List.of("ServiceRequest", "Patient");
-  private static final String TOKEN_ATTR_FHIR_ORG_ID = "fhir_organization_id";
-  private static final String USER_ALL_TAGS = "*";
+  public static final List<String> RESOURCES_WITH_TAGS = List.of("ServiceRequest", "Patient");
+  public static final String TOKEN_ATTR_FHIR_ORG_ID = "fhir_organization_id";
+  public static final String USER_ALL_TAGS = "*";
   
   private final BioProperties bioProperties;
   

@@ -154,6 +154,7 @@ hapi:
 bio:
   tagging: 
     enabled: true
+    queryParam: true
   elasticsearch:
     host: "elasticsearch-workers"
     port: 9200

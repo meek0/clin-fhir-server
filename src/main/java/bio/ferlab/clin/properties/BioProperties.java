@@ -21,6 +21,7 @@ public class BioProperties {
     private final boolean isDisableSslValidation;
     private final boolean isAuditsEnabled;
     private final boolean isTaggingEnabled;
+    private final boolean isTaggingQueryParam;
     private final boolean isAuthorizationEnabled;
     private final String authClientId;
     private final String authSystemId;
@@ -39,6 +40,7 @@ public class BioProperties {
             @Value("${bio.auth.disable-ssl-validation}") boolean isDisableSslValidation,
             @Value("${bio.audits.enabled}") boolean isAuditsEnabled,
             @Value("${bio.tagging.enabled}") boolean isTaggingEnabled,
+            @Value("${bio.tagging.queryParam}") boolean isTaggingQueryParam,
             @Value("${bio.auth.authorization.enabled}") boolean isAuthorizationEnabled,
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
@@ -56,6 +58,7 @@ public class BioProperties {
         this.isDisableSslValidation = isDisableSslValidation;
         this.isAuditsEnabled = isAuditsEnabled;
         this.isTaggingEnabled = isTaggingEnabled;
+        this.isTaggingQueryParam = isTaggingQueryParam;
         this.isAuthorizationEnabled = isAuthorizationEnabled;
         this.authClientId = authClientId;
         this.authClientSecret = authClientSecret;

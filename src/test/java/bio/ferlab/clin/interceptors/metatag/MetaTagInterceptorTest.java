@@ -1,32 +1,35 @@
 package bio.ferlab.clin.interceptors.metatag;
 
-import bio.ferlab.clin.auth.RPTPermissionExtractor;
-import bio.ferlab.clin.auth.data.Permission;
-import bio.ferlab.clin.auth.data.UserPermissions;
-import bio.ferlab.clin.interceptors.BioAuthInterceptor;
+import bio.ferlab.clin.properties.BioProperties;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseMetaType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.USER_ALL_TAGS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class MetaTagInterceptorTest {
 
+  final BioProperties bioProperties = Mockito.mock(BioProperties.class);
   final MetaTagResourceAccess metaTagResourceAccess = Mockito.mock(MetaTagResourceAccess.class);
   final MetaTagResourceVisitor metaTagResourceVisitor = Mockito.mock(MetaTagResourceVisitor.class);
-  final MetaTagInterceptor metaTagInterceptor = new MetaTagInterceptor(metaTagResourceAccess, metaTagResourceVisitor);
-
+  final MetaTagInterceptor metaTagInterceptor = new MetaTagInterceptor(bioProperties, metaTagResourceAccess, metaTagResourceVisitor);
+  
+  @BeforeEach
+  void beforeEach() {
+    when(bioProperties.isTaggingEnabled()).thenReturn(true);
+    when(bioProperties.isTaggingQueryParam()).thenReturn(true);
+  }
+  
   @Test
   void addTagParameter_GET_valid_resource() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
@@ -35,9 +38,26 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(String.class))).thenReturn(true);
     when(metaTagResourceAccess.getUserTags(any())).thenReturn(List.of("tag1", "tag2"));
     metaTagInterceptor.addTagParameter(requestDetails);
+    verify(bioProperties).isTaggingEnabled();
+    verify(bioProperties).isTaggingQueryParam();
     verify(metaTagResourceAccess).isResourceWithTags(eq("ValidResource"));
     verify(metaTagResourceAccess).getUserTags(eq(requestDetails));
-    verify(requestDetails).addParameter(eq("_tag"), eq(new String[]{"tag1", "tag2"}));
+    verify(requestDetails).addParameter(eq("_tag"), eq(new String[]{"tag1,tag2"}));
+  }
+
+  @Test
+  void addTagParameter_ignore_if_all_tags() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
+    when(requestDetails.getResourceName()).thenReturn("ValidResource");
+    when(metaTagResourceAccess.isResourceWithTags(any(String.class))).thenReturn(true);
+    when(metaTagResourceAccess.getUserTags(any())).thenReturn(List.of(USER_ALL_TAGS));
+    metaTagInterceptor.addTagParameter(requestDetails);
+    verify(bioProperties).isTaggingEnabled();
+    verify(bioProperties).isTaggingQueryParam();
+    verify(metaTagResourceAccess).isResourceWithTags(eq("ValidResource"));
+    verify(metaTagResourceAccess).getUserTags(eq(requestDetails));
+    verify(requestDetails, never()).addParameter(any(), any());
   }
 
   @Test
@@ -45,6 +65,8 @@ class MetaTagInterceptorTest {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.DELETE);
     metaTagInterceptor.addTagParameter(requestDetails);
+    verify(bioProperties).isTaggingEnabled();
+    verify(bioProperties).isTaggingQueryParam();
     verify(requestDetails, never()).addParameter(any(), any());
   }
 
@@ -57,6 +79,15 @@ class MetaTagInterceptorTest {
     metaTagInterceptor.addTagParameter(requestDetails);
     verify(metaTagResourceAccess).isResourceWithTags(eq("NotValidResource"));
     verify(requestDetails, never()).addParameter(any(), any());
+  }
+
+  @Test
+  void addTagParameter_tagging_disabled() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(bioProperties.isTaggingEnabled()).thenReturn(false);
+    metaTagInterceptor.addTagParameter(requestDetails);
+    verify(bioProperties).isTaggingEnabled();
+    verify(bioProperties, never()).isTaggingQueryParam();
   }
   
   @Test
@@ -95,6 +126,16 @@ class MetaTagInterceptorTest {
     verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
     verify(tag).setCode(eq("ep1"));
     verify(tag).setCode(eq("ldm1"));
+  }
+
+  @Test
+  void addTagCode_tagging_disabled() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    final IBaseResource resource = Mockito.mock(IBaseResource.class);
+    when(bioProperties.isTaggingEnabled()).thenReturn(false);
+    metaTagInterceptor.created(requestDetails, resource);
+    verify(bioProperties).isTaggingEnabled();
+    verify(metaTagResourceAccess, never()).isResourceWithTags(eq(resource));
   }
 
 }
