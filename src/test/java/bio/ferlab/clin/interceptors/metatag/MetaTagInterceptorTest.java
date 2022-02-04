@@ -1,11 +1,14 @@
 package bio.ferlab.clin.interceptors.metatag;
 
+import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseMetaType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,6 +16,7 @@ import org.mockito.Mockito;
 import java.util.List;
 
 import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.USER_ALL_TAGS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -102,6 +106,7 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
     when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
     metaTagInterceptor.created(requestDetails, resource);
     verify(metaTagResourceVisitor).extractEpCode(eq(resource));
     verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
@@ -121,6 +126,7 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
     when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
     metaTagInterceptor.updated(requestDetails, null, resource);
     verify(metaTagResourceVisitor).extractEpCode(eq(resource));
     verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
@@ -136,6 +142,33 @@ class MetaTagInterceptorTest {
     metaTagInterceptor.created(requestDetails, resource);
     verify(bioProperties).isTaggingEnabled();
     verify(metaTagResourceAccess, never()).isResourceWithTags(eq(resource));
+  }
+
+  @Test
+  void addTagCode_POST_not_same_organization() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    final IBaseResource resource = Mockito.mock(IBaseResource.class);
+    final IBaseMetaType meta = Mockito.mock(IBaseMetaType.class);
+    final IBaseCoding tag = Mockito.mock(IBaseCoding.class);
+    when(resource.getMeta()).thenReturn(meta);
+    when(meta.addTag()).thenReturn(tag);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
+    when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
+    when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(false);
+
+    Exception ex = Assertions.assertThrows(
+        ForbiddenOperationException.class,
+        () ->  metaTagInterceptor.created(requestDetails, resource)
+    );
+    assertEquals("Resource belongs to another organization", ex.getMessage());
+    
+    verify(metaTagResourceVisitor).extractEpCode(eq(resource));
+    verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
+    verify(metaTagResourceAccess).canModifyResource(eq(requestDetails), eq(resource));
+
+
   }
 
 }

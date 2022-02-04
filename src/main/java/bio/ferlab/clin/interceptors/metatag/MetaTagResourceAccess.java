@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,9 +34,16 @@ public class MetaTagResourceAccess {
   }
 
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
-    if (RequestTypeEnum.GET.equals(requestDetails.getRequestType())
-        && bioProperties.isTaggingEnabled()
-        && isResourceWithTags(resource)) {
+    return !RequestTypeEnum.GET.equals(requestDetails.getRequestType()) || canAccessResource(requestDetails, resource);
+  }
+
+  public boolean canModifyResource(RequestDetails requestDetails, IBaseResource resource) {
+    return !EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT).contains(requestDetails.getRequestType())
+       || canAccessResource(requestDetails, resource);
+  }
+
+  private boolean canAccessResource(RequestDetails requestDetails, IBaseResource resource) {
+    if (bioProperties.isTaggingEnabled() && isResourceWithTags(resource)) {
       final List<String> userTags = getUserTags(requestDetails);
       final List<String> resourceTags = resource.getMeta().getTag().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
       return userTags.contains(USER_ALL_TAGS) || resourceTags.stream().anyMatch(userTags::contains);

@@ -5,7 +5,7 @@ import bio.ferlab.clin.auth.data.Permission;
 import bio.ferlab.clin.auth.data.UserPermissions;
 import bio.ferlab.clin.auth.data.custom.Export;
 import bio.ferlab.clin.auth.data.custom.Metadata;
-import bio.ferlab.clin.interceptors.metatag.MetaTagAuthRuleTester;
+
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
@@ -20,23 +20,21 @@ import java.util.List;
 @Service
 public class BioAuthInterceptor extends AuthorizationInterceptor {
     private final RPTPermissionExtractor permissionExtractor;
-    private final MetaTagAuthRuleTester metaTagAuthRuleTester;
 
-    public BioAuthInterceptor(RPTPermissionExtractor permissionExtractor, MetaTagAuthRuleTester metaTagAuthRuleTester) {
+    public BioAuthInterceptor(RPTPermissionExtractor permissionExtractor) {
         this.permissionExtractor = permissionExtractor;
-        this.metaTagAuthRuleTester = metaTagAuthRuleTester;
     }
 
     private <T extends Resource> void
     allowReadPermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
-        builder.allow().read().resourcesOfType(resourceType).withAnyId().withTester(metaTagAuthRuleTester).andThen();
+        builder.allow().read().resourcesOfType(resourceType).withAnyId().andThen();
     }
 
     private <T extends Resource> void
     allowCreatePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
         // don't use the default allow() because internally it 
         // can only contain rules for create() or write() but not both
-        builder.allow("create").create().resourcesOfType(resourceType).withAnyId().withTester(metaTagAuthRuleTester).andThen();
+        builder.allow("create").create().resourcesOfType(resourceType).withAnyId().andThen();
         // this one will contain all our rules with 'create' scope only
     }
 
@@ -44,13 +42,13 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
     allowWritePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
         // don't use the default allow() because internally it
         // can only contain rules for create() or write() but not both
-        builder.allow("write").write().resourcesOfType(resourceType).withAnyId().withTester(metaTagAuthRuleTester).andThen();
+        builder.allow("write").write().resourcesOfType(resourceType).withAnyId().andThen();
         // this one will contain all our rules with 'update' scope only
     }
 
     private <T extends Resource> void
     allowDeletePermissionByType(IAuthRuleBuilder builder, Class<T> resourceType) {
-        builder.allow().delete().resourcesOfType(resourceType).withAnyId().withTester(metaTagAuthRuleTester).andThen();
+        builder.allow().delete().resourcesOfType(resourceType).withAnyId().andThen();
     }
 
     private void handlePermission(IAuthRuleBuilder builder, Permission<? extends Resource> permission) {

@@ -6,6 +6,7 @@ import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.stereotype.Component;
@@ -66,6 +67,10 @@ public class MetaTagInterceptor {
       Optional.ofNullable(resource.getMeta().getTag()).ifPresent(List::clear);
       this.addTagCode(resource, metaTagResourceVisitor.extractEpCode(resource));
       this.addTagCode(resource, metaTagResourceVisitor.extractLdmCode(resource));
+      // we could allow cross modify if needed with a custom config boolean, for now it's mandatory
+      if(!metaTagResourceAccess.canModifyResource(requestDetails, resource)) {
+        throw new ForbiddenOperationException("Resource belongs to another organization");
+      }
     }
   }
   
