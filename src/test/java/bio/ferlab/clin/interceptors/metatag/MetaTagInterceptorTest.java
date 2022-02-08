@@ -46,7 +46,7 @@ class MetaTagInterceptorTest {
     verify(bioProperties).isTaggingQueryParam();
     verify(metaTagResourceAccess).isResourceWithTags(eq("ValidResource"));
     verify(metaTagResourceAccess).getUserTags(eq(requestDetails));
-    verify(requestDetails).addParameter(eq("_tag"), eq(new String[]{"tag1,tag2"}));
+    verify(requestDetails).addParameter(eq("_security"), eq(new String[]{"tag1,tag2"}));
   }
 
   @Test
@@ -101,7 +101,7 @@ class MetaTagInterceptorTest {
     final IBaseMetaType meta = Mockito.mock(IBaseMetaType.class);
     final IBaseCoding tag = Mockito.mock(IBaseCoding.class);
     when(resource.getMeta()).thenReturn(meta);
-    when(meta.addTag()).thenReturn(tag);
+    when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
@@ -121,7 +121,7 @@ class MetaTagInterceptorTest {
     final IBaseMetaType meta = Mockito.mock(IBaseMetaType.class);
     final IBaseCoding tag = Mockito.mock(IBaseCoding.class);
     when(resource.getMeta()).thenReturn(meta);
-    when(meta.addTag()).thenReturn(tag);
+    when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
@@ -151,7 +151,7 @@ class MetaTagInterceptorTest {
     final IBaseMetaType meta = Mockito.mock(IBaseMetaType.class);
     final IBaseCoding tag = Mockito.mock(IBaseCoding.class);
     when(resource.getMeta()).thenReturn(meta);
-    when(meta.addTag()).thenReturn(tag);
+    when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");

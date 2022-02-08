@@ -45,7 +45,7 @@ public class MetaTagResourceAccess {
   private boolean canAccessResource(RequestDetails requestDetails, IBaseResource resource) {
     if (bioProperties.isTaggingEnabled() && isResourceWithTags(resource)) {
       final List<String> userTags = getUserTags(requestDetails);
-      final List<String> resourceTags = resource.getMeta().getTag().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
+      final List<String> resourceTags = resource.getMeta().getSecurity().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
       return userTags.contains(USER_ALL_TAGS) || resourceTags.stream().anyMatch(userTags::contains);
     }
     return true;

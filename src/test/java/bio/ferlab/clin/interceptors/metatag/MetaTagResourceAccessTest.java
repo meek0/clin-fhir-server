@@ -83,9 +83,9 @@ class MetaTagResourceAccessTest {
         .sign(Algorithm.HMAC256("secret"));
     when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
     final ServiceRequest resource = new ServiceRequest();
-    resource.getMeta().addTag().setCode("tag3"); // not allowed to see this resource
+    resource.getMeta().addSecurity().setCode("tag3"); // not allowed to see this resource
     assertFalse(metaTagResourceAccess.canSeeResource(requestDetails, resource));
-    resource.getMeta().addTag().setCode("tag1"); // allowed to see this resource
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
     assertTrue(metaTagResourceAccess.canSeeResource(requestDetails, resource));
   }
 
@@ -133,9 +133,9 @@ class MetaTagResourceAccessTest {
         .sign(Algorithm.HMAC256("secret"));
     when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
     final ServiceRequest resource = new ServiceRequest();
-    resource.getMeta().addTag().setCode("tag3"); // not allowed to see this resource
+    resource.getMeta().addSecurity().setCode("tag3"); // not allowed to see this resource
     assertFalse(metaTagResourceAccess.canModifyResource(requestDetails, resource));
-    resource.getMeta().addTag().setCode("tag1"); // allowed to see this resource
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
     assertTrue(metaTagResourceAccess.canModifyResource(requestDetails, resource));
   }
 

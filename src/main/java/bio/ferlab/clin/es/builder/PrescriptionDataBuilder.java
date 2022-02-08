@@ -204,7 +204,7 @@ public class PrescriptionDataBuilder {
     }
 
     private List<String> extractMetaTags(IBaseResource resource) {
-        return resource.getMeta().getTag().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
+        return resource.getMeta().getSecurity().stream().map(IBaseCoding::getCode).collect(Collectors.toList());
     }
 
     private static class Name {

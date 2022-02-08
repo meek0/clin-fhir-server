@@ -51,7 +51,7 @@ public class MetaTagInterceptor {
       if(!userTags.isEmpty() && !userTags.contains(USER_ALL_TAGS)) {
         // we use "," separated query param _tag because it's a OR relation, at least one should match.
         final String orTags = String.join(",", userTags);
-        requestDetails.addParameter("_tag", new String[]{orTags});
+        requestDetails.addParameter("_security", new String[]{orTags});
       }
     }
   }
@@ -76,7 +76,7 @@ public class MetaTagInterceptor {
   
   private void addTagCode(IBaseResource resource, String code) {
     if (StringUtils.isNotBlank(code)) {
-      resource.getMeta().addTag().setCode(code);
+      resource.getMeta().addSecurity().setCode(code);
     }
   }
   
