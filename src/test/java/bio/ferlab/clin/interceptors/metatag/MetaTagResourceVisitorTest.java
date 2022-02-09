@@ -1,5 +1,7 @@
 package bio.ferlab.clin.interceptors.metatag;
 
+import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -9,10 +11,32 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MetaTagResourceVisitorTest {
   
-  private final MetaTagResourceVisitor metaTagResourceVisitor = new MetaTagResourceVisitor();
+  private final IFhirResourceDao patientDAO = Mockito.mock(IFhirResourceDao.class);
+  private final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(
+      patientDAO, 
+      null, 
+      null, 
+      null, 
+      null, 
+      null, 
+      null, 
+      null, 
+      null);
+  private final MetaTagResourceVisitor metaTagResourceVisitor = new MetaTagResourceVisitor(configuration);
+
+  @Test
+  void extractLdmCode_null() {
+    assertNull(metaTagResourceVisitor.extractLdmCode(new Patient()));
+    assertNull(metaTagResourceVisitor.extractLdmCode(new Observation()));
+    assertNull(metaTagResourceVisitor.extractLdmCode(new ClinicalImpression()));
+  }
   
   @Test
   void extractEpCode_not_implemented() {
@@ -74,6 +98,72 @@ class MetaTagResourceVisitorTest {
         () -> metaTagResourceVisitor.extractLdmCode(resource)
     );
     assertEquals("Missing extract LDM implementation for meta tag of AuditEvent", ex.getMessage());
+  }
+
+  @Test
+  void extractEpCode_Observation() {
+    Observation resource = new Observation();
+    resource.setSubject(new Reference().setReference("patient1"));
+    Patient patient = new Patient();
+    patient.setManagingOrganization(new Reference().setReference("Organization/foo"));
+    when(patientDAO.read(any())).thenReturn(patient);
+    String code = metaTagResourceVisitor.extractEpCode(resource);
+    verify(patientDAO).read(eq(new IdType("patient1")));
+    assertEquals("foo", code);
+  }
+
+  @Test
+  void extractEpCode_Observation_missing_subject() {
+    Observation resource = new Observation();
+    Exception ex = Assertions.assertThrows(
+        InvalidRequestException.class,
+        () -> metaTagResourceVisitor.extractEpCode(resource)
+    );
+    assertEquals("Resource 'Observation' field 'subject' is required for meta tag", ex.getMessage());
+  }
+
+  @Test
+  void extractEpCode_Observation_patient_not_found() {
+    Observation resource = new Observation();
+    resource.setSubject(new Reference().setReference("patient1"));
+    Exception ex = Assertions.assertThrows(
+        InvalidRequestException.class,
+        () -> metaTagResourceVisitor.extractEpCode(resource)
+    );
+    assertEquals("Resource not found 'Patient' with reference 'patient1'", ex.getMessage());
+  }
+
+  @Test
+  void extractEpCode_ClinicalImpression() {
+    ClinicalImpression resource = new ClinicalImpression();
+    resource.setSubject(new Reference().setReference("patient1"));
+    Patient patient = new Patient();
+    patient.setManagingOrganization(new Reference().setReference("Organization/foo"));
+    when(patientDAO.read(any())).thenReturn(patient);
+    String code = metaTagResourceVisitor.extractEpCode(resource);
+    verify(patientDAO).read(eq(new IdType("patient1")));
+    assertEquals("foo", code);
+  }
+
+  @Test
+  void extractEpCode_ClinicalImpression_missing_subject() {
+    ClinicalImpression resource = new ClinicalImpression();
+    Exception ex = Assertions.assertThrows(
+        InvalidRequestException.class,
+        () -> metaTagResourceVisitor.extractEpCode(resource)
+    );
+    assertEquals("Resource 'ClinicalImpression' field 'subject' is required for meta tag", ex.getMessage());
+  }
+
+  @Test
+  void extractEpCode_ClinicalImpression_patient_not_found() {
+    ClinicalImpression resource = new ClinicalImpression();
+    resource.setSubject(new Reference().setReference("patient1"));
+    Exception ex = Assertions.assertThrows(
+        InvalidRequestException.class,
+        () -> metaTagResourceVisitor.extractEpCode(resource)
+    );
+    assertEquals("Resource not found 'Patient' with reference 'patient1'", ex.getMessage());
   }
 
   @Test
