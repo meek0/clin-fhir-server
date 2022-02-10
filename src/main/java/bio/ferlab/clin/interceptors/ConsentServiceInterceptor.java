@@ -2,6 +2,7 @@ package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.audit.AuditEventsBuilder;
 import bio.ferlab.clin.audit.AuditTrail;
+import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
 import bio.ferlab.clin.user.RequesterData;
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
@@ -13,10 +14,8 @@ import ca.uhn.fhir.rest.server.interceptor.consent.IConsentContextServices;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentService;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +23,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 @Service
 public class ConsentServiceInterceptor implements IConsentService {
     private final static Logger log = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
     private final AuditTrail auditTrail;
+    private final MetaTagResourceAccess metaTagResourceAccess;
 
-    public ConsentServiceInterceptor(AuditTrail auditTrail) {
+    public ConsentServiceInterceptor(AuditTrail auditTrail, MetaTagResourceAccess metaTagResourceAccess) {
         this.auditTrail = auditTrail;
+        this.metaTagResourceAccess = metaTagResourceAccess;
     }
 
     @Override
@@ -44,6 +43,9 @@ public class ConsentServiceInterceptor implements IConsentService {
 
     @Override
     public ConsentOutcome canSeeResource(RequestDetails requestDetails, IBaseResource theResource, IConsentContextServices contextServices) {
+        if (!metaTagResourceAccess.canSeeResource(requestDetails, theResource)) {
+           return ConsentOutcome.REJECT;
+        }
         return ConsentOutcome.PROCEED;
     }
 

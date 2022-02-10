@@ -9,6 +9,9 @@
         "enabled": true
       },
       "properties": {
+        "securityTags": {
+          "type": "keyword"
+        },
         "birthDate": {
           "type": "date"
         },
@@ -113,6 +116,9 @@
         "requests": {
           "properties": {
             "cid": {
+              "type": "keyword"
+            },
+            "securityTags": {
               "type": "keyword"
             },
             "cidText": {

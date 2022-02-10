@@ -33,6 +33,7 @@ public class PatientData implements WithFullText {
     private String timestamp = Instant.now().toString();
     private boolean fetus = false;
     private List<PrescriptionData> requests = new ArrayList<>();
+    private List<String> securityTags = new ArrayList<>();
 
     /*
      * The following fields will be copied with the same value
