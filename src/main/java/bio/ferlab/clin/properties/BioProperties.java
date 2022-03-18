@@ -18,6 +18,7 @@ public class BioProperties {
     private final boolean isAuthEnabled;
     private final String authServerUrl;
     private final String authRealm;
+    private final Integer authRetry;
     private final boolean isDisableSslValidation;
     private final boolean isAuditsEnabled;
     private final boolean isTaggingEnabled;
@@ -37,6 +38,7 @@ public class BioProperties {
             @Value("${bio.auth.enabled}") boolean isAuthEnabled,
             @Value("${bio.auth.server-url}") String authServerUrl,
             @Value("${bio.auth.realm}") String authRealm,
+            @Value("${bio.auth.retry}") Integer authRetry,
             @Value("${bio.auth.disable-ssl-validation}") boolean isDisableSslValidation,
             @Value("${bio.audits.enabled}") boolean isAuditsEnabled,
             @Value("${bio.tagging.enabled}") boolean isTaggingEnabled,
@@ -55,6 +57,7 @@ public class BioProperties {
         this.isAuthEnabled = isAuthEnabled;
         this.authServerUrl = authServerUrl;
         this.authRealm = authRealm;
+        this.authRetry = authRetry;
         this.isDisableSslValidation = isDisableSslValidation;
         this.isAuditsEnabled = isAuditsEnabled;
         this.isTaggingEnabled = isTaggingEnabled;
