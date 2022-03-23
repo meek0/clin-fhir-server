@@ -59,21 +59,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().equals("token is not active"));
-    }
-    @Test
-    void expired() {
-      final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-      when(requestDetails.getHeader(any())).thenReturn("Bearer a.b.c");
-      when(introspectionResponse.getPermissions()).thenReturn(new ArrayList<>());
-      when(introspectionResponse.isActive()).thenReturn(true);
-      when(introspectionResponse.isExpired()).thenReturn(true);
-
-      Exception ex = Assertions.assertThrows(
-          RptIntrospectionException.class,
-          () -> extractor.extract(requestDetails)
-      );
-      assertTrue(ex.getMessage().equals("token is expired"));
+      assertTrue(ex.getMessage().equals("token is not active or expired"));
     }
   }
 
