@@ -30,11 +30,7 @@ public class RPTPermissionExtractor {
         }
     
         if (!response.isActive()) {
-            throw new RptIntrospectionException("token is not active");
-        }
-    
-        if (response.isExpired()) {
-            throw new RptIntrospectionException("token is expired");
+            throw new RptIntrospectionException("token is not active or expired");
         }
     
         final var builder = new UserPermissionsBuilder();
