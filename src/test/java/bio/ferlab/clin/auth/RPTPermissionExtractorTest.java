@@ -59,7 +59,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().equals("token is not active or expired"));
+      assertTrue(ex.getMessage().equals("token is expired"));
     }
   }
 
