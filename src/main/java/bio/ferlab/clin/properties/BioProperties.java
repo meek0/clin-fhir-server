@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Optional;
+
 @Configuration
 @ConfigurationProperties(prefix = "bio")
 @Data
@@ -19,6 +21,7 @@ public class BioProperties {
     private final String authServerUrl;
     private final String authRealm;
     private final Integer authRetry;
+    private final Long authLeeway;
     private final boolean isDisableSslValidation;
     private final boolean isAuditsEnabled;
     private final boolean isTaggingEnabled;
@@ -39,6 +42,7 @@ public class BioProperties {
             @Value("${bio.auth.server-url}") String authServerUrl,
             @Value("${bio.auth.realm}") String authRealm,
             @Value("${bio.auth.retry}") Integer authRetry,
+            @Value("${bio.auth.leeway}") Long authLeeway,
             @Value("${bio.auth.disable-ssl-validation}") boolean isDisableSslValidation,
             @Value("${bio.audits.enabled}") boolean isAuditsEnabled,
             @Value("${bio.tagging.enabled}") boolean isTaggingEnabled,
@@ -58,6 +62,7 @@ public class BioProperties {
         this.authServerUrl = authServerUrl;
         this.authRealm = authRealm;
         this.authRetry = authRetry;
+        this.authLeeway = Optional.ofNullable(authLeeway).orElse(0L);
         this.isDisableSslValidation = isDisableSslValidation;
         this.isAuditsEnabled = isAuditsEnabled;
         this.isTaggingEnabled = isTaggingEnabled;
