@@ -166,6 +166,7 @@ bio:
     server-url: https://auth.qa.cqdg.ferlab.bio/auth
     realm: clin
     retry: 5
+    leeway: 30
     disable-ssl-validation: true
     enabled: true
     authorization:

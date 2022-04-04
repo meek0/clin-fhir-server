@@ -37,9 +37,11 @@ public class TokenDecoder {
     private static final Logger log = LoggerFactory.getLogger(TokenDecoder.class);
     
     private final JwkProviderService provider;
+    private final BioProperties bioProperties;
 
-    public TokenDecoder(JwkProviderService jwkProviderService) {   
+    public TokenDecoder(JwkProviderService jwkProviderService, BioProperties bioProperties) {   
         this.provider = jwkProviderService;
+        this.bioProperties = bioProperties;
     }
 
     public RequesterData decode(String authorization, Locale locale) {
@@ -52,7 +54,7 @@ public class TokenDecoder {
             final Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
             final Verification verifier = JWT.require(algorithm);
 
-            verifier.build().verify(decodedJWT);
+            verifier.acceptLeeway(bioProperties.getAuthLeeway()).build().verify(decodedJWT);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
         } catch (JwkException e) {
