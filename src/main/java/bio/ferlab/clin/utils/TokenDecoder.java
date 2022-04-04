@@ -2,6 +2,7 @@ package bio.ferlab.clin.utils;
 
 import bio.ferlab.clin.auth.JwkProviderService;
 import bio.ferlab.clin.context.ServiceContext;
+import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.user.RequesterData;
@@ -33,6 +34,8 @@ import java.util.Locale;
 
 @Component
 public class TokenDecoder {
+    private static final Logger log = LoggerFactory.getLogger(TokenDecoder.class);
+    
     private final JwkProviderService provider;
 
     public TokenDecoder(JwkProviderService jwkProviderService) {   
@@ -53,10 +56,13 @@ public class TokenDecoder {
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
         } catch (JwkException e) {
+            log.error("Failed to decode token", e);
             throw new RptIntrospectionException("token from another provider");
         } catch (JWTDecodeException | JsonProcessingException e) {
+            log.error("Failed to decode token", e);
             throw new RptIntrospectionException("malformed token");
         } catch (JWTVerificationException e) {
+            log.error("Failed to decode token", e);
             throw new RptIntrospectionException("token is expired");
         }
     }
