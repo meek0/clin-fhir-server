@@ -1,9 +1,7 @@
 package bio.ferlab.clin.auth;
 
-import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
-import org.apache.commons.lang3.StringUtils;
+import com.github.dnault.xmlpatch.internal.Log;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.authorization.client.representation.TokenIntrospectionResponse;
@@ -11,20 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class KeycloakClient {
     private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
     public static final String AUTH_CLIENT_SECRET_KEY = "secret";
-    private final AuthzClient authzClient;
     private final BioProperties bioProperties;
+    private AuthzClient authzClient;
 
     public KeycloakClient(BioProperties bioProperties) {
-        final Configuration configuration = new Configuration();
-        configuration.setRealm(bioProperties.getAuthRealm());
-        configuration.setAuthServerUrl(bioProperties.getAuthServerUrl());
-        configuration.setResource(bioProperties.getAuthClientId());
-        configuration.getCredentials().put(AUTH_CLIENT_SECRET_KEY, bioProperties.getAuthClientSecret());
-        this.authzClient = AuthzClient.create(configuration);
         this.bioProperties = bioProperties;
     }
 
@@ -34,7 +28,7 @@ public class KeycloakClient {
     
     private TokenIntrospectionResponse retryableIntrospectRpt(String rpt, int retry) {
         try {
-            return this.authzClient.protection().introspectRequestingPartyToken(rpt);
+            return this.getAuthzClient().protection().introspectRequestingPartyToken(rpt);
         } catch (Exception e) {
             log.error("Failed to introspect token: {}", e.getMessage());
             if (retry > 0) {
@@ -45,4 +39,25 @@ public class KeycloakClient {
             }
         }
     }
+    
+    private AuthzClient initAuthzClient() {
+        try {
+            Log.info("Init auth. client");
+            final Configuration configuration = new Configuration();
+            configuration.setRealm(bioProperties.getAuthRealm());
+            configuration.setAuthServerUrl(bioProperties.getAuthServerUrl());
+            configuration.setResource(bioProperties.getAuthClientId());
+            configuration.getCredentials().put(AUTH_CLIENT_SECRET_KEY, bioProperties.getAuthClientSecret());
+            this.authzClient = AuthzClient.create(configuration);
+            return this.authzClient;
+        } catch (Exception e) {
+            log.error("Failed to init auth. client", e);
+            throw e;
+        }
+    }
+    
+    private AuthzClient getAuthzClient() {
+        return Optional.ofNullable(this.authzClient).orElseGet(this::initAuthzClient);
+    }
+
 }
