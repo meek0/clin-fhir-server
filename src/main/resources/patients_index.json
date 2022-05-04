@@ -114,6 +114,7 @@
           "type": "text"
         },
         "requests": {
+          "type": "nested",
           "properties": {
             "cid": {
               "type": "keyword"
