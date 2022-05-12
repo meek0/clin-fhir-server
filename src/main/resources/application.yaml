@@ -152,6 +152,8 @@ hapi:
 #  username: SomeUsername
 
 bio:
+  nanuq:
+    enabled: true
   tagging: 
     enabled: true
     queryParam: true

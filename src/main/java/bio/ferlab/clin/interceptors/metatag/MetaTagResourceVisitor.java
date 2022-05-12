@@ -1,8 +1,10 @@
 package bio.ferlab.clin.interceptors.metatag;
 
-import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
+import bio.ferlab.clin.utils.ResourceFinder;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
@@ -14,29 +16,29 @@ import java.util.Optional;
 @Component
 public class MetaTagResourceVisitor {
 
-  private final ResourceDaoConfiguration configuration;
+  private final ResourceFinder resourceFinder;
 
-  public MetaTagResourceVisitor(ResourceDaoConfiguration configuration) {
-    this.configuration = configuration;
+  public MetaTagResourceVisitor(ResourceFinder resourceFinder) {
+    this.resourceFinder = resourceFinder;
   }
 
-  public String extractEpCode(IBaseResource resource) {
+  public String extractEpCode(RequestDetails requestDetails, IBaseResource resource) {
     if(resource instanceof ServiceRequest) {
-      return extractEpCode((ServiceRequest) resource);
+      return extractEpCode(requestDetails, (ServiceRequest) resource);
     } else if(resource instanceof Patient) {
-      return extractEpCode((Patient) resource);
+      return extractEpCode(requestDetails, (Patient) resource);
     } else if(resource instanceof Observation) {
-      return extractEpCode((Observation) resource);
+      return extractEpCode(requestDetails, (Observation) resource);
     } else if(resource instanceof ClinicalImpression) {
-      return extractEpCode((ClinicalImpression) resource);
+      return extractEpCode(requestDetails, (ClinicalImpression) resource);
     }
     // add implementation of resource with EP or return null
     throw new NotImplementedOperationException(String.format("Missing extract EP implementation for meta tag of %s", resource.getClass().getSimpleName()));
   }
 
-  public String extractLdmCode(IBaseResource resource) {
+  public String extractLdmCode(RequestDetails requestDetails, IBaseResource resource) {
     if(resource instanceof ServiceRequest) {
-      return extractLdmCode((ServiceRequest) resource);
+      return extractLdmCode(requestDetails, (ServiceRequest) resource);
     } else if(resource instanceof Patient) {
       return null;
     } else if(resource instanceof Observation) {
@@ -48,33 +50,33 @@ public class MetaTagResourceVisitor {
     throw new NotImplementedOperationException(String.format("Missing extract LDM implementation for meta tag of %s", resource.getClass().getSimpleName()));
   }
 
-  private String extractEpCode(ServiceRequest resource) {
-    return Optional.ofNullable(resource.getIdentifier()).orElse(Collections.emptyList()).stream()
-        .filter(i -> i.getType().getCoding().stream().anyMatch(c -> "MR".equals(c.getCode())))
-        .findFirst().map(p -> getReferenceId(p.getAssigner()))
-        .orElseThrow(() -> formatExtractException(resource, "identifier of type MR"));
+  private String extractEpCode(RequestDetails requestDetails, ServiceRequest resource) {
+    final String patientRef = Optional.ofNullable(resource.getSubject()).map(Reference::getReference)
+        .orElseThrow(() -> formatExtractException(resource, "subject"));
+    return extractEpCode(requestDetails, resourceFinder.findPatientFromRequestOrDAO(requestDetails, patientRef)
+        .orElseThrow(() -> formatResourceNotFoundException("Patient", patientRef)));
   }
 
-  private String extractEpCode(Patient resource) {
+  private String extractEpCode(RequestDetails requestDetails, Patient resource) {
     return Optional.ofNullable(resource.getManagingOrganization()).map(this::getReferenceId)
         .orElseThrow(() -> formatExtractException(resource, "managing organization"));
   }
 
-  private String extractEpCode(Observation resource) {
+  private String extractEpCode(RequestDetails requestDetails, Observation resource) {
     final String patientRef = Optional.ofNullable(resource.getSubject()).map(Reference::getReference)
         .orElseThrow(() -> formatExtractException(resource, "subject"));
-    final Patient patient = this.configuration.patientDAO.read(new IdType(patientRef));
-    return Optional.ofNullable(patient).map(this::extractEpCode).orElseThrow(() -> formatResourceNotFoundException("Patient", patientRef));
+    return extractEpCode(requestDetails, resourceFinder.findPatientFromRequestOrDAO(requestDetails, patientRef)
+        .orElseThrow(() -> formatResourceNotFoundException("Patient", patientRef)));
   }
 
-  private String extractEpCode(ClinicalImpression resource) {
+  private String extractEpCode(RequestDetails requestDetails, ClinicalImpression resource) {
     final String patientRef = Optional.ofNullable(resource.getSubject()).map(Reference::getReference)
         .orElseThrow(() -> formatExtractException(resource, "subject"));
-    final Patient patient = this.configuration.patientDAO.read(new IdType(patientRef));
-    return Optional.ofNullable(patient).map(this::extractEpCode).orElseThrow(() -> formatResourceNotFoundException("Patient", patientRef));
+    return extractEpCode(requestDetails, resourceFinder.findPatientFromRequestOrDAO(requestDetails, patientRef)
+        .orElseThrow(() -> formatResourceNotFoundException("Patient", patientRef)));
   }
 
-  private String extractLdmCode(ServiceRequest resource) {
+  private String extractLdmCode(RequestDetails requestDetails, ServiceRequest resource) {
     return Optional.ofNullable(resource.getPerformer()).orElse(Collections.emptyList()).stream()
         .filter(p -> StringUtils.isNotBlank(p.getReference()))
         .map(this::getReferenceId)
@@ -90,7 +92,7 @@ public class MetaTagResourceVisitor {
     return new InvalidRequestException(String.format("Resource '%s' field '%s' is required for meta tag", resource.getClass().getSimpleName(), missingField));
   }
 
-  private InvalidRequestException formatResourceNotFoundException(String resourceName, String resourceReference) {
-    return new InvalidRequestException(String.format("Resource not found '%s' with reference '%s'", resourceName, resourceReference));
+  private ResourceNotFoundException formatResourceNotFoundException(String resourceName, String resourceReference) {
+    return new ResourceNotFoundException(String.format("Resource not found '%s' with reference '%s'", resourceName, resourceReference));
   }
 }

@@ -104,12 +104,12 @@ class MetaTagInterceptorTest {
     when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
-    when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
-    when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
+    when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
     when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
     metaTagInterceptor.created(requestDetails, resource);
-    verify(metaTagResourceVisitor).extractEpCode(eq(resource));
-    verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
+    verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
+    verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
     verify(tag).setCode(eq("ep1"));
     verify(tag).setCode(eq("ldm1"));
   }
@@ -124,12 +124,12 @@ class MetaTagInterceptorTest {
     when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
-    when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
-    when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
+    when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
     when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
     metaTagInterceptor.updated(requestDetails, null, resource);
-    verify(metaTagResourceVisitor).extractEpCode(eq(resource));
-    verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
+    verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
+    verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
     verify(tag).setCode(eq("ep1"));
     verify(tag).setCode(eq("ldm1"));
   }
@@ -154,8 +154,8 @@ class MetaTagInterceptorTest {
     when(meta.addSecurity()).thenReturn(tag);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
-    when(metaTagResourceVisitor.extractEpCode(any())).thenReturn("ep1");
-    when(metaTagResourceVisitor.extractLdmCode(any())).thenReturn("ldm1");
+    when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
+    when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
     when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(false);
 
     Exception ex = Assertions.assertThrows(
@@ -164,8 +164,8 @@ class MetaTagInterceptorTest {
     );
     assertEquals("Resource belongs to another organization", ex.getMessage());
     
-    verify(metaTagResourceVisitor).extractEpCode(eq(resource));
-    verify(metaTagResourceVisitor).extractLdmCode(eq(resource));
+    verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
+    verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
     verify(metaTagResourceAccess).canModifyResource(eq(requestDetails), eq(resource));
 
 
