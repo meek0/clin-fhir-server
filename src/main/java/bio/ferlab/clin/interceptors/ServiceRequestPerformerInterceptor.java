@@ -12,6 +12,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OrganizationAffiliation;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
@@ -24,6 +25,9 @@ import java.util.Optional;
 @Service
 @Interceptor
 public class ServiceRequestPerformerInterceptor {
+  
+  public static final String SERVICE_REQUEST_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code";
+  public static final String ANALYSIS_REQUEST_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/analysis-request-code";
 
   private final ResourceDaoConfiguration configuration;
 
@@ -47,11 +51,15 @@ public class ServiceRequestPerformerInterceptor {
   }
   
   private String extractCode(ServiceRequest serviceRequest) {
-    return Optional.ofNullable(serviceRequest)
-        .filter(sr -> sr.hasCode() && sr.getCode().hasCoding())
-        .map(sr -> sr.getCode().getCoding().get(0).getCode())
-        .filter(StringUtils::isNotBlank)
-        .orElseThrow(() -> new InvalidRequestException("Missing code/coding in service request"));
+    String code = null;
+    if (serviceRequest != null && serviceRequest.hasCode() && serviceRequest.getCode().hasCoding()) {
+      for (Coding coding: serviceRequest.getCode().getCoding()) {
+        if (List.of(ANALYSIS_REQUEST_CODE, SERVICE_REQUEST_CODE).contains(coding.getSystem()) && StringUtils.isNotBlank(coding.getCode())) {
+           code = coding.getCode();
+        }
+      }
+    }
+    return Optional.ofNullable(code).orElseThrow(() -> new InvalidRequestException("Missing code/coding in service request"));
   }
   
   private OrganizationAffiliation findOrganizationAffiliationByCode(String code) {

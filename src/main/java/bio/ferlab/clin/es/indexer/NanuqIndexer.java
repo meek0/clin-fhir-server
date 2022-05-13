@@ -49,7 +49,7 @@ public class NanuqIndexer extends Indexer {
     List<PatientData> patients = this.indexPatients(requestDetails, patientIds);
     // re-index linked distinct prescriptions
     final Set<String> linkedPrescriptions = patients.stream().flatMap(p -> p.getRequests().stream().map(PrescriptionData::getCid)).collect(Collectors.toSet());
-    indexPrescriptions(requestDetails, linkedPrescriptions);
+    this.indexPrescriptions(requestDetails, linkedPrescriptions);
     
     final Set<String> prescriptionIds = serviceRequestIdExtractor.extract(resource);
     List<PrescriptionData> prescriptions = this.indexPrescriptions(requestDetails, prescriptionIds);
