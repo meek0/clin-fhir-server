@@ -1,5 +1,6 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.builder.CommonDataBuilder;
 import bio.ferlab.clin.es.builder.PatientDataBuilder;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
@@ -104,7 +105,7 @@ public class PatientDataBuilderTest {
         this.bundle.addEntry().setResource(serviceRequest);
 
         this.jsonGenerator = new JsonGenerator(FhirContext.forR4());
-        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration);
+        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration, new CommonDataBuilder());
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 

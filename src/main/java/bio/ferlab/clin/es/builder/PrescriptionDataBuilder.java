@@ -29,9 +29,11 @@ public class PrescriptionDataBuilder {
     public static final String MRN_CODE = "MR";
 
     private final ResourceDaoConfiguration configuration;
+    private final CommonDataBuilder commonDataBuilder;
 
-    public PrescriptionDataBuilder(ResourceDaoConfiguration configuration) {
+    public PrescriptionDataBuilder(ResourceDaoConfiguration configuration, CommonDataBuilder commonDataBuilder) {
         this.configuration = configuration;
+        this.commonDataBuilder = commonDataBuilder;
     }
 
     public List<PrescriptionData> fromIds(Set<String> ids, RequestDetails requestDetails) {

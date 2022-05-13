@@ -154,6 +154,9 @@ hapi:
 bio:
   nanuq:
     enabled: true
+    patients-index: "patients"
+    analyses-index: "analyses"
+    sequencings-index: "prescriptions"
   tagging: 
     enabled: true
     queryParam: true

@@ -1,0 +1,48 @@
+package bio.ferlab.clin.es.builder.nanuq;
+
+import bio.ferlab.clin.es.builder.CommonDataBuilder;
+import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
+import bio.ferlab.clin.es.data.PrescriptionData;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+@Component("NanuqPrescriptionDataBuilder")
+public class PrescriptionDataBuilder {
+
+  private static final Logger log = LoggerFactory.getLogger(PrescriptionDataBuilder.class);
+
+  private final ResourceDaoConfiguration configuration;
+  private final CommonDataBuilder commonDataBuilder;
+
+  public PrescriptionDataBuilder(ResourceDaoConfiguration configuration,
+                                 CommonDataBuilder commonDataBuilder) {
+    this.configuration = configuration;
+    this.commonDataBuilder =commonDataBuilder;
+  }
+
+  public List<PrescriptionData> fromIds(Set<String> ids, RequestDetails requestDetails, PrescriptionDataType type) {
+    final List<PrescriptionData> prescriptionDataList = new ArrayList<>();
+    for (final String serviceRequestId : ids) {
+      final PrescriptionData prescriptionData = new PrescriptionData();
+      final ServiceRequest serviceRequest = this.configuration.serviceRequestDAO.read(new IdType(serviceRequestId), requestDetails);
+      if (isOfType(serviceRequest, type)) {
+        
+        prescriptionDataList.add(prescriptionData);
+      }
+    }
+    return prescriptionDataList;
+  }
+  
+  private boolean isOfType(ServiceRequest serviceRequest, PrescriptionDataType type) {
+    return serviceRequest.getMeta().getProfile().stream().anyMatch(s -> type.value.equals(s.getValue()));
+  }
+  
+}

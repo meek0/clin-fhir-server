@@ -24,9 +24,11 @@ public class PatientDataBuilder {
     public static final String MRN_CODE = "MR";
 
     private final ResourceDaoConfiguration configuration;
+    private final CommonDataBuilder commonDataBuilder;
 
-    public PatientDataBuilder(ResourceDaoConfiguration configuration) {
+    public PatientDataBuilder(ResourceDaoConfiguration configuration, CommonDataBuilder commonDataBuilder) {
         this.configuration = configuration;
+        this.commonDataBuilder = commonDataBuilder;
     }
 
     public List<PatientData> fromIds(Set<String> ids, RequestDetails requestDetails) {
