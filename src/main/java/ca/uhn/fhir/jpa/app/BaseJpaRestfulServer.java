@@ -106,9 +106,6 @@ public class BaseJpaRestfulServer extends RestfulServer {
     IndexerInterceptor indexerInterceptor;
 
     @Autowired
-    NanuqIndexerInterceptor nanuqIndexerInterceptor;
-
-    @Autowired
     BioAuthInterceptor bioAuthInterceptor;
 
     @Autowired
@@ -419,11 +416,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         }
 
         if (bioProperties.isBioEsEnabled()) {
-            if (bioProperties.isNanuqEnabled()) {
-                registerInterceptor(nanuqIndexerInterceptor);
-            } else {
-                registerInterceptor(indexerInterceptor);
-            }
+            registerInterceptor(indexerInterceptor);
         }
 
         if (bioProperties.isAuthEnabled()) {

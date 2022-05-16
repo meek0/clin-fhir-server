@@ -105,7 +105,7 @@ public class PatientDataBuilderTest {
         this.bundle.addEntry().setResource(serviceRequest);
 
         this.jsonGenerator = new JsonGenerator(FhirContext.forR4());
-        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration, new CommonDataBuilder());
+        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration, new CommonDataBuilder(daoConfiguration));
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 

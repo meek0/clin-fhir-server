@@ -1,9 +1,8 @@
 package bio.ferlab.clin.interceptors;
 
+import bio.ferlab.clin.es.indexer.LegacyNanuqIndexer;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
-import bio.ferlab.clin.es.indexer.PatientIndexer;
-import bio.ferlab.clin.es.indexer.ServiceRequestIndexer;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
@@ -23,15 +22,13 @@ import org.springframework.stereotype.Service;
 public class IndexerInterceptor {
     private final ElasticsearchRestClient client;
     private final BioProperties bioProperties;
-    private final PatientIndexer patientIndexer;
-    private final ServiceRequestIndexer serviceRequestIndexer;
+    private final LegacyNanuqIndexer legacyNanuqIndexer;
 
     public IndexerInterceptor(ElasticsearchRestClient client,
-                              BioProperties bioProperties, PatientIndexer patientIndexer, ServiceRequestIndexer serviceRequestIndexer) {
+                              BioProperties bioProperties, LegacyNanuqIndexer legacyNanuqIndexer) {
         this.client = client;
         this.bioProperties = bioProperties;
-        this.patientIndexer = patientIndexer;
-        this.serviceRequestIndexer = serviceRequestIndexer;
+        this.legacyNanuqIndexer = legacyNanuqIndexer;
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_DELETED)
@@ -45,8 +42,7 @@ public class IndexerInterceptor {
 
     @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
     public boolean response(RequestDetails requestDetails) {
-        this.patientIndexer.index(requestDetails);
-        this.serviceRequestIndexer.index(requestDetails);
+        this.legacyNanuqIndexer.index(requestDetails);
         return true;
     }
 }
