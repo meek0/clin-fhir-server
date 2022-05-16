@@ -9,14 +9,51 @@
         "enabled": true
       },
       "properties": {
-        "securityTags": {
+        "request_id": {
           "type": "keyword"
         },
-        "cid": {
+        "patient_id": {
+          "type": "keyword"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "priority": {
+          "type": "keyword"
+        },
+        "prenatal": {
+          "type": "boolean"
+        },
+        "panel_code": {
+          "type": "keyword"
+        },
+        "requester": {
+          "type": "keyword"
+        },
+        "ldm": {
+          "type": "keyword"
+        },
+        "ep": {
+          "type": "keyword"
+        },
+        "created_on": {
           "type": "keyword"
         },
         "timestamp": {
           "type": "date"
+        },
+        "security_tags": {
+          "type": "keyword"
+        },
+        "sequencing_requests": {
+          "properties": {
+            "request_id": {
+              "type": "keyword"
+            },
+            "status": {
+              "type": "keyword"
+            }
+          }
         }
       }
     }

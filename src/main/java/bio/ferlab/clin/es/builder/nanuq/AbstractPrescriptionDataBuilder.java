@@ -55,7 +55,7 @@ public abstract class AbstractPrescriptionDataBuilder {
     }
     
     if(serviceRequest.hasCategory()) {
-      // prescriptionData.setPrenatal(false); // TODO
+      prescriptionData.setPrenatal(false); // TODO need documentation
     }
 
     if(serviceRequest.hasCode() && serviceRequest.getCode().hasCoding()) {
@@ -67,7 +67,7 @@ public abstract class AbstractPrescriptionDataBuilder {
     }
     
     if(serviceRequest.hasRequester()) {
-      // prescriptionData.setRequester(null); // TODO
+      prescriptionData.setRequester(""); // TODO need documentation
     }
     
     if(serviceRequest.hasPerformer()) {
