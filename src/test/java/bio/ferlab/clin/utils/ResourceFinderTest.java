@@ -30,6 +30,7 @@ class ResourceFinderTest {
       null,
       null,
       null,
+      null,
       null);
   private final ResourceFinder resourceFinder = new ResourceFinder(configuration);
 

@@ -29,7 +29,7 @@ class ServiceRequestPerformerInterceptorTest {
   final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
   final IFhirResourceDao<OrganizationAffiliation> dao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(null, null, null, null
-  , dao, null, null, null, null);
+  , dao, null, null, null, null, null);
   final ServiceRequestPerformerInterceptor interceptor = new ServiceRequestPerformerInterceptor(configuration);
   
   @Test
