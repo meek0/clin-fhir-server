@@ -3,6 +3,7 @@ package bio.ferlab.clin.es.indexer;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.builder.nanuq.AnalysisDataBuilder;
 import bio.ferlab.clin.es.builder.nanuq.SequencingDataBuilder;
+import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.es.data.nanuq.AnalysisData;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
 import bio.ferlab.clin.es.extractor.ServiceRequestIdExtractor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class NanuqIndexer extends Indexer {
@@ -40,6 +42,12 @@ public class NanuqIndexer extends Indexer {
     final Set<String> prescriptionIds = serviceRequestIdExtractor.extract(resource);
     List<AnalysisData> analyses = this.indexAnalyses(requestDetails, prescriptionIds);
     List<SequencingData> sequencings = this.indexSequencings(requestDetails, prescriptionIds);
+    
+    // re-index parent analyses
+    final Set<String> linkedParentAnalyses = sequencings.stream().map(SequencingData::getPrescriptionId).collect(Collectors.toSet());
+    final Set<String> alreadyIndexedAnalyses = analyses.stream().map(AnalysisData::getRequestId).collect(Collectors.toSet());
+    linkedParentAnalyses.removeAll(alreadyIndexedAnalyses); // ignore if indexed before
+    this.indexAnalyses(requestDetails, linkedParentAnalyses);
   }
 
   private List<AnalysisData> indexAnalyses(RequestDetails requestDetails, Set<String> ids) {
@@ -49,9 +57,9 @@ public class NanuqIndexer extends Indexer {
   }
 
   private List<SequencingData> indexSequencings(RequestDetails requestDetails, Set<String> ids) {
-    final List<SequencingData> analyses = sequencingDataBuilder.fromIds(ids, requestDetails);
-    analyses.forEach(e -> indexToEs(e.getRequestId(), e, bioProperties.getNanuqEsSequencingsIndex()));
-    return analyses;
+    final List<SequencingData> sequencings = sequencingDataBuilder.fromIds(ids, requestDetails);
+    sequencings.forEach(e -> indexToEs(e.getRequestId(), e, bioProperties.getNanuqEsSequencingsIndex()));
+    return sequencings;
   }
   
   private void indexToEs(String id, Object document, String indexName) {

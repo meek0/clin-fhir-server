@@ -2,19 +2,24 @@ package bio.ferlab.clin.es.builder.nanuq;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AbstractPrescriptionData;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.r4.model.*;
 
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
+import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
+
 public abstract class AbstractPrescriptionDataBuilder {
 
-  public enum RequestType {
+  public enum Type {
     ANALYSIS("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-analysis-request"),
     SEQUENCING("http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-sequencing-request");
+    
     public final String value;
-    RequestType(String value){
+
+    Type(String value){
       this.value = value;
     }
   }
@@ -23,10 +28,10 @@ public abstract class AbstractPrescriptionDataBuilder {
   private final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal
       .withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
   
-  private final RequestType type;
+  private final Type type;
   private final ResourceDaoConfiguration configuration;
 
-  public AbstractPrescriptionDataBuilder(RequestType type, ResourceDaoConfiguration configuration) {
+  public AbstractPrescriptionDataBuilder(Type type, ResourceDaoConfiguration configuration) {
     this.type = type;
     this.configuration = configuration;
   }
@@ -49,12 +54,24 @@ public abstract class AbstractPrescriptionDataBuilder {
       prescriptionData.setPriority(serviceRequest.getPriority().toCode());
     }
     
-    prescriptionData.setPrenatal(false);
-    prescriptionData.setPanelCode(null);
-    prescriptionData.setRequester(null);
+    if(serviceRequest.hasCategory()) {
+      // prescriptionData.setPrenatal(false); // TODO
+    }
+
+    if(serviceRequest.hasCode() && serviceRequest.getCode().hasCoding()) {
+      for (Coding coding: serviceRequest.getCode().getCoding()) {
+        if (ANALYSIS_REQUEST_CODE.equals(coding.getSystem()) && StringUtils.isNotBlank(coding.getCode())) {
+          prescriptionData.setPanelCode(coding.getCode());
+        }
+      }
+    }
+    
+    if(serviceRequest.hasRequester()) {
+      // prescriptionData.setRequester(null); // TODO
+    }
     
     if(serviceRequest.hasPerformer()) {
-      prescriptionData.setLdm(serviceRequest.getPerformer().get(0).getReference());
+      prescriptionData.setLdm(serviceRequest.getPerformer().get(0).getReferenceElement().getIdPart());
     }
 
     final Reference subjectRef = serviceRequest.getSubject();
@@ -64,7 +81,7 @@ public abstract class AbstractPrescriptionDataBuilder {
     final Organization organization = configuration.organizationDAO.read(new IdType(organizationRef.getReference()));
     
     if(organization.hasAlias()) {
-      prescriptionData.setEp(organization.getAlias().get(0).getId());
+      prescriptionData.setEp(organization.getAlias().get(0).getValue());
     }
     
     if(serviceRequest.hasAuthoredOn()) {

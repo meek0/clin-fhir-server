@@ -4,7 +4,9 @@ import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.Specimen;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
   private final ResourceDaoConfiguration configuration;
 
   public SequencingDataBuilder(ResourceDaoConfiguration configuration) {
-    super(RequestType.SEQUENCING, configuration);
+    super(Type.SEQUENCING, configuration);
     this.configuration = configuration;
   }
 
@@ -31,11 +33,16 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
         this.handlePrescription(serviceRequest, sequencingData);
         
         if(serviceRequest.hasBasedOn()) {
-          sequencingData.setPrescriptionId(serviceRequest.getBasedOn().get(0).getId());
+          sequencingData.setPrescriptionId(serviceRequest.getBasedOn().get(0).getReferenceElement().getIdPart());
         }
         
         if(serviceRequest.hasSpecimen()) {
-          
+          for(Reference specimenRef: serviceRequest.getSpecimen()) {
+            final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
+            if(specimen.hasParent()) {
+              sequencingData.setSample(specimenRef.getDisplay());
+            }
+          }
         }
 
         sequencings.add(sequencingData);

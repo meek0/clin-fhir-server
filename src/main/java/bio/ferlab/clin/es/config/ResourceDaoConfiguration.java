@@ -15,6 +15,7 @@ public class ResourceDaoConfiguration {
     public final IFhirResourceDao<PractitionerRole> practitionerRoleDao;
     public final IFhirResourceDao<Group> groupDao;
     public final IFhirResourceDao<Observation> observationDao;
+    public final IFhirResourceDao<Specimen> specimenDao;
 
     public ResourceDaoConfiguration(
             IFhirResourceDao<Patient> patientDAO,
@@ -25,7 +26,8 @@ public class ResourceDaoConfiguration {
             IFhirResourceDao<Practitioner> practitionerDao,
             IFhirResourceDao<PractitionerRole> practitionerRoleDao,
             IFhirResourceDao<Group> groupDao,
-            IFhirResourceDao<Observation> observationDao) {
+            IFhirResourceDao<Observation> observationDao,
+            IFhirResourceDao<Specimen> specimenDao) {
         this.patientDAO = patientDAO;
         this.serviceRequestDAO = serviceRequestDAO;
         this.clinicalImpressionDAO = clinicalImpressionDAO;
@@ -35,5 +37,6 @@ public class ResourceDaoConfiguration {
         this.practitionerRoleDao = practitionerRoleDao;
         this.groupDao = groupDao;
         this.observationDao = observationDao;
+        this.specimenDao = specimenDao;
     }
 }
