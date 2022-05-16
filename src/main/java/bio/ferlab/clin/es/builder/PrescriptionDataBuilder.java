@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,34 +24,27 @@ public class PrescriptionDataBuilder {
         this.commonDataBuilder = commonDataBuilder;
     }
 
-    public List<PrescriptionData> fromIds(Set<String> ids, RequestDetails requestDetails, PrescriptionDataType type) {
+    public List<PrescriptionData> fromIds(Set<String> ids, RequestDetails requestDetails) {
         final List<PrescriptionData> prescriptionDataList = new ArrayList<>();
         for (final String serviceRequestId : ids) {
             final PrescriptionData prescriptionData = new PrescriptionData();
             final ServiceRequest serviceRequest = this.configuration.serviceRequestDAO.read(new IdType(serviceRequestId), requestDetails);
-            if (isOfType(serviceRequest, type)) {
-                if (!serviceRequest.hasSubject()) {
-                    log.error(String.format("Cannot index ServiceRequest [%s]: resource has no subject.", serviceRequestId));
-                    continue;
-                }
-                final Reference subject = serviceRequest.getSubject();
-                final Patient patient = this.configuration.patientDAO.read(new IdType(subject.getReference()), requestDetails);
-
-                this.commonDataBuilder.handlePatient(patient, prescriptionData.getPatientInfo());
-                this.commonDataBuilder.finalize(prescriptionData.getPatientInfo());
-                
-                this.commonDataBuilder.handleServiceRequest(serviceRequest, prescriptionData);
-                this.commonDataBuilder.finalize(prescriptionData);
-                
-                prescriptionDataList.add(prescriptionData);
+            if (!serviceRequest.hasSubject()) {
+                log.error(String.format("Cannot index ServiceRequest [%s]: resource has no subject.", serviceRequestId));
+                continue;
             }
+            final Reference subject = serviceRequest.getSubject();
+            final Patient patient = this.configuration.patientDAO.read(new IdType(subject.getReference()), requestDetails);
+
+            this.commonDataBuilder.handlePatient(patient, prescriptionData.getPatientInfo());
+            this.commonDataBuilder.finalize(prescriptionData.getPatientInfo());
+            
+            this.commonDataBuilder.handleServiceRequest(serviceRequest, prescriptionData);
+            this.commonDataBuilder.finalize(prescriptionData);
+            
+            prescriptionDataList.add(prescriptionData);
         }
         return prescriptionDataList;
-    }
-
-    private boolean isOfType(ServiceRequest serviceRequest, PrescriptionDataType type) {
-        return PrescriptionDataType.ANY.equals(type) 
-            || serviceRequest.getMeta().getProfile().stream().anyMatch(s -> type.value.equals(s.getValue()));
     }
 
 }

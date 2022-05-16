@@ -3,6 +3,7 @@ package bio.ferlab.clin.es.builder;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.es.data.PrescriptionData;
+import bio.ferlab.clin.es.data.nanuq.AbstractPrescriptionData;
 import bio.ferlab.clin.utils.Extensions;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,10 @@ import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.SE
 @Component
 public class CommonDataBuilder {
 
-  private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  // thread confinement because SimpleDateFormat not thread-safe
+  private final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal
+      .withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+
   private static final String ID_SEPARATOR = "/";
   public static final String MRN_CODE = "MR";
   public static final String JHN_CODE = "JHN";
@@ -123,7 +127,7 @@ public class CommonDataBuilder {
     }
 
     if (patient.hasBirthDate()) {
-      patientData.setBirthDate(simpleDateFormat.format(patient.getBirthDate()));
+      patientData.setBirthDate(formatter.get().format(patient.getBirthDate()));
     }
 
   }
@@ -154,7 +158,7 @@ public class CommonDataBuilder {
     }
 
     if (serviceRequest.hasAuthoredOn()) {
-      prescriptionData.setAuthoredOn(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
+      prescriptionData.setAuthoredOn(formatter.get().format(serviceRequest.getAuthoredOn()));
     }
 
     if (serviceRequest.hasExtension(Extensions.IS_SUBMITTED)) {
@@ -164,7 +168,7 @@ public class CommonDataBuilder {
     }
 
     if (serviceRequest.hasAuthoredOn()) {
-      prescriptionData.setAuthoredOn(simpleDateFormat.format(serviceRequest.getAuthoredOn()));
+      prescriptionData.setAuthoredOn(formatter.get().format(serviceRequest.getAuthoredOn()));
     }
 
     if (serviceRequest.hasPerformer()) {

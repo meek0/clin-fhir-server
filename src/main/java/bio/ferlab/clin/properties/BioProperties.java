@@ -16,7 +16,6 @@ public class BioProperties {
     private final int esPort;
     private final String esScheme;
     private final String esPatientsIndex;
-    private final String esAnalysesIndex;
     private final String esPrescriptionsIndex;
     private final boolean isAuthEnabled;
     private final String authServerUrl;
@@ -32,6 +31,8 @@ public class BioProperties {
     private final String authSystemId;
     private final String authClientSecret;
     private final boolean isNanuqEnabled;
+    private final String nanuqEsAnalysesIndex;
+    private final String nanuqEsSequencingsIndex;
 
     public BioProperties(
             @Value("${bio.elasticsearch.enabled}") boolean isBioEsEnabled,
@@ -39,7 +40,6 @@ public class BioProperties {
             @Value("${bio.elasticsearch.port}") int esPort,
             @Value("${bio.elasticsearch.scheme}") String esScheme,
             @Value("${bio.elasticsearch.patients-index}") String esPatientsIndex,
-            @Value("${bio.elasticsearch.analyses-index}") String esAnalysesIndex,
             @Value("${bio.elasticsearch.prescriptions-index}") String esPrescriptionsIndex,
             @Value("${bio.auth.enabled}") boolean isAuthEnabled,
             @Value("${bio.auth.server-url}") String authServerUrl,
@@ -54,14 +54,16 @@ public class BioProperties {
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
             @Value("${bio.auth.authorization.system-id}") String authSystemId,
-            @Value("${bio.nanuq.enabled}") boolean isNanuqEnabled
+            @Value("${bio.nanuq.enabled}") boolean isNanuqEnabled,
+            @Value("${bio.nanuq.analyses-index}") String nanuqEsAnalysesIndex,
+            @Value("${bio.nanuq.sequencings-index}") String nanuqEsSequencingsIndex
+            
     ) {
         this.isBioEsEnabled = isBioEsEnabled;
         this.esHost = esHost;
         this.esPort = esPort;
         this.esScheme = esScheme;
         this.esPatientsIndex = esPatientsIndex;
-        this.esAnalysesIndex = esAnalysesIndex;
         this.esPrescriptionsIndex = esPrescriptionsIndex;
         this.isAuthEnabled = isAuthEnabled;
         this.authServerUrl = authServerUrl;
@@ -77,5 +79,7 @@ public class BioProperties {
         this.authClientSecret = authClientSecret;
         this.authSystemId = authSystemId;
         this.isNanuqEnabled = isNanuqEnabled;
+        this.nanuqEsAnalysesIndex = nanuqEsAnalysesIndex;
+        this.nanuqEsSequencingsIndex = nanuqEsSequencingsIndex;
     }
 }

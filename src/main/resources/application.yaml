@@ -154,6 +154,8 @@ hapi:
 bio:
   nanuq:
     enabled: false
+    analyses-index: "analyses"
+    sequencings-index: "sequencings"
   tagging: 
     enabled: true
     queryParam: true
@@ -162,7 +164,6 @@ bio:
     port: 9200
     scheme: "http"
     patients-index: "patients"
-    analyses-index: "analyses"
     prescriptions-index: "prescriptions"
     enabled: true
   auth:

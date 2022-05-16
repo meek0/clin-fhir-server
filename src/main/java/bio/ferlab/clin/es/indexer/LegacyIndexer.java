@@ -3,7 +3,6 @@ package bio.ferlab.clin.es.indexer;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.builder.PatientDataBuilder;
 import bio.ferlab.clin.es.builder.PrescriptionDataBuilder;
-import bio.ferlab.clin.es.builder.PrescriptionDataType;
 import bio.ferlab.clin.es.data.PatientData;
 import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.es.extractor.PatientIdExtractor;
@@ -16,10 +15,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
-public class LegacyNanuqIndexer extends Indexer {
+public class LegacyIndexer extends Indexer {
   
   private final ServiceRequestIdExtractor serviceRequestIdExtractor;
   private final PrescriptionDataBuilder prescriptionDataBuilder;
@@ -28,12 +26,12 @@ public class LegacyNanuqIndexer extends Indexer {
   private final BioProperties bioProperties;
   private final IndexerTools tools;
   
-  public LegacyNanuqIndexer(ServiceRequestIdExtractor serviceRequestIdExtractor,
-                            PrescriptionDataBuilder prescriptionDataBuilder,
-                            PatientIdExtractor patientIdExtractor,
-                            PatientDataBuilder patientDataBuilder,
-                            BioProperties bioProperties,
-                            IndexerTools tools) {
+  public LegacyIndexer(ServiceRequestIdExtractor serviceRequestIdExtractor,
+                       PrescriptionDataBuilder prescriptionDataBuilder,
+                       PatientIdExtractor patientIdExtractor,
+                       PatientDataBuilder patientDataBuilder,
+                       BioProperties bioProperties,
+                       IndexerTools tools) {
     this.serviceRequestIdExtractor = serviceRequestIdExtractor;
     this.prescriptionDataBuilder = prescriptionDataBuilder;
     this.patientIdExtractor = patientIdExtractor;
@@ -68,23 +66,9 @@ public class LegacyNanuqIndexer extends Indexer {
   }
 
   private List<PrescriptionData> indexPrescriptions(RequestDetails requestDetails, Set<String> ids) {
-    if (bioProperties.isNanuqEnabled()) {
-      final List<PrescriptionData> analysis = prescriptionDataBuilder.fromIds(ids, requestDetails,
-          PrescriptionDataType.ANALYSIS);
-      analysis.forEach(e -> indexToEs(e.getCid(), e, bioProperties.getEsAnalysesIndex()));
-
-      final List<PrescriptionData> sequencing = prescriptionDataBuilder.fromIds(ids, requestDetails,
-          PrescriptionDataType.SEQUENCING);
-      sequencing.forEach(e -> indexToEs(e.getCid(), e, bioProperties.getEsPrescriptionsIndex()));
-
-      return Stream.concat(analysis.stream(), sequencing.stream()).collect(Collectors.toList());
-    } else {  // LEGACY
-      final List<PrescriptionData> prescriptions = prescriptionDataBuilder.fromIds(ids, requestDetails,
-          PrescriptionDataType.ANY);
-      prescriptions.forEach(e -> indexToEs(e.getCid(), e, bioProperties.getEsPrescriptionsIndex()));
-      
-      return prescriptions;
-    }
+    final List<PrescriptionData> prescriptions = prescriptionDataBuilder.fromIds(ids, requestDetails);
+    prescriptions.forEach(e -> indexToEs(e.getCid(), e, bioProperties.getEsPrescriptionsIndex()));
+    return prescriptions;
   }
   
   private void indexToEs(String id, Object document, String indexName) {
