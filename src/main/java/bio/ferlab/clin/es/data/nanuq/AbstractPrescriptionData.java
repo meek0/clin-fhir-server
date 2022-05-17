@@ -17,12 +17,13 @@ import static bio.ferlab.clin.es.data.ElasticsearchData.EMPTY_STRING;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public abstract class AbstractPrescriptionData {
 
-  private String requestId = EMPTY_STRING;
+  private String prescriptionId = EMPTY_STRING;
   private String patientId = EMPTY_STRING;
+  private String patientMRN = EMPTY_STRING;
   private String status = EMPTY_STRING;
   private String priority = EMPTY_STRING;
   private boolean prenatal = false;
-  private String panelCode = EMPTY_STRING;
+  private String analysisCode = EMPTY_STRING;
   private String requester = EMPTY_STRING;
   private String ldm = EMPTY_STRING;
   private String ep = EMPTY_STRING;

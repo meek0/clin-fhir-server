@@ -11,10 +11,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
+  
+  public static final String SAMPLE_PREFIX = "Submitter Sample ID:";
 
   private final ResourceDaoConfiguration configuration;
 
@@ -31,6 +34,7 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
       if (this.isValidType(serviceRequest)) {
 
         this.handlePrescription(serviceRequest, sequencingData);
+        sequencingData.setRequestId(serviceRequest.getIdElement().getIdPart());
         
         if(serviceRequest.hasBasedOn()) {
           sequencingData.setPrescriptionId(serviceRequest.getBasedOn().get(0).getReferenceElement().getIdPart());
@@ -40,7 +44,8 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
           for(Reference specimenRef: serviceRequest.getSpecimen()) {
             final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
             if(specimen.hasParent()) {
-              sequencingData.setSample(specimenRef.getDisplay());
+              final String sampleId = Optional.ofNullable(specimenRef.getDisplay()).map(d -> d.replace(SAMPLE_PREFIX, "").trim()).orElse("");
+              sequencingData.setSample(sampleId);
             }
           }
         }

@@ -20,12 +20,10 @@ import java.util.Set;
 public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
 
   private final ResourceDaoConfiguration configuration;
-  private final CommonDataBuilder commonDataBuilder;
 
-  public AnalysisDataBuilder(ResourceDaoConfiguration configuration, CommonDataBuilder commonDataBuilder) {
+  public AnalysisDataBuilder(ResourceDaoConfiguration configuration) {
     super(Type.ANALYSIS, configuration);
     this.configuration = configuration;
-    this.commonDataBuilder = commonDataBuilder;
   }
 
   public List<AnalysisData> fromIds(Set<String> ids, RequestDetails requestDetails) {
@@ -36,10 +34,11 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
       if (this.isValidType(serviceRequest)) {
         
         this.handlePrescription(serviceRequest, analysisData);
+        analysisData.setPrescriptionId(serviceRequest.getIdElement().getIdPart());
 
         final SearchParameterMap searchMap = SearchParameterMap.newSynchronous("based-on", new ReferenceParam(serviceRequestId));
         final IBundleProvider srProvider = this.configuration.serviceRequestDAO.search(searchMap);
-        final List<ServiceRequest> serviceRequests = this.commonDataBuilder.getListFromProvider(srProvider);
+        final List<ServiceRequest> serviceRequests = this.getListFromProvider(srProvider);
         for (ServiceRequest sr : serviceRequests) {
           SequencingRequestData srd = new SequencingRequestData();
           srd.setRequestId(sr.getIdElement().getIdPart());

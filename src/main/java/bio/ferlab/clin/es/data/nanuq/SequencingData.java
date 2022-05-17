@@ -11,7 +11,7 @@ import static bio.ferlab.clin.es.data.ElasticsearchData.EMPTY_STRING;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SequencingData extends AbstractPrescriptionData {
-  
-  private String prescriptionId = EMPTY_STRING;
+
+  private String requestId = EMPTY_STRING;
   private String sample = EMPTY_STRING;
 }

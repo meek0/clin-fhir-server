@@ -45,14 +45,14 @@ public class NanuqIndexer extends Indexer {
     
     // re-index parent analyses
     final Set<String> linkedParentAnalyses = sequencings.stream().map(SequencingData::getPrescriptionId).collect(Collectors.toSet());
-    final Set<String> alreadyIndexedAnalyses = analyses.stream().map(AnalysisData::getRequestId).collect(Collectors.toSet());
+    final Set<String> alreadyIndexedAnalyses = analyses.stream().map(AnalysisData::getPrescriptionId).collect(Collectors.toSet());
     linkedParentAnalyses.removeAll(alreadyIndexedAnalyses); // ignore if indexed before
     this.indexAnalyses(requestDetails, linkedParentAnalyses);
   }
 
   private List<AnalysisData> indexAnalyses(RequestDetails requestDetails, Set<String> ids) {
     final List<AnalysisData> analyses = analysisDataBuilder.fromIds(ids, requestDetails);
-    analyses.forEach(e -> indexToEs(e.getRequestId(), e, bioProperties.getNanuqEsAnalysesIndex()));
+    analyses.forEach(e -> indexToEs(e.getPrescriptionId(), e, bioProperties.getNanuqEsAnalysesIndex()));
     return analyses;
   }
 
