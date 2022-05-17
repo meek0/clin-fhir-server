@@ -15,6 +15,9 @@
         "patient_id": {
           "type": "keyword"
         },
+        "patient_mrn": {
+          "type": "keyword"
+        },
         "status": {
           "type": "keyword"
         },
@@ -24,7 +27,7 @@
         "prenatal": {
           "type": "boolean"
         },
-        "panel_code": {
+        "analysis_code": {
           "type": "keyword"
         },
         "requester": {
