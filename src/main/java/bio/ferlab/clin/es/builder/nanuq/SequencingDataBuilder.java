@@ -16,8 +16,6 @@ import java.util.Set;
 
 @Component
 public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
-  
-  public static final String SAMPLE_PREFIX = "Submitter Sample ID:";
 
   private final ResourceDaoConfiguration configuration;
 
@@ -43,9 +41,8 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
         if(serviceRequest.hasSpecimen()) {
           for(Reference specimenRef: serviceRequest.getSpecimen()) {
             final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
-            if(specimen.hasParent()) {
-              final String sampleId = Optional.ofNullable(specimenRef.getDisplay()).map(d -> d.replace(SAMPLE_PREFIX, "").trim()).orElse("");
-              sequencingData.setSample(sampleId);
+            if(specimen.hasParent() && specimen.hasAccessionIdentifier()) {
+              sequencingData.setSample(specimen.getAccessionIdentifier().getValue());
             }
           }
         }
