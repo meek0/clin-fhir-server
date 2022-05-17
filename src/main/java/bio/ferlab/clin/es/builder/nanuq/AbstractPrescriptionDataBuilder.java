@@ -32,7 +32,7 @@ public abstract class AbstractPrescriptionDataBuilder {
   }
 
   // thread confinement because SimpleDateFormat not thread-safe
-  private final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal
+  public final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal
       .withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
   
   private final Type type;
@@ -73,7 +73,7 @@ public abstract class AbstractPrescriptionDataBuilder {
     }
     
     if(serviceRequest.hasRequester()) {
-      prescriptionData.setRequester(""); // TODO need documentation
+      prescriptionData.setRequester(serviceRequest.getRequester().getReferenceElement().getIdPart());
     }
     
     if(serviceRequest.hasPerformer()) {
@@ -105,7 +105,7 @@ public abstract class AbstractPrescriptionDataBuilder {
   protected <T extends IBaseResource> List<T> getListFromProvider(IBundleProvider provider) {
     final List<T> resources = new ArrayList<>();
     if (!provider.isEmpty()) {
-      for (IBaseResource sr : provider.getResources(0, provider.size())) {
+      for (IBaseResource sr : provider.getAllResources()) {
         resources.add((T) sr);
       }
     }

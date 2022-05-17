@@ -1,5 +1,5 @@
 {
-  "index_patterns": ["clin-qa-analyses-*", "clin-staging-analyses-*"],
+  "index_patterns": ["clin-qa-analyses*", "clin-staging-analyses*"],
   "template": {
     "settings": {
       "number_of_shards": 1

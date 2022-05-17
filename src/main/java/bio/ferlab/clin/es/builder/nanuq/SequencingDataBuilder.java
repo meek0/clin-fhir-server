@@ -41,7 +41,7 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
         if(serviceRequest.hasSpecimen()) {
           for(Reference specimenRef: serviceRequest.getSpecimen()) {
             final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
-            if(specimen.hasParent() && specimen.hasAccessionIdentifier()) {
+            if(specimen.hasParent() && specimen.hasAccessionIdentifier()) { // specimen with a parent is the good one
               sequencingData.setSample(specimen.getAccessionIdentifier().getValue());
             }
           }
