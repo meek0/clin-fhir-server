@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
@@ -55,10 +56,10 @@ public class CommonDataBuilder {
       patientData.setLastNameFirstName(name.lastNameFirstName);
     }
 
-    String ramq = Objects.requireNonNull(patient.getIdentifier()).stream()
+    Optional<String> ramq = Objects.requireNonNull(patient.getIdentifier()).stream()
         .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(JHN_CODE))
-        .map(Identifier::getValue).findFirst().orElse(null);
-    patientData.setRamq(ramq);
+        .map(Identifier::getValue).findFirst();
+    ramq.ifPresent(patientData::setRamq);
 
     if (patient.hasExtension(Extensions.IS_PROBAND)) {
       final Extension extension = patient.getExtensionByUrl(Extensions.IS_PROBAND);
@@ -165,10 +166,6 @@ public class CommonDataBuilder {
       final Extension extension = serviceRequest.getExtensionByUrl(Extensions.IS_SUBMITTED);
       final BooleanType valueBoolean = (BooleanType) extension.getValue();
       prescriptionData.setSubmitted(valueBoolean.getValue());
-    }
-
-    if (serviceRequest.hasAuthoredOn()) {
-      prescriptionData.setAuthoredOn(formatter.get().format(serviceRequest.getAuthoredOn()));
     }
 
     if (serviceRequest.hasPerformer()) {
