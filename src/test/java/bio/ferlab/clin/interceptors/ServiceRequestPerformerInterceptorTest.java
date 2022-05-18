@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import java.util.List;
 import java.util.Locale;
 
+import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ class ServiceRequestPerformerInterceptorTest {
   final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
   final IFhirResourceDao<OrganizationAffiliation> dao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(null, null, null, null
-  , dao, null, null, null, null);
+  , dao, null, null, null, null, null);
   final ServiceRequestPerformerInterceptor interceptor = new ServiceRequestPerformerInterceptor(configuration);
   
   @Test
@@ -71,7 +72,8 @@ class ServiceRequestPerformerInterceptorTest {
   @DisplayName("ServiceRequest - no matching affiliation")
   void noAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(new Coding().setCode("foo"))));
+    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
+        new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(true);
@@ -86,7 +88,8 @@ class ServiceRequestPerformerInterceptorTest {
   @DisplayName("ServiceRequest - create found an affiliation")
   void createMatchAnAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(new Coding().setCode("foo"))));
+    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
+        new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(false);
@@ -100,7 +103,8 @@ class ServiceRequestPerformerInterceptorTest {
   @DisplayName("ServiceRequest - update found an affiliation")
   void updateMatchAnAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
-    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(new Coding().setCode("foo"))));
+    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
+        new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(false);

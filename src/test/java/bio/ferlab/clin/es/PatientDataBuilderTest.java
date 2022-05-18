@@ -1,5 +1,6 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.builder.CommonDataBuilder;
 import bio.ferlab.clin.es.builder.PatientDataBuilder;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PatientData;
@@ -97,14 +98,14 @@ public class PatientDataBuilderTest {
         when(this.practitionerDao.read(any())).thenReturn(this.practitioner);
         when(this.practitionerRoleDao.read(any())).thenReturn(this.practitionerRole);
 
-        this.daoConfiguration = new ResourceDaoConfiguration(null, null, null, this.organizationDao, null, this.practitionerDao, this.practitionerRoleDao, null, null);
+        this.daoConfiguration = new ResourceDaoConfiguration(null, null, null, this.organizationDao, null, this.practitionerDao, this.practitionerRoleDao, null, null, null);
         this.bundle = new Bundle();
         this.bundle.setId("bundle-id");
         this.bundle.addEntry().setResource(patient);
         this.bundle.addEntry().setResource(serviceRequest);
 
         this.jsonGenerator = new JsonGenerator(FhirContext.forR4());
-        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration);
+        this.patientDataBuilder = new PatientDataBuilder(daoConfiguration, new CommonDataBuilder(daoConfiguration));
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 

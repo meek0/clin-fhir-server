@@ -152,6 +152,10 @@ hapi:
 #  username: SomeUsername
 
 bio:
+  nanuq:
+    enabled: false
+    analyses-index: "analyses"
+    sequencings-index: "sequencings"
   tagging: 
     enabled: true
     queryParam: true

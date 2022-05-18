@@ -41,7 +41,7 @@ public class MetaTagInterceptor {
     this.handleRequestAndResource(requestDetails, newResource);
   }
 
-  // this hook (optional) will increase performance by adding _tag in the query before SQL calls
+  // this hook (optional) will increase performance by adding _security in the query before SQL calls
   @Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
   public void addTagParameter(RequestDetails requestDetails) {
     if (bioProperties.isTaggingEnabled() && bioProperties.isTaggingQueryParam() 
@@ -49,7 +49,7 @@ public class MetaTagInterceptor {
         && metaTagResourceAccess.isResourceWithTags(requestDetails.getResourceName())) {
       final List<String> userTags =  metaTagResourceAccess.getUserTags(requestDetails);
       if(!userTags.isEmpty() && !userTags.contains(USER_ALL_TAGS)) {
-        // we use "," separated query param _tag because it's a OR relation, at least one should match.
+        // we use "," separated query param _security because it's a OR relation, at least one should match.
         final String orTags = String.join(",", userTags);
         requestDetails.addParameter("_security", new String[]{orTags});
       }
@@ -65,8 +65,8 @@ public class MetaTagInterceptor {
     if(isValidRequestAndResource(requestDetails, resource)) {
       // clear all tags, easy solution to manage tags update
       Optional.ofNullable(resource.getMeta().getTag()).ifPresent(List::clear);
-      this.addTagCode(resource, metaTagResourceVisitor.extractEpCode(resource));
-      this.addTagCode(resource, metaTagResourceVisitor.extractLdmCode(resource));
+      this.addTagCode(resource, metaTagResourceVisitor.extractEpCode(requestDetails, resource));
+      this.addTagCode(resource, metaTagResourceVisitor.extractLdmCode(requestDetails, resource));
       // we could allow cross modify if needed with a custom config boolean, for now it's mandatory
       if(!metaTagResourceAccess.canModifyResource(requestDetails, resource)) {
         throw new ForbiddenOperationException("Resource belongs to another organization");

@@ -30,6 +30,9 @@ public class BioProperties {
     private final String authClientId;
     private final String authSystemId;
     private final String authClientSecret;
+    private final boolean isNanuqEnabled;
+    private final String nanuqEsAnalysesIndex;
+    private final String nanuqEsSequencingsIndex;
 
     public BioProperties(
             @Value("${bio.elasticsearch.enabled}") boolean isBioEsEnabled,
@@ -50,7 +53,11 @@ public class BioProperties {
             @Value("${bio.auth.authorization.enabled}") boolean isAuthorizationEnabled,
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
-            @Value("${bio.auth.authorization.system-id}") String authSystemId
+            @Value("${bio.auth.authorization.system-id}") String authSystemId,
+            @Value("${bio.nanuq.enabled}") boolean isNanuqEnabled,
+            @Value("${bio.nanuq.analyses-index}") String nanuqEsAnalysesIndex,
+            @Value("${bio.nanuq.sequencings-index}") String nanuqEsSequencingsIndex
+            
     ) {
         this.isBioEsEnabled = isBioEsEnabled;
         this.esHost = esHost;
@@ -71,5 +78,8 @@ public class BioProperties {
         this.authClientId = authClientId;
         this.authClientSecret = authClientSecret;
         this.authSystemId = authSystemId;
+        this.isNanuqEnabled = isNanuqEnabled;
+        this.nanuqEsAnalysesIndex = nanuqEsAnalysesIndex;
+        this.nanuqEsSequencingsIndex = nanuqEsSequencingsIndex;
     }
 }

@@ -1,5 +1,5 @@
 {
-  "index_patterns": ["clin-qa-patients-*"],
+  "index_patterns": ["clin-qa-patients*", "clin-staging-patients*"],
   "template": {
     "settings": {
       "number_of_shards": 1

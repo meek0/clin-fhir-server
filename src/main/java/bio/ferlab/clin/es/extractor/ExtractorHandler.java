@@ -20,7 +20,7 @@ abstract class IdExtractor {
                 return (Set<String>) handler.callback.apply(handler.tClass.cast(resource));
             }
         }
-        return null;
+        return new HashSet<>();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -1,5 +1,5 @@
 {
-  "index_patterns": ["clin-qa-prescriptions-*"],
+  "index_patterns": ["clin-qa-prescriptions*", "clin-staging-prescriptions*"],
   "template": {
     "settings": {
       "number_of_shards": 1
@@ -105,6 +105,34 @@
             },
             "position": {
               "type": "keyword"
+            },
+            "practitioner": {
+              "properties": {
+                "cid": {
+                  "type": "keyword"
+                },
+                "cidText": {
+                  "type": "text"
+                },
+                "firstName": {
+                  "type": "keyword"
+                },
+                "lastName": {
+                  "type": "keyword"
+                },
+                "lastNameFirstName": {
+                  "type": "keyword"
+                },
+                "firstNameText": {
+                  "type": "text"
+                },
+                "lastNameText": {
+                  "type": "text"
+                },
+                "lastNameFirstNameText": {
+                  "type": "text"
+                }
+              }
             },
             "ramq": {
               "type": "keyword"

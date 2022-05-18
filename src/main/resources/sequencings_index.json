@@ -1,0 +1,60 @@
+{
+  "index_patterns": ["clin-qa-sequencings*", "clin-staging-sequencings*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1
+    },
+    "mappings": {
+      "_source": {
+        "enabled": true
+      },
+      "properties": {
+        "request_id": {
+          "type": "keyword"
+        },
+        "patient_id": {
+          "type": "keyword"
+        },
+        "patient_mrn": {
+          "type": "keyword"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "priority": {
+          "type": "keyword"
+        },
+        "prenatal": {
+          "type": "boolean"
+        },
+        "analysis_code": {
+          "type": "keyword"
+        },
+        "requester": {
+          "type": "keyword"
+        },
+        "ldm": {
+          "type": "keyword"
+        },
+        "ep": {
+          "type": "keyword"
+        },
+        "created_on": {
+          "type": "keyword"
+        },
+        "timestamp": {
+          "type": "date"
+        },
+        "security_tags": {
+          "type": "keyword"
+        },
+        "prescription_id": {
+          "type": "keyword"
+        },
+        "sample": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

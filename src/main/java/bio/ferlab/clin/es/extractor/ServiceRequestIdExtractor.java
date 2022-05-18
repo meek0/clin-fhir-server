@@ -18,7 +18,7 @@ public class ServiceRequestIdExtractor extends IdExtractor {
     );
 
     private Set<String> extractServiceRequestId(ServiceRequest serviceRequest) {
-        return Collections.singleton(serviceRequest.getId());
+        return Collections.singleton(serviceRequest.getIdElement().getIdPart());
     }
 
     @Override
