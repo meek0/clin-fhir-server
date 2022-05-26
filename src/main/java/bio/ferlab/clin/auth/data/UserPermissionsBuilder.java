@@ -32,7 +32,7 @@ public class UserPermissionsBuilder {
                     scopes.contains(DELETE_SCOPE)
             );
         } catch (ClassNotFoundException e) {
-            log.warn("[{}] is not a valid FHIR resource, permission ignored.", completeName);
+            log.debug("[{}] is not a valid FHIR resource, permission ignored.", completeName);
             return null;
         }
     }

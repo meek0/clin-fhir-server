@@ -102,10 +102,26 @@ class MetaTagResourceAccessTest {
   }
 
   @Test
-  void canSeeResource_not_GET() {
+  void canSeeResource_not_GET_nor_graphql() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    assertTrue(metaTagResourceAccess.canSeeResource(requestDetails, null));
+    assertFalse(metaTagResourceAccess.canSeeResource(requestDetails, null));
+  }
+
+  @Test
+  void canSeeResource_POST_graphql() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    when(requestDetails.getOperation()).thenReturn("$graphql");
+    String bearer = JWT.create()
+        .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
+        .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    final ServiceRequest resource = new ServiceRequest();
+    resource.getMeta().addSecurity().setCode("tag3"); // not allowed to see this resource
+    assertFalse(metaTagResourceAccess.canSeeResource(requestDetails, resource));
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
+    assertTrue(metaTagResourceAccess.canSeeResource(requestDetails, resource));
   }
 
   @Test
@@ -125,9 +141,39 @@ class MetaTagResourceAccessTest {
   }
 
   @Test
-  void canModifyResource() {
+  void canModifyResource_POST() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    String bearer = JWT.create()
+        .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
+        .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    final ServiceRequest resource = new ServiceRequest();
+    resource.getMeta().addSecurity().setCode("tag3"); // not allowed to see this resource
+    assertFalse(metaTagResourceAccess.canModifyResource(requestDetails, resource));
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
+    assertTrue(metaTagResourceAccess.canModifyResource(requestDetails, resource));
+  }
+
+  @Test
+  void canModifyResource_PUT() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
+    String bearer = JWT.create()
+        .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
+        .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    final ServiceRequest resource = new ServiceRequest();
+    resource.getMeta().addSecurity().setCode("tag3"); // not allowed to see this resource
+    assertFalse(metaTagResourceAccess.canModifyResource(requestDetails, resource));
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
+    assertTrue(metaTagResourceAccess.canModifyResource(requestDetails, resource));
+  }
+
+  @Test
+  void canModifyResource_DELETE() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.DELETE);
     String bearer = JWT.create()
         .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
         .sign(Algorithm.HMAC256("secret"));

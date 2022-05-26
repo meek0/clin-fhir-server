@@ -26,6 +26,7 @@ public class MetaTagResourceAccess {
   public static final List<String> RESOURCES_WITH_TAGS = List.of("ServiceRequest", "Patient", "Observation", "ClinicalImpression");
   public static final String TOKEN_ATTR_FHIR_ORG_ID = "fhir_organization_id";
   public static final String USER_ALL_TAGS = "*";
+  public static final String OPERATION_GRAPHQL = "$graphql";
   
   private final BioProperties bioProperties;
   
@@ -34,12 +35,13 @@ public class MetaTagResourceAccess {
   }
 
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
-    return !RequestTypeEnum.GET.equals(requestDetails.getRequestType()) || canAccessResource(requestDetails, resource);
+    return (RequestTypeEnum.GET.equals(requestDetails.getRequestType()) || isOperationGraphql(requestDetails))
+        && canAccessResource(requestDetails, resource);
   }
 
   public boolean canModifyResource(RequestDetails requestDetails, IBaseResource resource) {
-    return !EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT).contains(requestDetails.getRequestType())
-       || canAccessResource(requestDetails, resource);
+    return EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT, RequestTypeEnum.DELETE).contains(requestDetails.getRequestType())
+       && canAccessResource(requestDetails, resource);
   }
 
   private boolean canAccessResource(RequestDetails requestDetails, IBaseResource resource) {
@@ -77,5 +79,9 @@ public class MetaTagResourceAccess {
 
   public boolean isResourceWithTags(IBaseResource resource) {
     return this.isResourceWithTags(resource.getClass().getSimpleName());
+  }
+  
+  private boolean isOperationGraphql(RequestDetails requestDetails) {
+    return RequestTypeEnum.POST.equals(requestDetails.getRequestType()) && OPERATION_GRAPHQL.equals(requestDetails.getOperation());
   }
 }
