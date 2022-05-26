@@ -102,17 +102,16 @@ class MetaTagResourceAccessTest {
   }
 
   @Test
-  void canSeeResource_not_GET_nor_graphql() {
+  void canSeeResource_not_GET_nor_POST() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
     assertFalse(metaTagResourceAccess.canSeeResource(requestDetails, null));
   }
 
   @Test
-  void canSeeResource_POST_graphql() {
+  void canSeeResource_POST() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    when(requestDetails.getOperation()).thenReturn("$graphql");
     String bearer = JWT.create()
         .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
         .sign(Algorithm.HMAC256("secret"));
