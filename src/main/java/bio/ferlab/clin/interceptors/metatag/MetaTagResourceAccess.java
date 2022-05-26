@@ -34,12 +34,14 @@ public class MetaTagResourceAccess {
   }
 
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
-    return !RequestTypeEnum.GET.equals(requestDetails.getRequestType()) || canAccessResource(requestDetails, resource);
+    // POST can be a bundle or graphql query
+    return EnumSet.of(RequestTypeEnum.GET, RequestTypeEnum.POST).contains(requestDetails.getRequestType())
+        && canAccessResource(requestDetails, resource);
   }
 
   public boolean canModifyResource(RequestDetails requestDetails, IBaseResource resource) {
-    return !EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT).contains(requestDetails.getRequestType())
-       || canAccessResource(requestDetails, resource);
+    return EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT, RequestTypeEnum.DELETE).contains(requestDetails.getRequestType())
+       && canAccessResource(requestDetails, resource);
   }
 
   private boolean canAccessResource(RequestDetails requestDetails, IBaseResource resource) {
@@ -76,6 +78,6 @@ public class MetaTagResourceAccess {
   }
 
   public boolean isResourceWithTags(IBaseResource resource) {
-    return this.isResourceWithTags(resource.getClass().getSimpleName());
+    return resource != null && this.isResourceWithTags(resource.getClass().getSimpleName());
   }
 }
