@@ -12,6 +12,7 @@ import java.io.IOException;
 public class ElasticsearchRestClient {
     private static final Logger log = LoggerFactory.getLogger(ElasticsearchRestClient.class);
     public static final String FAILED_TO_SAVE_RESOURCE = "Failed to save resource";
+    public static final String FAILED_TO_INDEX_TEMPLATE = "Failed to index template";
     public static final String FAILED_TO_DELETE_RESOURCE = "Failed to delete resource";
     private final ElasticsearchData data;
 
@@ -32,6 +33,21 @@ public class ElasticsearchRestClient {
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
             throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_SAVE_RESOURCE);
+        }
+    }
+
+    public void indexTemplate(String templateName, String templateContent) {
+        log.info("Indexing template: {}", templateName);
+        try {
+            final Request request = new Request(
+                HttpMethod.PUT.name(),
+                String.format("/_index_template/%s",templateName)
+            );
+            request.setJsonEntity(templateContent);
+            this.data.client.performRequest(request);
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage());
+            throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_INDEX_TEMPLATE);
         }
     }
 
