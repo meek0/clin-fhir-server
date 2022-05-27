@@ -1,5 +1,5 @@
 {
-  "index_patterns": ["clin-qa-analyses*", "clin-staging-analyses*"],
+  "index_patterns": ["clin-qa-sequencings*", "clin-staging-sequencings*",  "clin-prod-sequencings*"],
   "template": {
     "settings": {
       "number_of_shards": 1
@@ -9,7 +9,7 @@
         "enabled": true
       },
       "properties": {
-        "prescription_id": {
+        "request_id": {
           "type": "keyword"
         },
         "patient_id": {
@@ -48,16 +48,11 @@
         "security_tags": {
           "type": "keyword"
         },
-        "sequencing_requests": {
-          "type": "nested",
-          "properties": {
-            "request_id": {
-              "type": "keyword"
-            },
-            "status": {
-              "type": "keyword"
-            }
-          }
+        "prescription_id": {
+          "type": "keyword"
+        },
+        "sample": {
+          "type": "keyword"
         }
       }
     }
