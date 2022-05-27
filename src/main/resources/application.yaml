@@ -152,12 +152,12 @@ hapi:
 #  username: SomeUsername
 
 bio:
+  service-request-routing:
+    enabled: false
   nanuq:
     enabled: false
     analyses-index: "analyses"
     sequencings-index: "sequencings"
-    service-request-routing:
-        enabled: false
   tagging: 
     enabled: true
     queryParam: true
