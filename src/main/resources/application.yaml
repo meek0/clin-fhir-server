@@ -156,6 +156,8 @@ bio:
     enabled: false
     analyses-index: "analyses"
     sequencings-index: "sequencings"
+    service-request-routing:
+        enabled: false
   tagging: 
     enabled: true
     queryParam: true
