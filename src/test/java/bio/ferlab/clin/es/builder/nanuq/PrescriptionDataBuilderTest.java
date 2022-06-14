@@ -151,7 +151,12 @@ class PrescriptionDataBuilderTest {
     specimen2.getAccessionIdentifier().setValue("speciId");
     serviceRequest.getSpecimen().addAll(List.of(new Reference("speci1"), new Reference("speci2")));
     
-    when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
+    final ServiceRequest parentAnalysis = new ServiceRequest();
+    parentAnalysis.setStatus(ServiceRequest.ServiceRequestStatus.ACTIVE);
+    
+    when(serviceRequestDao.read(any(), any()))
+        .thenReturn(serviceRequest)
+        .thenReturn(parentAnalysis);
     when(patientDao.read(any())).thenReturn(patient);
     when(organizationDao.read(any())).thenReturn(organization);
     when(specimenDao.read(eq(new IdType("speci1")), any())).thenReturn(specimen1);
@@ -160,6 +165,7 @@ class PrescriptionDataBuilderTest {
     List<SequencingData> results = sequencingDataBuilder.fromIds(Set.of("serviceRequest1"), requestDetails);
 
     verify(serviceRequestDao).read(eq(new IdType("serviceRequest1")), eq(requestDetails));
+    verify(serviceRequestDao).read(eq(new IdType("parentAnalysis")), eq(requestDetails));
     verify(patientDao).read(eq(new IdType("patient1")));
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(specimenDao).read(eq(new IdType("speci1")), any());
@@ -181,6 +187,7 @@ class PrescriptionDataBuilderTest {
     assertEquals(nowStr, data1.getCreatedOn());
     assertEquals("serviceRequest1", data1.getRequestId());
     assertEquals("parentAnalysis", data1.getPrescriptionId());
+    assertEquals("active", data1.getPrescriptionStatus());
     assertEquals("speciId", data1.getSample());
   }
 

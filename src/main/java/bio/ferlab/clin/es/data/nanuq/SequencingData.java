@@ -14,4 +14,5 @@ public class SequencingData extends AbstractPrescriptionData {
 
   private String requestId = EMPTY_STRING;
   private String sample = EMPTY_STRING;
+  private String prescriptionStatus = EMPTY_STRING;
 }
