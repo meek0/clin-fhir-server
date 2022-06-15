@@ -35,7 +35,14 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
         sequencingData.setRequestId(serviceRequest.getIdElement().getIdPart());
         
         if(serviceRequest.hasBasedOn()) {
-          sequencingData.setPrescriptionId(serviceRequest.getBasedOn().get(0).getReferenceElement().getIdPart());
+
+          final String basedOnId = serviceRequest.getBasedOn().get(0).getReferenceElement().getIdPart();
+          sequencingData.setPrescriptionId(basedOnId);
+
+          final ServiceRequest basedOn = this.configuration.serviceRequestDAO.read(new IdType(basedOnId), requestDetails);
+          if(basedOn.hasStatus()) {
+            sequencingData.setPrescriptionStatus(basedOn.getStatus().toCode());
+          }
         }
         
         if(serviceRequest.hasSpecimen()) {

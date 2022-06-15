@@ -51,6 +51,9 @@
         "prescription_id": {
           "type": "keyword"
         },
+        "prescription_status": {
+          "type": "keyword"
+        },
         "sample": {
           "type": "keyword"
         }
