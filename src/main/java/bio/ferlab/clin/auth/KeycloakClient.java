@@ -40,15 +40,17 @@ public class KeycloakClient {
         }
     }
     
-    private AuthzClient initAuthzClient() {
+    private synchronized AuthzClient initAuthzClient() {
         try {
-            Log.info("Init auth. client");
-            final Configuration configuration = new Configuration();
-            configuration.setRealm(bioProperties.getAuthRealm());
-            configuration.setAuthServerUrl(bioProperties.getAuthServerUrl());
-            configuration.setResource(bioProperties.getAuthClientId());
-            configuration.getCredentials().put(AUTH_CLIENT_SECRET_KEY, bioProperties.getAuthClientSecret());
-            this.authzClient = AuthzClient.create(configuration);
+            if (this.authzClient == null) {
+                Log.info("Init auth. client");
+                final Configuration configuration = new Configuration();
+                configuration.setRealm(bioProperties.getAuthRealm());
+                configuration.setAuthServerUrl(bioProperties.getAuthServerUrl());
+                configuration.setResource(bioProperties.getAuthClientId());
+                configuration.getCredentials().put(AUTH_CLIENT_SECRET_KEY, bioProperties.getAuthClientSecret());
+                this.authzClient = AuthzClient.create(configuration);
+            }
             return this.authzClient;
         } catch (Exception e) {
             log.error("Failed to init auth. client", e);
