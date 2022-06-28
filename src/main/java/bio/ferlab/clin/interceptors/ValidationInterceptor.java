@@ -8,7 +8,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,16 @@ import java.util.Collections;
 
 @Service
 public class ValidationInterceptor extends RequestValidatingInterceptor {
+    
+    public ValidationInterceptor(JpaValidationSupportChain jpaValidationSupportChain) {
+        FhirInstanceValidator module = new FhirInstanceValidator(jpaValidationSupportChain);
+        module.setAnyExtensionsAllowed(false);
+        module.setErrorForUnknownProfiles(true);
+        module.setNoTerminologyChecks(false);
+        module.setNoBindingMsgSuppressed(true);
+        module.setAssumeValidRestReferences(true);
+        this.setValidatorModules(Collections.singletonList(module));
+    }
 
     @Hook(value = Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
     @Override
@@ -24,16 +33,6 @@ public class ValidationInterceptor extends RequestValidatingInterceptor {
         if (requestDetails.getRestOperationType() == RestOperationTypeEnum.GRAPHQL_REQUEST) {
             return true;
         }
-        ApplicationContext appCtx = (ApplicationContext) request.getServletContext()
-                .getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
-        JpaValidationSupportChain chain = appCtx.getBean(JpaValidationSupportChain.class);
-        FhirInstanceValidator module = new FhirInstanceValidator(chain);
-        module.setAnyExtensionsAllowed(false);
-        module.setErrorForUnknownProfiles(true);
-        module.setNoTerminologyChecks(false);
-        module.setNoBindingMsgSuppressed(true);
-        module.setAssumeValidRestReferences(true);
-        setValidatorModules(Collections.singletonList(module));
         return super.incomingRequestPostProcessed(requestDetails, request, response);
     }
 }

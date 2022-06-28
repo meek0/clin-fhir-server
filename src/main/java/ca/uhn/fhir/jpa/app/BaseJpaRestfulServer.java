@@ -110,6 +110,9 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     @Autowired
     BioProperties bioProperties;
+    
+    @Autowired
+    ValidationInterceptor validationInterceptor;
 
     // These are set only if the features are enabled
     private CqlProviderLoader cqlProviderLoader;
@@ -404,7 +407,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         // CLIN
         daoConfig.setEnforceReferentialIntegrityOnWrite(false);
         registerInterceptor(fieldValidatorInterceptor);
-        registerInterceptor(new ValidationInterceptor());
+        registerInterceptor(validationInterceptor);
 
         if (bioProperties.isServiceRequestRoutingEnabled()) {
             registerInterceptor(serviceRequestPerformerInterceptor);
@@ -434,6 +437,6 @@ public class BaseJpaRestfulServer extends RestfulServer {
         registerInterceptor(new DeleteConflictInterceptor());
         
         // Auto add Coding.display if Coding.system/code is defined in the FHIR model
-         registerInterceptor(new ResponseTerminologyDisplayPopulationInterceptor(myValidationSupport));
+        registerInterceptor(new ResponseTerminologyDisplayPopulationInterceptor(myValidationSupport));
     }
 }
