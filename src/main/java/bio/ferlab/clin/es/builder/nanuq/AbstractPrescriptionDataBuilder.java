@@ -80,19 +80,25 @@ public abstract class AbstractPrescriptionDataBuilder {
       prescriptionData.setLdm(serviceRequest.getPerformer().get(0).getReferenceElement().getIdPart());
     }
 
-    final Reference subjectRef = serviceRequest.getSubject();
-    final Patient patient = this.configuration.patientDAO.read(new IdType(subjectRef.getReference()));
+    if (serviceRequest.hasSubject()) {
+      final Reference subjectRef = serviceRequest.getSubject();
+      final Patient patient = this.configuration.patientDAO.read(new IdType(subjectRef.getReference()));
 
-    final Optional<String> mrn = Objects.requireNonNull(patient.getIdentifier()).stream()
-        .filter(id -> id.getType().getCodingFirstRep().getCode().contentEquals(MRN_CODE))
-        .map(Identifier::getValue).findFirst();
-    mrn.ifPresent(prescriptionData::setPatientMRN);
-    
-    final Reference organizationRef = patient.getManagingOrganization();
-    final Organization organization = configuration.organizationDAO.read(new IdType(organizationRef.getReference()));
-    
-    if(organization.hasAlias()) {
-      prescriptionData.setEp(organization.getAlias().get(0).getValue());
+      if (patient.hasIdentifier()) {
+        final Optional<String> mrn = patient.getIdentifier().stream()
+            .filter(id -> id.hasType() && MRN_CODE.equals(id.getType().getCodingFirstRep().getCode()))
+            .map(Identifier::getValue).findFirst();
+        mrn.ifPresent(prescriptionData::setPatientMRN);
+      }
+
+      if (patient.hasManagingOrganization()) {
+        final Reference organizationRef = patient.getManagingOrganization();
+        final Organization organization = configuration.organizationDAO.read(new IdType(organizationRef.getReference()));
+
+        if (organization.hasAlias()) {
+          prescriptionData.setEp(organization.getAlias().get(0).getValue());
+        }
+      }
     }
     
     if(serviceRequest.hasAuthoredOn()) {
