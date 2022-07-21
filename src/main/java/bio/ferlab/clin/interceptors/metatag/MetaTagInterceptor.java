@@ -64,7 +64,7 @@ public class MetaTagInterceptor {
   private void handleRequestAndResource(RequestDetails requestDetails, IBaseResource resource) {
     if(isValidRequestAndResource(requestDetails, resource)) {
       // clear all tags, easy solution to manage tags update
-      Optional.ofNullable(resource.getMeta().getTag()).ifPresent(List::clear);
+      Optional.ofNullable(resource.getMeta().getSecurity()).ifPresent(List::clear);
       this.addTagCode(resource, metaTagResourceVisitor.extractEpCode(requestDetails, resource));
       this.addTagCode(resource, metaTagResourceVisitor.extractLdmCode(requestDetails, resource));
       // we could allow cross modify if needed with a custom config boolean, for now it's mandatory

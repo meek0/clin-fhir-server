@@ -2,6 +2,7 @@ package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.exceptions.RptIntrospectionException;
+import bio.ferlab.clin.utils.ResourceFinder;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,10 +29,11 @@ import static org.mockito.Mockito.when;
 class ServiceRequestPerformerInterceptorTest {
 
   final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+  final ResourceFinder resourceFinder = Mockito.mock(ResourceFinder.class);
   final IFhirResourceDao<OrganizationAffiliation> dao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(null, null, null, null
   , dao, null, null, null, null, null);
-  final ServiceRequestPerformerInterceptor interceptor = new ServiceRequestPerformerInterceptor(configuration);
+  final ServiceRequestPerformerInterceptor interceptor = new ServiceRequestPerformerInterceptor(configuration, resourceFinder);
   
   @Test
   @DisplayName("ServiceRequest - missing code")
@@ -72,28 +75,35 @@ class ServiceRequestPerformerInterceptorTest {
   @DisplayName("ServiceRequest - no matching affiliation")
   void noAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
     final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
         new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(true);
+    when(resourceFinder.findPatientFromRequestOrDAO(any(), any())).thenReturn(Optional.ofNullable(patient));
     Exception ex = Assertions.assertThrows(
         InvalidRequestException.class,
         () -> interceptor.created(requestDetails, serviceRequest)
     );
-    assertEquals("Can't find organization affiliation attached to code foo", ex.getMessage());
+    assertEquals("Can't find organization affiliation attached to code: foo with ep: ep1", ex.getMessage());
   }
 
   @Test
   @DisplayName("ServiceRequest - create found an affiliation")
   void createMatchAnAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
-        new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
+    final ServiceRequest serviceRequest = new ServiceRequest()
+        .setSubject(new Reference("patient"))
+        .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(false);
-    final OrganizationAffiliation affiliation = new OrganizationAffiliation().setParticipatingOrganization(new Reference("bar"));
+    when(resourceFinder.findPatientFromRequestOrDAO(any(), any())).thenReturn(Optional.ofNullable(patient));
+    final OrganizationAffiliation affiliation = new OrganizationAffiliation()
+        .setOrganization(new Reference("ep1"))
+        .setParticipatingOrganization(new Reference("bar"));
     when(bundle.getAllResources()).thenReturn(List.of(affiliation));
     interceptor.created(requestDetails, serviceRequest);
     assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
@@ -103,12 +113,17 @@ class ServiceRequestPerformerInterceptorTest {
   @DisplayName("ServiceRequest - update found an affiliation")
   void updateMatchAnAffiliation() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
-    final ServiceRequest serviceRequest = new ServiceRequest().setCode(new CodeableConcept().setCoding(List.of(
-        new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
+    final ServiceRequest serviceRequest = new ServiceRequest()
+        .setSubject(new Reference("patient"))
+        .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(false);
-    final OrganizationAffiliation affiliation = new OrganizationAffiliation().setParticipatingOrganization(new Reference("bar"));
+    when(resourceFinder.findPatientFromRequestOrDAO(any(), any())).thenReturn(Optional.ofNullable(patient));
+    final OrganizationAffiliation affiliation = new OrganizationAffiliation()
+        .setOrganization(new Reference("ep1"))
+        .setParticipatingOrganization(new Reference("bar"));
     when(bundle.getAllResources()).thenReturn(List.of(affiliation));
     interceptor.updated(requestDetails, null, serviceRequest);
     assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());

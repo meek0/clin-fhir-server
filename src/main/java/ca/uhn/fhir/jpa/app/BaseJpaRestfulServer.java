@@ -408,10 +408,8 @@ public class BaseJpaRestfulServer extends RestfulServer {
         daoConfig.setEnforceReferentialIntegrityOnWrite(false);
         registerInterceptor(fieldValidatorInterceptor);
         registerInterceptor(validationInterceptor);
-
-        if (bioProperties.isServiceRequestRoutingEnabled()) {
-            registerInterceptor(serviceRequestPerformerInterceptor);
-        }
+        
+        registerInterceptor(serviceRequestPerformerInterceptor);
         
         if (bioProperties.isTaggingEnabled()) {
             registerInterceptor(metaTagInterceptor);

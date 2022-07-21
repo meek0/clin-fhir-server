@@ -25,7 +25,6 @@ public class BioProperties {
     private final boolean isDisableSslValidation;
     private final boolean isAuditsEnabled;
     private final boolean isTaggingEnabled;
-    private final boolean isServiceRequestRoutingEnabled;
     private final boolean isTaggingQueryParam;
     private final boolean isAuthorizationEnabled;
     private final String authClientId;
@@ -52,7 +51,6 @@ public class BioProperties {
             @Value("${bio.tagging.enabled}") boolean isTaggingEnabled,
             @Value("${bio.tagging.queryParam}") boolean isTaggingQueryParam,
             @Value("${bio.auth.authorization.enabled}") boolean isAuthorizationEnabled,
-            @Value("${bio.service-request-routing.enabled}") boolean isServiceRequestRoutingEnabled,
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
             @Value("${bio.auth.authorization.system-id}") String authSystemId,
@@ -83,7 +81,6 @@ public class BioProperties {
         this.isNanuqEnabled = isNanuqEnabled;
         this.nanuqEsAnalysesIndex = nanuqEsAnalysesIndex;
         this.nanuqEsSequencingsIndex = nanuqEsSequencingsIndex;
-        this.isServiceRequestRoutingEnabled = isServiceRequestRoutingEnabled;
     }
 
 

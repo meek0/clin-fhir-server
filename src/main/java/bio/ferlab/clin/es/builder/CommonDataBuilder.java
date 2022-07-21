@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
-import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.SERVICE_REQUEST_CODE;
 
 @Component
 public class CommonDataBuilder {
@@ -151,7 +150,7 @@ public class CommonDataBuilder {
     
     if (serviceRequest.hasCode() && serviceRequest.getCode().hasCoding()) {
       for (Coding coding: serviceRequest.getCode().getCoding()) {
-        if (List.of(ANALYSIS_REQUEST_CODE, SERVICE_REQUEST_CODE).contains(coding.getSystem()) && StringUtils.isNotBlank(coding.getCode())) {
+        if (ANALYSIS_REQUEST_CODE.equals(coding.getSystem()) && StringUtils.isNotBlank(coding.getCode())) {
           prescriptionData.getAnalysis().setCode(coding.getCode());
           prescriptionData.getAnalysis().setDisplay(coding.getDisplay());
         }
