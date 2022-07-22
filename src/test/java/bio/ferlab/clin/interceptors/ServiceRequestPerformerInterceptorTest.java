@@ -24,7 +24,7 @@ import java.util.Optional;
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ServiceRequestPerformerInterceptorTest {
 
@@ -155,6 +155,22 @@ class ServiceRequestPerformerInterceptorTest {
         .setParticipatingOrganization(new Reference("bar"));
     when(bundle.getAllResources()).thenReturn(List.of(affiliation));
     interceptor.updated(requestDetails, null, serviceRequest);
+    assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
+  }
+
+  @Test
+  @DisplayName("ServiceRequest - ignore if performer already set")
+  void performerAlreadySet() {
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
+    final ServiceRequest serviceRequest = new ServiceRequest()
+        .setSubject(new Reference("patient"))
+        .setPerformer(List.of(new Reference("bar")))
+        .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
+    final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
+    interceptor.created(requestDetails, serviceRequest);
+    verify(resourceFinder,never()).findPatientFromRequestOrDAO(any(), any());
+    verify(dao,never()).search(any());
     assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
   }
 
