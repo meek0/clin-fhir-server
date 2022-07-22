@@ -90,10 +90,10 @@ class ServiceRequestPerformerInterceptorTest {
   }
 
   @Test
-  @DisplayName("ServiceRequest - create found an affiliation")
-  void createMatchAnAffiliation() {
+  @DisplayName("ServiceRequest - no matching affiliation from multiple result")
+  void noAffiliationFromMultiple() {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-    final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep3"));
     final ServiceRequest serviceRequest = new ServiceRequest()
         .setSubject(new Reference("patient"))
         .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
@@ -104,9 +104,38 @@ class ServiceRequestPerformerInterceptorTest {
     final OrganizationAffiliation affiliation = new OrganizationAffiliation()
         .setOrganization(new Reference("ep1"))
         .setParticipatingOrganization(new Reference("bar"));
-    when(bundle.getAllResources()).thenReturn(List.of(affiliation));
+    final OrganizationAffiliation affiliation2 = new OrganizationAffiliation()
+        .setOrganization(new Reference("ep2"))
+        .setParticipatingOrganization(new Reference("bar2"));
+    when(bundle.getAllResources()).thenReturn(List.of(affiliation, affiliation2));
+    Exception ex = Assertions.assertThrows(
+        InvalidRequestException.class,
+        () -> interceptor.created(requestDetails, serviceRequest)
+    );
+    assertEquals("Can't find organization affiliation attached to code: foo with ep: ep3", ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("ServiceRequest - create found an affiliation")
+  void createMatchAnAffiliation() {
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
+    final Patient patient = new Patient().setManagingOrganization(new Reference("ep2"));
+    final ServiceRequest serviceRequest = new ServiceRequest()
+        .setSubject(new Reference("patient"))
+        .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
+    final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
+    when(dao.search(any())).thenReturn(bundle);
+    when(bundle.isEmpty()).thenReturn(false);
+    when(resourceFinder.findPatientFromRequestOrDAO(any(), any())).thenReturn(Optional.ofNullable(patient));
+    final OrganizationAffiliation affiliation = new OrganizationAffiliation()
+        .setOrganization(new Reference("ep1"))
+        .setParticipatingOrganization(new Reference("bar"));
+    final OrganizationAffiliation affiliation2 = new OrganizationAffiliation()
+        .setOrganization(new Reference("ep2"))
+        .setParticipatingOrganization(new Reference("bar2"));
+    when(bundle.getAllResources()).thenReturn(List.of(affiliation, affiliation2));
     interceptor.created(requestDetails, serviceRequest);
-    assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
+    assertEquals("bar2", serviceRequest.getPerformer().get(0).getReference());
   }
 
   @Test
