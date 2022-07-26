@@ -152,8 +152,6 @@ hapi:
 #  username: SomeUsername
 
 bio:
-  service-request-routing:
-    enabled: false
   nanuq:
     enabled: false
     analyses-index: "analyses"
