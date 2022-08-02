@@ -16,16 +16,16 @@ class PatientValidatorTest {
     patient.getIdentifierFirstRep().getType().getCodingFirstRep().setCode(PatientValidator.MRN_CODE);
 
     patient.getIdentifierFirstRep().setValue(null);
-    assertFalse(validator.validate(patient));
+    assertFalse(validator.validate(patient).isEmpty());
     
     patient.getIdentifierFirstRep().setValue("");
-    assertFalse(validator.validate(patient));
+    assertFalse(validator.validate(patient).isEmpty());
 
     patient.getIdentifierFirstRep().setValue(" foo");
-    assertFalse(validator.validate(patient));
+    assertFalse(validator.validate(patient).isEmpty());
 
     patient.getIdentifierFirstRep().setValue("foo");
-    assertTrue(validator.validate(patient));
+    assertTrue(validator.validate(patient).isEmpty());
   }
 
 }

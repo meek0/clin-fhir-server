@@ -40,7 +40,7 @@ public class PatientValidatorTest {
             @Test
             @DisplayName("PatientValidator::validate should return true")
             public void validateShouldReturnTrue() {
-                Assertions.assertTrue(patientValidator.validate(patient));
+                Assertions.assertTrue(patientValidator.validate(patient).isEmpty());
             }
         }
 
@@ -55,7 +55,7 @@ public class PatientValidatorTest {
                         .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
                         .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                         .setValue("ABCD00000000");
-                Assertions.assertTrue(patientValidator.validate(patient));
+                Assertions.assertTrue(patientValidator.validate(patient).isEmpty());
             }
         }
     }
@@ -75,7 +75,7 @@ public class PatientValidatorTest {
                 calendar.setTime(date);
                 calendar.add(Calendar.DATE, 1);
                 patient.setBirthDate(calendar.getTime());
-                Assertions.assertFalse(patientValidator.validate(patient));
+                Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
             }
         }
 
@@ -89,13 +89,13 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.addName().setFamily("Test ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.addName().setFamily(" Test");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.addName().setFamily(" Test ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.addName().setFamily(" ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
 
@@ -107,7 +107,7 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.addName().setFamily("%^Test");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
         }
@@ -125,13 +125,13 @@ public class PatientValidatorTest {
                             .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
                             .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                             .setValue("ABC00000000 ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(1).setValue(" ABC00000000");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(0).setValue(" ABC00000000 ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(0).setValue(" ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
 
@@ -145,7 +145,7 @@ public class PatientValidatorTest {
                             .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
                             .setType(new CodeableConcept().addCoding(new Coding().setCode("JHN")))
                             .setValue("ABC00000000");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
         }
@@ -160,13 +160,13 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.getIdentifier().get(0).setValue(" 12345 ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(0).setValue(" ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(0).setValue("12345 ");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                     patient.getIdentifier().get(0).setValue(" 12345");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
 
@@ -177,7 +177,7 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.getIdentifier().get(0).setValue("1234%");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
 
@@ -189,7 +189,7 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.getIdentifier().get(0).setValue("");
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
 
@@ -200,7 +200,7 @@ public class PatientValidatorTest {
                 @DisplayName("PatientValidator::validate should return false")
                 public void validateShouldReturnFalse() {
                     patient.getIdentifier().clear();
-                    Assertions.assertFalse(patientValidator.validate(patient));
+                    Assertions.assertFalse(patientValidator.validate(patient).isEmpty());
                 }
             }
         }

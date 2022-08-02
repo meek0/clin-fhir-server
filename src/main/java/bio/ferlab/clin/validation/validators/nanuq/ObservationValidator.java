@@ -2,6 +2,7 @@ package bio.ferlab.clin.validation.validators.nanuq;
 
 import bio.ferlab.clin.validation.validators.SchemaValidator;
 import org.hl7.fhir.r4.model.Observation;
+import java.util.List;
 
 public class ObservationValidator extends SchemaValidator<Observation> {
 
@@ -10,7 +11,7 @@ public class ObservationValidator extends SchemaValidator<Observation> {
   }
 
   @Override
-  public boolean validateResource(Observation patient) {
-    return true;
+  public List<String> validateResource(Observation observation) {
+    return List.of();
   }
 }

@@ -7,6 +7,7 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +22,13 @@ public class PatientValidator extends SchemaValidator<Patient> {
     }
 
     @Override
-    public boolean validateResource(Patient patient) {
-        return validateNames(patient) &&
-                validateBirthDate(patient) &&
-                validateMRN(patient) &&
-                validateRAMQ(patient);
+    public List<String> validateResource(Patient patient) {
+        List<String> errors = new ArrayList<>();
+        if(!validateNames(patient)) this.formatError(errors, patient, "Invalid names");
+        if(!validateBirthDate(patient)) this.formatError(errors, patient, "Invalid birth date");
+        if(!validateMRN(patient)) this.formatError(errors, patient, "Invalid MRN");
+        if(!validateRAMQ(patient)) this.formatError(errors,patient, "Invalid RAMQ");
+        return errors;
     }
 
     private boolean validateBirthDate(Patient patient) {

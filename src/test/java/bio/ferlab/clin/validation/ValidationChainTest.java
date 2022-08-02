@@ -8,6 +8,8 @@ import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import java.util.List;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -39,8 +41,8 @@ public class ValidationChainTest {
                     .withValidator(observationValidator);
 
             final Patient resource = new Patient();
-            when(patientValidator.validateResource(resource)).thenReturn(false);
-            final boolean result = validationChain.isValid(resource);
+            //when(patientValidator.validateResource(resource)).thenReturn(List.of("error"));
+            final boolean result = validationChain.isValid(resource).isEmpty();
             verify(patientValidator, times(1)).validateResource(any());
             Assertions.assertFalse(result);
         }
@@ -59,14 +61,14 @@ public class ValidationChainTest {
             final Patient patient = new Patient();
             final Observation observation = new Observation();
 
-            when(patientValidator.validateResource(patient)).thenReturn(false);
-            when(observationValidator.validateResource(observation)).thenReturn(false);
+            //when(patientValidator.validateResource(patient)).thenReturn(List.of("error"));
+            //when(observationValidator.validateResource(observation)).thenReturn(List.of("error"));
 
-            boolean result = validationChain.isValid(patient);
+            boolean result = validationChain.isValid(patient).isEmpty();
             verify(patientValidator, times(1)).validateResource(patient);
             Assertions.assertFalse(result);
 
-            result = validationChain.isValid(observation);
+            result = validationChain.isValid(observation).isEmpty();
             verify(observationValidator, times(1)).validateResource(observation);
             Assertions.assertFalse(result);
         }
@@ -83,8 +85,8 @@ public class ValidationChainTest {
             final Patient patient = new Patient();
             final Observation observation = new Observation();
 
-            final boolean patientResult = validationChain.isValid(patient);
-            final boolean observationResult = validationChain.isValid(observation);
+            final boolean patientResult = validationChain.isValid(patient).isEmpty();
+            final boolean observationResult = validationChain.isValid(observation).isEmpty();
 
             Assertions.assertTrue(patientResult);
             Assertions.assertTrue(observationResult);

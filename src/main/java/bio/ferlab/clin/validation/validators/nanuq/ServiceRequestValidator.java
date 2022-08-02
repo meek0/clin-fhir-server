@@ -3,6 +3,8 @@ package bio.ferlab.clin.validation.validators.nanuq;
 import bio.ferlab.clin.validation.validators.SchemaValidator;
 import org.hl7.fhir.r4.model.ServiceRequest;
 
+import java.util.List;
+
 public class ServiceRequestValidator extends SchemaValidator<ServiceRequest> {
 
   public ServiceRequestValidator() {
@@ -10,7 +12,7 @@ public class ServiceRequestValidator extends SchemaValidator<ServiceRequest> {
   }
 
   @Override
-  public boolean validateResource(ServiceRequest patient) {
-    return true;
+  public List<String> validateResource(ServiceRequest serviceRequest) {
+    return List.of();
   }
 }

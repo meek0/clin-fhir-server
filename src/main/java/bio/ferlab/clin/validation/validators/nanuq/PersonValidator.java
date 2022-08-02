@@ -9,6 +9,7 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Person;
 import org.hl7.fhir.r4.model.StringType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +24,12 @@ public class PersonValidator extends SchemaValidator<Person> {
   }
 
   @Override
-  public boolean validateResource(Person person) {
-    return validateNames(person) &&
-        validateBirthDate(person) &&
-        validateRAMQ(person);
+  public List<String> validateResource(Person person) {
+    List<String> errors = new ArrayList<>();
+    if(!validateBirthDate(person)) formatError(errors, person, "Invalid birth date");
+    if(!validateRAMQ(person)) formatError(errors, person, "Invalid RAMQ");
+    if(!validateNames(person)) formatError(errors, person, "Invalid names");
+    return errors;
   }
 
   private boolean validateBirthDate(Person person) {

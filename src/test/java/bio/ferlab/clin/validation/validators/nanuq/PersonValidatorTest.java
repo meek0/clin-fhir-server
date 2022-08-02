@@ -19,15 +19,15 @@ class PersonValidatorTest {
   @Test
   void validateResource() {
     final Person valid = getValidPerson();
-    assertTrue(validator.validateResource(valid));
+    assertTrue(validator.validateResource(valid).isEmpty());
 
     final Person badName = getValidPerson();
     badName.getNameFirstRep().setFamily("x");
-    assertFalse(validator.validateResource(badName));
+    assertFalse(validator.validateResource(badName).isEmpty());
 
     final Person badBirthDate = getValidPerson();
     badBirthDate.setBirthDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
-    assertFalse(validator.validateResource(badBirthDate));
+    assertFalse(validator.validateResource(badBirthDate).isEmpty());
   }
   
   private Person getValidPerson() {

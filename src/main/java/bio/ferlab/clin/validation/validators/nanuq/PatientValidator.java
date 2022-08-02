@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class PatientValidator extends SchemaValidator<Patient> {
@@ -17,8 +19,10 @@ public class PatientValidator extends SchemaValidator<Patient> {
   }
 
   @Override
-  public boolean validateResource(Patient patient) {
-    return validateMRN(patient);
+  public List<String> validateResource(Patient patient) {
+    List<String> errors = new ArrayList<>();
+    if(!validateMRN(patient)) formatError(errors, patient, "Invalid MRN");
+    return errors;
   }
 
   private boolean validateMRN(Patient patient) {
