@@ -89,6 +89,12 @@ public class BaseJpaRestfulServer extends RestfulServer {
     
     @Autowired
     ServiceRequestPerformerInterceptor serviceRequestPerformerInterceptor;
+    
+    @Autowired
+    ImmutableRamqInterceptor immutableRamqInterceptor;
+    
+    @Autowired
+    ImmutableMrnInterceptor immutableMrnInterceptor;
 
     @Autowired
     MetaTagInterceptor metaTagInterceptor;
@@ -410,6 +416,8 @@ public class BaseJpaRestfulServer extends RestfulServer {
         registerInterceptor(validationInterceptor);
         
         registerInterceptor(serviceRequestPerformerInterceptor);
+        registerInterceptor(immutableRamqInterceptor);
+        registerInterceptor(immutableMrnInterceptor);
         
         if (bioProperties.isTaggingEnabled()) {
             registerInterceptor(metaTagInterceptor);
