@@ -5,6 +5,9 @@ import bio.ferlab.clin.validation.utils.ValidatorUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.hl7.fhir.r4.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ObservationValidator extends SchemaValidator<Observation> {
     private static final String AGE_AT_ONSET_PREFIX_VALUE = "HP:";
     public static final String ETHNICITY_SYSTEM = "http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity";
@@ -29,28 +32,37 @@ public class ObservationValidator extends SchemaValidator<Observation> {
     }
 
     @Override
-    public boolean validateResource(Observation resource) {
+    public List<String> validateResource(Observation resource) {
+        List<String> errors = new ArrayList<>();
         final String resourceCode = getCode(resource);
         final SupportedCodesEnum code = EnumUtils.getEnum(SupportedCodesEnum.class, resourceCode);
         if (resourceCode == null || code == null) {
-            return false;
+            this.formatError(errors, resource, "Missing code");
+        } else {
+            switch (code) {
+                case CGH:
+                    if (!validateCgh(resource)) this.formatError(errors, resource, "Invalid CGH");
+                    break;
+                case INDIC:
+                    if (!validateIndications(resource)) this.formatError(errors, resource, "Invalid indications");
+                    break;
+                case PHENO:
+                    if (!validatePhenotype(resource)) this.formatError(errors, resource, "Invalid phenotype");
+                    break;
+                case INVES:
+                    if (!validateInvestigations(resource)) this.formatError(errors, resource, "Invalid investigations");
+                    break;
+                case ETH:
+                    if (!validateEthnicity(resource)) this.formatError(errors, resource, "Invalid ethnicity");
+                    break;
+                case CONS:
+                    if (!validateConsumption(resource)) this.formatError(errors, resource, "Invalid consumption");
+                    break;
+                default:
+                    this.formatError(errors, resource, "Invalid code");
+            }
         }
-        switch (code) {
-            case CGH:
-                return validateCgh(resource);
-            case INDIC:
-                return validateIndications(resource);
-            case PHENO:
-                return validatePhenotype(resource);
-            case INVES:
-                return validateInvestigations(resource);
-            case ETH:
-                return validateEthnicity(resource);
-            case CONS:
-                return validateConsumption(resource);
-            default:
-                return false;
-        }
+        return errors;
     }
 
     private boolean validateCgh(Observation resource) {

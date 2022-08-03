@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ResourceDaoConfiguration {
     public final IFhirResourceDao<Patient> patientDAO;
+    public final IFhirResourceDao<Person> personDAO;
     public final IFhirResourceDao<ServiceRequest> serviceRequestDAO;
     public final IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO;
     public final IFhirResourceDao<Organization> organizationDAO;
@@ -19,6 +20,7 @@ public class ResourceDaoConfiguration {
 
     public ResourceDaoConfiguration(
             IFhirResourceDao<Patient> patientDAO,
+            IFhirResourceDao<Person> personDAO,
             IFhirResourceDao<ServiceRequest> serviceRequestDAO,
             IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO,
             IFhirResourceDao<Organization> organizationDAO,
@@ -29,6 +31,7 @@ public class ResourceDaoConfiguration {
             IFhirResourceDao<Observation> observationDao,
             IFhirResourceDao<Specimen> specimenDao) {
         this.patientDAO = patientDAO;
+        this.personDAO = personDAO;
         this.serviceRequestDAO = serviceRequestDAO;
         this.clinicalImpressionDAO = clinicalImpressionDAO;
         this.organizationDAO = organizationDAO;

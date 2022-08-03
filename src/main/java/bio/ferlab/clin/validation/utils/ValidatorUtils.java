@@ -1,11 +1,10 @@
 package bio.ferlab.clin.validation.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ValidatorUtils {
     public static boolean isTrimmed(String value) {
-        if (value.length() == 0) {
-            return true;
-        }
-        return !Character.isWhitespace(value.charAt(0)) && !Character.isWhitespace(value.charAt(value.length() - 1));
+        return StringUtils.isEmpty(value) || value.trim().equals(value);
     }
 
     public static boolean hasSpecialCharacters(String value) {

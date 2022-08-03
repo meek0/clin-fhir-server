@@ -42,7 +42,7 @@ public class ObservationValidatorTest {
             void withInterpretationAndAgeAtOnset() {
                 observation.setInterpretation(Collections.singletonList(createInterpretation("NEG")));
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("HP:0011462"));
-                Assertions.assertTrue(observationValidator.validateResource(observation));
+                Assertions.assertTrue(observationValidator.validateResource(observation).isEmpty());
             }
         }
     }
@@ -62,13 +62,13 @@ public class ObservationValidatorTest {
                     observation.setInterpretation(Collections.singletonList(createInterpretation("IND")));
                     final Annotation annotation = observation.addNote();
                     annotation.setText(" ");
-                    Assertions.assertFalse(observationValidator.validateResource(observation));
+                    Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
                     annotation.setText(" note");
-                    Assertions.assertFalse(observationValidator.validateResource(observation));
+                    Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
                     annotation.setText("note ");
-                    Assertions.assertFalse(observationValidator.validateResource(observation));
+                    Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
                     annotation.setText(" note ");
-                    Assertions.assertFalse(observationValidator.validateResource(observation));
+                    Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
                 }
             }
         }
@@ -94,7 +94,7 @@ public class ObservationValidatorTest {
                     void withoutPrecision() {
                         observation.setInterpretation(Collections.singletonList(createInterpretation("A")));
                         observation.addNote().setText("  Note");
-                        Assertions.assertFalse(observationValidator.validateResource(observation));
+                        Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
                     }
                 }
             }
@@ -118,7 +118,7 @@ public class ObservationValidatorTest {
             void withMultipleInterpretations() {
                 observation.setInterpretation(Arrays.asList(createInterpretation("POS"), createInterpretation("NEG")));
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("HP:0011462"));
-                Assertions.assertFalse(observationValidator.validateResource(observation));
+                Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
             }
 
             @Test
@@ -126,14 +126,14 @@ public class ObservationValidatorTest {
             void withMultipleInterpretationCodings() {
                 observation.setInterpretation(Collections.singletonList(createInterpretation("POS").addCoding(new Coding().setCode("NEG"))));
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("HP:0011462"));
-                Assertions.assertFalse(observationValidator.validateResource(observation));
+                Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
             }
 
             @Test
             @DisplayName("With no interpretation")
             void withNoInterpretation() {
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("HP:0011462"));
-                Assertions.assertFalse(observationValidator.validateResource(observation));
+                Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
             }
 
             @Test
@@ -141,7 +141,7 @@ public class ObservationValidatorTest {
             void withInvalidInterpretation() {
                 observation.setInterpretation(Collections.singletonList(createInterpretation("INVALID")));
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("HP:0011462"));
-                Assertions.assertFalse(observationValidator.validateResource(observation));
+                Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
             }
 
             @Test
@@ -149,7 +149,7 @@ public class ObservationValidatorTest {
             void withInvalidAgeAtOnset() {
                 observation.setInterpretation(Collections.singletonList(createInterpretation("POS")));
                 observation.addExtension(Extensions.AGE_AT_ONSET, new Coding().setCode("1234"));
-                Assertions.assertFalse(observationValidator.validateResource(observation));
+                Assertions.assertFalse(observationValidator.validateResource(observation).isEmpty());
             }
         }
     }
