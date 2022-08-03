@@ -28,7 +28,7 @@ class PrescriptionDataBuilderTest {
   final IFhirResourceDao<Patient> patientDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Organization> organizationDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Specimen> specimenDao = Mockito.mock(IFhirResourceDao.class);
-  final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, serviceRequestDao, null, organizationDao
+  final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null, serviceRequestDao, null, organizationDao
       , null, null, null, null, null, specimenDao);
   
   private final AnalysisDataBuilder analysisDataBuilder = new AnalysisDataBuilder(configuration);
