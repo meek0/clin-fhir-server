@@ -202,11 +202,11 @@ public class BaseJpaRestfulServer extends RestfulServer {
          * This server tries to dynamically generate narratives
          */
         FhirContext ctx = getFhirContext();
-        INarrativeGenerator theNarrativeGenerator =
+        /*INarrativeGenerator theNarrativeGenerator =
                 appProperties.getNarrative_enabled() ?
                         new DefaultThymeleafNarrativeGenerator() :
                         new NullNarrativeGenerator();
-        ctx.setNarrativeGenerator(theNarrativeGenerator);
+        ctx.setNarrativeGenerator(theNarrativeGenerator);*/
 
         /*
          * Default to JSON and pretty printing
