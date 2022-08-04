@@ -28,6 +28,10 @@ class PersonValidatorTest {
     final Person badBirthDate = getValidPerson();
     badBirthDate.setBirthDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     assertFalse(validator.validateResource(badBirthDate).isEmpty());
+
+    final Person noRamq = getValidPerson();
+    noRamq.getIdentifier().clear(); // no RAMQ is OK
+    assertTrue(validator.validateResource(noRamq).isEmpty());
   }
   
   private Person getValidPerson() {

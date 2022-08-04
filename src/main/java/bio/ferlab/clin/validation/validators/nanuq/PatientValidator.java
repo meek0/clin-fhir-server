@@ -27,7 +27,7 @@ public class PatientValidator extends SchemaValidator<Patient> {
 
   private boolean validateMRN(Patient patient) {
     Optional<Identifier> mrn = patient.getIdentifier().stream().filter(identifier -> MRN_CODE.equals(identifier.getType().getCodingFirstRep().getCode())).findFirst();
-    return mrn.map(Identifier::getValue).filter(m -> StringUtils.isNotBlank(m) && !ValidatorUtils.hasSpecialCharacters(m) && ValidatorUtils.isTrimmed(m)).isPresent();
+    return mrn.isEmpty() || mrn.map(Identifier::getValue).filter(m -> StringUtils.isNotBlank(m) && !ValidatorUtils.hasSpecialCharacters(m) && ValidatorUtils.isTrimmed(m)).isPresent();
   }
 
 }

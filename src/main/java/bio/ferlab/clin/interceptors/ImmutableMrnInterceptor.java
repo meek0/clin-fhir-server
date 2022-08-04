@@ -62,7 +62,7 @@ public class ImmutableMrnInterceptor {
     if (isValidRequestAndResource(requestDetails, oldResource, newResource)) {
       final String oldMrn = getMrn((Patient)oldResource);
       final String newMrn = getMrn((Patient)newResource);
-      if (StringUtils.isNoneBlank(oldMrn, newMrn) && !oldMrn.equals(newMrn)) {
+      if (StringUtils.isNotBlank(oldMrn) && !oldMrn.equals(newMrn)) {
         throw new InvalidRequestException("Can't change the MRN (" + getObstructed(oldMrn) + ") of Patient/" + ((Patient) oldResource).getIdElement().getIdPart());
       }
     }

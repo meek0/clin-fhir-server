@@ -40,7 +40,7 @@ public class PersonValidator extends SchemaValidator<Person> {
 
   private boolean validateRAMQ(Person person) {
     Optional<Identifier> ramq = person.getIdentifier().stream().filter(identifier -> RAMQ_CODE.equals(identifier.getType().getCodingFirstRep().getCode())).findFirst();
-    return ramq.map(Identifier::getValue).filter(m -> StringUtils.isNotBlank(m) && ValidatorUtils.isValidRAMQ(m) && ValidatorUtils.isTrimmed(m)).isPresent();
+    return ramq.isEmpty() || ramq.map(Identifier::getValue).filter(m -> StringUtils.isNotBlank(m) && ValidatorUtils.isValidRAMQ(m) && ValidatorUtils.isTrimmed(m)).isPresent();
   }
 
   private boolean validateNames(Person person) {
