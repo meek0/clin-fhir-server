@@ -25,12 +25,8 @@ public class RPTPermissionExtractor {
         final var rpt = Helpers.extractAccessTokenFromBearer(bearer);
         final var response = this.client.introspectRpt(rpt);
         
-        if (Optional.ofNullable(response.getPermissions()).isEmpty()) {
-            throw new RptIntrospectionException("rpt token is required");
-        }
-    
-        if (!response.isActive()) {
-            throw new RptIntrospectionException("token is expired");
+        if (!response.isActive() || Optional.ofNullable(response.getPermissions()).isEmpty()) {
+            throw new RptIntrospectionException("not active rpt token");
         }
     
         final var builder = new UserPermissionsBuilder();

@@ -46,10 +46,10 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().equals("rpt token is required"));
+      assertTrue(ex.getMessage().equals("not active rpt token"));
     }
     @Test
-    void not_active() {
+    void not_active_token() {
       final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
       when(requestDetails.getHeader(any())).thenReturn("Bearer a.b.c");
       when(introspectionResponse.getPermissions()).thenReturn(new ArrayList<>());
@@ -59,7 +59,7 @@ public class RPTPermissionExtractorTest {
           RptIntrospectionException.class,
           () -> extractor.extract(requestDetails)
       );
-      assertTrue(ex.getMessage().equals("token is expired"));
+      assertTrue(ex.getMessage().equals("not active rpt token"));
     }
   }
 
