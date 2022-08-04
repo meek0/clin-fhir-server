@@ -63,7 +63,7 @@ public class ImmutableRamqInterceptor {
     if (isValidRequestAndResource(requestDetails, oldResource, newResource)) {
       final String oldRamq = getRamq((Person)oldResource);
       final String newRamq = getRamq((Person)newResource);
-      if (StringUtils.isNoneBlank(oldRamq, newRamq) && !oldRamq.equals(newRamq)) {
+      if (StringUtils.isNotBlank(oldRamq) && !oldRamq.equals(newRamq)) {
         throw new InvalidRequestException("Can't change the RAMQ (" + getObstructed(oldRamq) + ") of Person/" + ((Person) oldResource).getIdElement().getIdPart());
       }
     }

@@ -63,35 +63,34 @@ class ImmutableRamqInterceptorTest {
   }
   
   @Test
-  void update_error() {
+  void update() {
+    update("oldRamq",null, true);
+    update("oldRamq","newRamq", true);
+    update("oldRamq","oldRamq", false);
+    update(null,"newRamq", false);
+  }
+  
+  private void update(String oldValue, String newValue, boolean shouldTrowError) {
+
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
-    
+
     final Person before = new Person();
     before.setId("1");
-    before.getIdentifierFirstRep().setValue("oldRamq").getType().getCodingFirstRep().setCode(RAMQ_CODE);
+    before.getIdentifierFirstRep().setValue(oldValue).getType().getCodingFirstRep().setCode(RAMQ_CODE);
     final Person after = new Person();
     after.setId("1");
-    after.getIdentifierFirstRep().setValue("newRamq").getType().getCodingFirstRep().setCode(RAMQ_CODE);
+    after.getIdentifierFirstRep().setValue(newValue).getType().getCodingFirstRep().setCode(RAMQ_CODE);
 
-    Exception ex = Assertions.assertThrows(
-        InvalidRequestException.class,
-        () -> interceptor.updated(requestDetails, before, after)
-    );
-    assertEquals("Can't change the RAMQ (oldR...) of Person/1", ex.getMessage());
-  }
-
-  @Test
-  void update_ok() {
-    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
-
-    final Person before = new Person();
-    before.getIdentifierFirstRep().setValue("sameRamq").getType().getCodingFirstRep().setCode(RAMQ_CODE);
-    final Person after = new Person();
-    after.getIdentifierFirstRep().setValue("sameRamq").getType().getCodingFirstRep().setCode(RAMQ_CODE);
-
-    interceptor.updated(requestDetails, before, after);
+    if (shouldTrowError) {
+      Exception ex = Assertions.assertThrows(
+          InvalidRequestException.class,
+          () -> interceptor.updated(requestDetails, before, after)
+      );
+      assertEquals("Can't change the RAMQ (oldR...) of Person/1", ex.getMessage());
+    } else {
+      interceptor.updated(requestDetails, before, after);
+    }
   }
 
 }

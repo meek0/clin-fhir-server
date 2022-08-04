@@ -6,9 +6,7 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Person;
-import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,9 +28,10 @@ class ImmutableMrnInterceptorTest {
   void create_error() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-
+    
     final Patient patient = new Patient();
     patient.setId("1");
+    patient.setManagingOrganization(new Reference("Organization/org1"));
     patient.getIdentifierFirstRep().setValue("mrn").getType().getCodingFirstRep().setCode(MRN_CODE);
 
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
@@ -53,6 +52,7 @@ class ImmutableMrnInterceptorTest {
 
     final Patient patient = new Patient();
     patient.setId("1");
+    patient.setManagingOrganization(new Reference("Organization/org1"));
     patient.getIdentifierFirstRep().setValue("mrn").getType().getCodingFirstRep().setCode(MRN_CODE);
 
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
@@ -63,35 +63,33 @@ class ImmutableMrnInterceptorTest {
   }
   
   @Test
-  void update_error() {
-    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
-    
-    final Patient before = new Patient();
-    before.setId("1");
-    before.getIdentifierFirstRep().setValue("oldMrn").getType().getCodingFirstRep().setCode(MRN_CODE);
-    final Patient after = new Patient();
-    after.setId("1");
-    after.getIdentifierFirstRep().setValue("newMrn").getType().getCodingFirstRep().setCode(MRN_CODE);
-
-    Exception ex = Assertions.assertThrows(
-        InvalidRequestException.class,
-        () -> interceptor.updated(requestDetails, before, after)
-    );
-    assertEquals("Can't change the MRN (oldM...) of Patient/1", ex.getMessage());
+  void update() {
+    update("oldMrn",null, true);
+    update("oldMrn","newMrn", true);
+    update("oldMrn","oldMrn", false);
+    update(null,"newMrn", false);
   }
 
-  @Test
-  void update_ok() {
+  private void update(String oldValue, String newValue, boolean shouldThrowError) {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.PUT);
 
     final Patient before = new Patient();
-    before.getIdentifierFirstRep().setValue("sameMrn").getType().getCodingFirstRep().setCode(MRN_CODE);
+    before.setId("1");
+    before.getIdentifierFirstRep().setValue(oldValue).getType().getCodingFirstRep().setCode(MRN_CODE);
     final Patient after = new Patient();
-    after.getIdentifierFirstRep().setValue("sameMrn").getType().getCodingFirstRep().setCode(MRN_CODE);
+    after.setId("1");
+    after.getIdentifierFirstRep().setValue(newValue).getType().getCodingFirstRep().setCode(MRN_CODE);
 
-    interceptor.updated(requestDetails, before, after);
+    if (shouldThrowError) {
+      Exception ex = Assertions.assertThrows(
+          InvalidRequestException.class,
+          () -> interceptor.updated(requestDetails, before, after)
+      );
+      assertEquals("Can't change the MRN (oldM...) of Patient/1", ex.getMessage());
+    }else {
+      interceptor.updated(requestDetails, before, after);
+    }
   }
 
 }
