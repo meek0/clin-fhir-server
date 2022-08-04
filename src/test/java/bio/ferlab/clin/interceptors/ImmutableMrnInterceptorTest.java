@@ -6,9 +6,7 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Person;
-import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,9 +28,10 @@ class ImmutableMrnInterceptorTest {
   void create_error() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.POST);
-
+    
     final Patient patient = new Patient();
     patient.setId("1");
+    patient.setManagingOrganization(new Reference("Organization/org1"));
     patient.getIdentifierFirstRep().setValue("mrn").getType().getCodingFirstRep().setCode(MRN_CODE);
 
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
@@ -53,6 +52,7 @@ class ImmutableMrnInterceptorTest {
 
     final Patient patient = new Patient();
     patient.setId("1");
+    patient.setManagingOrganization(new Reference("Organization/org1"));
     patient.getIdentifierFirstRep().setValue("mrn").getType().getCodingFirstRep().setCode(MRN_CODE);
 
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);

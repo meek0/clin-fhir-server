@@ -8,6 +8,7 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -46,10 +48,14 @@ public class ImmutableMrnInterceptor {
   @Hook(Pointcut.STORAGE_PRESTORAGE_RESOURCE_CREATED)
   public void created(RequestDetails requestDetails, IBaseResource newResource) {
     if (isValidRequestAndResource(requestDetails, newResource)) {
-      final String mrn = getMrn((Patient) newResource);
-      if (StringUtils.isNotBlank(mrn)) {
+      final Patient patient = (Patient) newResource;
+      final String mrn = getMrn(patient);
+      final String ep = patient.getManagingOrganization().getReference();
+      if (StringUtils.isNoneBlank(mrn, ep)) {
         final IBundleProvider search = this.configuration.patientDAO
-            .search(SearchParameterMap.newSynchronous().add(Patient.SP_IDENTIFIER, new TokenParam(mrn)));
+            .search(SearchParameterMap.newSynchronous()
+                .add(Patient.SP_IDENTIFIER, new TokenParam(mrn))
+                .add(Patient.SP_ORGANIZATION, new ReferenceParam(ep)));
         if(!search.isEmpty()) {
           throw new InvalidRequestException("Duplicated person with same MRN " + getObstructed(mrn));
         }
