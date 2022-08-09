@@ -90,6 +90,7 @@ public class BioAuthInterceptor extends AuthorizationInterceptor {
 
     private void applyRulesOnValidate(IAuthRuleBuilder ruleBuilder) {
         ruleBuilder.allow().operation().named(Constants.VALIDATE_OPERATION).onAnyType().andRequireExplicitResponseAuthorization().andThen();
+        ruleBuilder.allow().operation().named(Constants.VALIDATE_OPERATION).onAnyInstance().andRequireExplicitResponseAuthorization().andThen();
     }
 
     private void applyRulesOnExport(IAuthRuleBuilder ruleBuilder) {
