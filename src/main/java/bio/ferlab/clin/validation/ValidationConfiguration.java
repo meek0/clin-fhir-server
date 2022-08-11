@@ -18,6 +18,7 @@ public class ValidationConfiguration {
             return new ValidationChain()
                 .withValidator(new PatientValidator())
                 .withValidator(new PersonValidator())
+                .withValidator(new RelatedPersonValidator())
                 .withValidator(new ServiceRequestValidator())
                 .withValidator(new ClinicalImpressionValidator())
                 .withValidator(new ObservationValidator())
