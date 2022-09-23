@@ -2,7 +2,16 @@
   "index_patterns": ["clin-qa-analyses*", "clin-staging-analyses*", "clin-prod-analyses*"],
   "template": {
     "settings": {
-      "number_of_shards": 1
+      "number_of_shards": 1,
+      "analysis": {
+        "normalizer": {
+          "lowercase_normalizer": {
+            "type": "custom",
+            "char_filter": [],
+            "filter": "lowercase"
+          }
+        }
+      }
     },
     "mappings": {
       "_source": {
@@ -10,13 +19,16 @@
       },
       "properties": {
         "prescription_id": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
         },
         "patient_id": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
         },
         "patient_mrn": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
         },
         "status": {
           "type": "keyword"
@@ -52,7 +64,8 @@
           "type": "nested",
           "properties": {
             "request_id": {
-              "type": "keyword"
+              "type": "keyword",
+              "normalizer" : "lowercase_normalizer"
             },
             "status": {
               "type": "keyword"
