@@ -1,5 +1,6 @@
 package bio.ferlab.clin.utils;
 
+import bio.ferlab.clin.es.builder.nanuq.AbstractPrescriptionDataBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
@@ -11,6 +12,11 @@ import java.util.Optional;
 public class MaskingUtils {
   
   private MaskingUtils(){}
+
+  public static boolean isAnalysis(ServiceRequest serviceRequest) {
+    return serviceRequest != null && serviceRequest.getMeta().getProfile().stream()
+        .anyMatch(s -> AbstractPrescriptionDataBuilder.Type.ANALYSIS.value.equals(s.getValue()));
+  }
   
   public static boolean areLinked(ServiceRequest sr, Patient p) {
     return Optional.ofNullable(sr).map(ServiceRequest::getSubject).map(MaskingUtils::extractId).stream()
