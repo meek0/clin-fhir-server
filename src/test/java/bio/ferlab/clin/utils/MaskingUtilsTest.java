@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MaskingUtilsTest {
 
   @Test
-  void isLinkedTo_ServiceRequest_Patient() {
+  void areLinked_ServiceRequest_Patient() {
     final ServiceRequest sr1 = new ServiceRequest();
     sr1.setSubject(new Reference("Patient/p1"));
     final ServiceRequest sr2 = new ServiceRequest();
@@ -21,18 +21,18 @@ class MaskingUtilsTest {
     final Patient p2 = new Patient();
     p2.setId("p2");
     
-    assertTrue(MaskingUtils.isLinkedTo(sr1, p1));
-    assertTrue(MaskingUtils.isLinkedTo(sr2, p2));
+    assertTrue(MaskingUtils.areLinked(sr1, p1));
+    assertTrue(MaskingUtils.areLinked(sr2, p2));
 
-    assertFalse(MaskingUtils.isLinkedTo(sr1, null));
-    assertFalse(MaskingUtils.isLinkedTo((ServiceRequest) null, p1));
+    assertFalse(MaskingUtils.areLinked(sr1, null));
+    assertFalse(MaskingUtils.areLinked((ServiceRequest) null, p1));
 
-    assertFalse(MaskingUtils.isLinkedTo(sr1, p2));
-    assertFalse(MaskingUtils.isLinkedTo(sr2, p1));
+    assertFalse(MaskingUtils.areLinked(sr1, p2));
+    assertFalse(MaskingUtils.areLinked(sr2, p1));
   }
 
   @Test
-  void isLinkedTo_Person_Patient() {
+  void areLinked_Person_Patient() {
     final Person pers1 = new Person();
     pers1.addLink().setTarget(new Reference("Patient/p1"));
     final Person pers2 = new Person();
@@ -46,14 +46,14 @@ class MaskingUtilsTest {
     final Patient p2 = new Patient();
     p2.setId("p2");
 
-    assertTrue(MaskingUtils.isLinkedTo(pers1, p1));
-    assertTrue(MaskingUtils.isLinkedTo(pers2, p2));
+    assertTrue(MaskingUtils.areLinked(pers1, p1));
+    assertTrue(MaskingUtils.areLinked(pers2, p2));
 
-    assertFalse(MaskingUtils.isLinkedTo(pers1, null));
-    assertFalse(MaskingUtils.isLinkedTo((ServiceRequest) null, p1));
+    assertFalse(MaskingUtils.areLinked(pers1, null));
+    assertFalse(MaskingUtils.areLinked((ServiceRequest) null, p1));
 
-    assertFalse(MaskingUtils.isLinkedTo(pers1, p2));
-    assertFalse(MaskingUtils.isLinkedTo(pers2, p1));
+    assertFalse(MaskingUtils.areLinked(pers1, p2));
+    assertFalse(MaskingUtils.areLinked(pers2, p1));
   }
   
 }

@@ -1,6 +1,5 @@
 package bio.ferlab.clin.interceptors;
 
-import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
 import bio.ferlab.clin.utils.MaskingUtils;
 import ca.uhn.fhir.interceptor.api.Hook;
@@ -29,13 +28,15 @@ public class PrescriptionMaskingInterceptor {
   
   @Hook(Pointcut.STORAGE_PRESHOW_RESOURCES)
   public void preShow(IPreResourceShowDetails preResourceShowDetails, RequestDetails requestDetails) {
-    final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
     final List<IBaseResource> resources = sameRequestInterceptor.get(requestDetails);
-    List<ServiceRequest> serviceRequests = MaskingUtils.extractAllOfType(resources, ServiceRequest.class);
-    List<Patient> patients = MaskingUtils.extractAllOfType(resources, Patient.class);
-    List<Person> persons = MaskingUtils.extractAllOfType(resources, Person.class);
-    if (isPrescriptionRequest(serviceRequests, patients, persons)) {
-      maskSensitiveData(userTags, serviceRequests.get(0), persons.get(0));
+    if (resources.size() >= 3) {  // minimal requirements
+      List<ServiceRequest> serviceRequests = MaskingUtils.extractAllOfType(resources, ServiceRequest.class);
+      List<Patient> patients = MaskingUtils.extractAllOfType(resources, Patient.class);
+      List<Person> persons = MaskingUtils.extractAllOfType(resources, Person.class);
+      if (isPrescriptionRequest(serviceRequests, patients, persons)) {
+        final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
+        maskSensitiveData(userTags, serviceRequests.get(0), persons.get(0));
+      }
     }
   }
   
@@ -45,7 +46,7 @@ public class PrescriptionMaskingInterceptor {
       ServiceRequest sr = serviceRequests.get(0);
       Patient patient = patients.get(0);
       Person pers = persons.get(0);
-      return MaskingUtils.isLinkedTo(sr, patient) && MaskingUtils.isLinkedTo(pers, patient);
+      return MaskingUtils.areLinked(sr, patient) && MaskingUtils.areLinked(pers, patient);
     }
     return false;
   }

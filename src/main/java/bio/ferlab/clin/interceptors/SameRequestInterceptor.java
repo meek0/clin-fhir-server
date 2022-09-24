@@ -29,15 +29,11 @@ public class SameRequestInterceptor {
   }
   
   @Hook(Pointcut.SERVER_PROCESSING_COMPLETED)
-  public void clear(RequestDetails requestDetails) {
-    remove(requestDetails);
+  public void remove(RequestDetails requestDetails) {
+    requests.remove(requestDetails);
   }
   
   public List<IBaseResource> get(RequestDetails requestDetails) {
     return requests.get(requestDetails);
-  }
-  
-  public void remove(RequestDetails requestDetails) {
-    requests.remove(requestDetails);
   }
 }
