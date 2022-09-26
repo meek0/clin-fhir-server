@@ -22,9 +22,6 @@ import ca.uhn.fhir.jpa.provider.*;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.subscription.util.SubscriptionDebugLogInterceptor;
-import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
-import ca.uhn.fhir.narrative.INarrativeGenerator;
-import ca.uhn.fhir.narrative2.NullNarrativeGenerator;
 import ca.uhn.fhir.rest.server.*;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import ca.uhn.fhir.rest.server.interceptor.consent.ConsentInterceptor;
@@ -98,6 +95,12 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     @Autowired
     MetaTagInterceptor metaTagInterceptor;
+    
+    @Autowired
+    PrescriptionMaskingInterceptor prescriptionMaskingInterceptor;
+    
+    @Autowired
+    SameRequestInterceptor sameRequestInterceptor;
 
     @Autowired
     FieldValidatorInterceptor fieldValidatorInterceptor;
@@ -421,6 +424,8 @@ public class BaseJpaRestfulServer extends RestfulServer {
         
         if (bioProperties.isTaggingEnabled()) {
             registerInterceptor(metaTagInterceptor);
+            registerInterceptor(sameRequestInterceptor);
+            registerInterceptor(prescriptionMaskingInterceptor);
         }
 
         if (bioProperties.isAuthorizationEnabled()) {

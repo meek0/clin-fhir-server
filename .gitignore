@@ -2,6 +2,8 @@
 target/
 *.iml
 
+bench*
+
 # Compiled class file
 *.class
 
