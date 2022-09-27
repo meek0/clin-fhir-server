@@ -159,6 +159,7 @@ bio:
   tagging: 
     enabled: true
     queryParam: true
+    masking: true
   elasticsearch:
     host: "elasticsearch-workers"
     port: 9200

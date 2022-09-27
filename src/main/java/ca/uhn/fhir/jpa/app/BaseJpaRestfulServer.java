@@ -424,8 +424,10 @@ public class BaseJpaRestfulServer extends RestfulServer {
         
         if (bioProperties.isTaggingEnabled()) {
             registerInterceptor(metaTagInterceptor);
-            registerInterceptor(sameRequestInterceptor);
-            registerInterceptor(prescriptionMaskingInterceptor);
+            if (bioProperties.isTaggingMasking()) {
+                registerInterceptor(sameRequestInterceptor);
+                registerInterceptor(prescriptionMaskingInterceptor);
+            }
         }
 
         if (bioProperties.isAuthorizationEnabled()) {
