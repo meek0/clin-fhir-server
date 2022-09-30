@@ -70,7 +70,7 @@ public class MetaTagInterceptor {
       this.addTagCode(resource, metaTagResourceVisitor.extractEpCode(requestDetails, resource));
       this.addTagCode(resource, metaTagResourceVisitor.extractLdmCode(requestDetails, resource));
       // we could allow cross modify if needed with a custom config boolean, for now it's mandatory
-      if(!metaTagResourceAccess.canModifyResource(requestDetails, resource)) {
+      if(!metaTagResourceAccess.canSeeResource(requestDetails, resource)) {
         throw new ForbiddenOperationException("Resource belongs to another organization");
       }
     }

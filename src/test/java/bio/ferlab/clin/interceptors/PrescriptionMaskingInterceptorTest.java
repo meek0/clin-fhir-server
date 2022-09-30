@@ -3,6 +3,7 @@ package bio.ferlab.clin.interceptors;
 import bio.ferlab.clin.es.builder.nanuq.AbstractPrescriptionDataBuilder;
 import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.api.server.SimplePreResourceShowDetails;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Person;
 import org.hl7.fhir.r4.model.Reference;
@@ -53,8 +54,9 @@ class PrescriptionMaskingInterceptorTest {
     final Person pers = new Person();
     pers.setId("pers1");
     pers.addLink().setTarget(new Reference("Patient/p1"));
+    final SimplePreResourceShowDetails details = new SimplePreResourceShowDetails(pers);
     when(sameRequestInterceptor.get(any())).thenReturn(List.of(sr, p, pers));
-    prescriptionMaskingInterceptor.preShow(null, req1);
+    prescriptionMaskingInterceptor.preShow(details, req1);
     verify(metaTagResourceAccess).getUserTags(req1);
   }
 
@@ -69,10 +71,11 @@ class PrescriptionMaskingInterceptorTest {
     final Person pers = new Person();
     pers.setId("pers1");
     pers.addLink().setTarget(new Reference("Patient/p1"));
+    final SimplePreResourceShowDetails details = new SimplePreResourceShowDetails(pers);
     when(metaTagResourceAccess.getUserTags(any())).thenReturn(List.of("tag1", "tag2"));
     when(metaTagResourceAccess.getResourceTags(any())).thenReturn(List.of("tag1"));
     when(sameRequestInterceptor.get(any())).thenReturn(List.of(sr, p, pers));
-    prescriptionMaskingInterceptor.preShow(null, req1);
+    prescriptionMaskingInterceptor.preShow(details, req1);
     verify(sameRequestInterceptor).get(req1);
     verify(metaTagResourceAccess).getUserTags(req1);
     verify(metaTagResourceAccess).getResourceTags(sr);
@@ -90,10 +93,11 @@ class PrescriptionMaskingInterceptorTest {
     final Person pers = new Person();
     pers.setId("pers1");
     pers.addLink().setTarget(new Reference("Patient/p1"));
+    final SimplePreResourceShowDetails details = new SimplePreResourceShowDetails(pers);
     when(metaTagResourceAccess.getUserTags(any())).thenReturn(List.of("tag1", "tag2"));
     when(metaTagResourceAccess.getResourceTags(any())).thenReturn(List.of("tag3"));
     when(sameRequestInterceptor.get(any())).thenReturn(List.of(sr, p, pers));
-    prescriptionMaskingInterceptor.preShow(null, req1);
+    prescriptionMaskingInterceptor.preShow(details, req1);
     verify(sameRequestInterceptor).get(req1);
     verify(metaTagResourceAccess).getUserTags(req1);
     verify(metaTagResourceAccess).getResourceTags(sr);

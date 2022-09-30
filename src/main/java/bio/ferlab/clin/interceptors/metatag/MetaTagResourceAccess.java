@@ -4,6 +4,7 @@ import bio.ferlab.clin.exceptions.RptIntrospectionException;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.utils.Helpers;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Person;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -32,26 +34,20 @@ public class MetaTagResourceAccess {
   public static final String LDM_TAG_PREFIX = "LDM";
   
   private final BioProperties bioProperties;
+  private final MetaTagPerson metaTagPerson;
 
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
-    // POST can be a bundle or graphql query
-    return EnumSet.of(RequestTypeEnum.GET, RequestTypeEnum.POST).contains(requestDetails.getRequestType())
-        && canAccessResource(requestDetails, resource);
-  }
-
-  public boolean canModifyResource(RequestDetails requestDetails, IBaseResource resource) {
-    return EnumSet.of(RequestTypeEnum.POST, RequestTypeEnum.PUT, RequestTypeEnum.DELETE).contains(requestDetails.getRequestType())
-       && canAccessResource(requestDetails, resource);
-  }
-
-  private boolean canAccessResource(RequestDetails requestDetails, IBaseResource resource) {
-    if (bioProperties.isTaggingEnabled() && isResourceWithTags(resource)) {
-      final List<String> userTags = getUserTags(requestDetails);
-      final List<String> resourceTags = getResourceTags(resource);
-      if (userTags.contains(USER_ALL_TAGS) || userTags.stream().anyMatch(t -> t.startsWith(LDM_TAG_PREFIX))) {
-        return true;  // can see all
-      } else {
-        return resourceTags.stream().anyMatch(userTags::contains);  // tagged by EP
+    if (bioProperties.isTaggingEnabled()) {
+      if (isResourceWithTags(resource)) {
+        final List<String> userTags = getUserTags(requestDetails);
+        final List<String> resourceTags = getResourceTags(resource);
+        if (userTags.contains(USER_ALL_TAGS) || userTags.stream().anyMatch(t -> t.startsWith(LDM_TAG_PREFIX))) {
+          return true;  // can see all
+        } else {
+          return resourceTags.stream().anyMatch(userTags::contains);  // tagged by EP
+        }
+      } else if (resource instanceof Person) {  // Person isn't tagged and has custom access implementation
+        return metaTagPerson.canSeeResource(this, requestDetails, (Person) resource);
       }
     }
     return true;

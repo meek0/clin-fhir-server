@@ -121,7 +121,7 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
     when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
-    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
+    when(metaTagResourceAccess.canSeeResource(any(), any())).thenReturn(true);
     metaTagInterceptor.created(requestDetails, resource);
     verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
     verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
@@ -141,7 +141,7 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
     when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
-    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(true);
+    when(metaTagResourceAccess.canSeeResource(any(), any())).thenReturn(true);
     metaTagInterceptor.updated(requestDetails, null, resource);
     verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
     verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
@@ -171,7 +171,7 @@ class MetaTagInterceptorTest {
     when(metaTagResourceAccess.isResourceWithTags(any(IBaseResource.class))).thenReturn(true);
     when(metaTagResourceVisitor.extractEpCode(any(), any())).thenReturn("ep1");
     when(metaTagResourceVisitor.extractLdmCode(any(), any())).thenReturn("ldm1");
-    when(metaTagResourceAccess.canModifyResource(any(), any())).thenReturn(false);
+    when(metaTagResourceAccess.canSeeResource(any(), any())).thenReturn(false);
 
     Exception ex = Assertions.assertThrows(
         ForbiddenOperationException.class,
@@ -181,7 +181,7 @@ class MetaTagInterceptorTest {
     
     verify(metaTagResourceVisitor).extractEpCode(any(), eq(resource));
     verify(metaTagResourceVisitor).extractLdmCode(any(), eq(resource));
-    verify(metaTagResourceAccess).canModifyResource(eq(requestDetails), eq(resource));
+    verify(metaTagResourceAccess).canSeeResource(eq(requestDetails), eq(resource));
 
 
   }

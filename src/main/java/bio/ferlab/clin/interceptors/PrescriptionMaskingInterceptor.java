@@ -1,6 +1,7 @@
 package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
+import bio.ferlab.clin.utils.FhirUtils;
 import bio.ferlab.clin.utils.MaskingUtils;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
@@ -30,30 +31,16 @@ public class PrescriptionMaskingInterceptor {
   @Hook(Pointcut.STORAGE_PRESHOW_RESOURCES)
   public void preShow(IPreResourceShowDetails preResourceShowDetails, RequestDetails requestDetails) {
     final List<IBaseResource> resources = sameRequestInterceptor.get(requestDetails);
-    if (resources.size() >= 3) {  // minimal requirements
-      List<ServiceRequest> serviceRequests = MaskingUtils.extractAllOfType(resources, ServiceRequest.class);
-      List<Patient> patients = MaskingUtils.extractAllOfType(resources, Patient.class);
-      List<Person> persons = MaskingUtils.extractAllOfType(resources, Person.class);
-      if (isValidPrescriptionRequest(serviceRequests, patients, persons)) {
+    // extract the Person object, this one can be edited (the one in resources can not)
+    final Person personToShow = MaskingUtils.extractPerson(preResourceShowDetails);
+    if (personToShow != null && MaskingUtils.isValidPrescriptionRequest(resources)) {
+      // this one can't be edited but at least should reference the same Person
+      final Person personFromRequest = FhirUtils.extractAllOfType(resources, Person.class).get(0);
+      if (FhirUtils.equals(personFromRequest, personToShow) && !MaskingUtils.isAlreadyMasked(personToShow)) {
         final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
-        maskSensitiveData(userTags, serviceRequests.get(0), persons.get(0));
+        maskSensitiveData(userTags, MaskingUtils.extractAnalysis(resources), personToShow);
       }
     }
-  }
-  
-  private boolean isValidPrescriptionRequest(List<ServiceRequest> serviceRequests, List<Patient> patients, List<Person> persons) {
-    // the following algorithm detects if the current request is about displaying a Prescription
-    final ServiceRequest analysis = serviceRequests.stream().filter(MaskingUtils::isAnalysis).findFirst().orElse(null);
-    if (analysis != null && patients.size() == 1 && persons.size() == 1) {
-      Patient patient = patients.get(0);
-      Person pers = persons.get(0);
-      return !isAlreadyMasked(pers) && MaskingUtils.areLinked(analysis, patient) && MaskingUtils.areLinked(pers, patient);
-    }
-    return false;
-  }
-  
-  private boolean isAlreadyMasked(Person person) {
-    return Optional.ofNullable(person).map(Person::getId).stream().anyMatch(id -> id.equals(RESTRICTED_FIELD));
   }
   
   private void maskSensitiveData(List<String> userTags, ServiceRequest sr, Person person) {
