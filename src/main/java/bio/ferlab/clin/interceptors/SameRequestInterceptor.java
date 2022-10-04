@@ -37,15 +37,10 @@ public class SameRequestInterceptor {
   }
 
   /**
-   * Return list of resources associated to a RequestDetails.
-   * Resources from this list are read-only, modifying a field won't do anything.
-   * If you want to mask/edit data before the request ends then use STORAGE_PRESHOW_RESOURCES 
-   * (cf PrescriptionMaskingInterceptor)
-   * Be aware that resources listed in STORAGE_PRESHOW_RESOURCES aren't equals from JAVA object point of view 
-   * (cf FhirUtils.equals() to compare them)
+   * Return list of immutable resources associated to a RequestDetails.
    * 
    * @param requestDetails current RequestDetails
-   * @return read-only resources of the RequestDetails
+   * @return immutable resources of the RequestDetails
    */
   public List<IBaseResource> get(RequestDetails requestDetails) {
     return requests.get(requestDetails);

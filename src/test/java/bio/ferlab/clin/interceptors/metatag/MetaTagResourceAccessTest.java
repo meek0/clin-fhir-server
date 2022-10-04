@@ -23,7 +23,8 @@ class MetaTagResourceAccessTest {
   
   private final BioProperties bioProperties = Mockito.mock(BioProperties.class);
   private final MetaTagPerson metaTagPerson = Mockito.mock(MetaTagPerson.class);
-  private final MetaTagResourceAccess metaTagResourceAccess = new MetaTagResourceAccess(bioProperties, metaTagPerson);
+  private final PrescriptionMasking prescriptionMasking = Mockito.mock(PrescriptionMasking.class);
+  private final MetaTagResourceAccess metaTagResourceAccess = new MetaTagResourceAccess(bioProperties, metaTagPerson, prescriptionMasking);
   
   @BeforeEach
   void beforeEach() {
@@ -92,7 +93,6 @@ class MetaTagResourceAccessTest {
   @Test
   void canSeeResource_all_tags() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     String bearer = JWT.create()
         .withClaim("azp", "system")
         .sign(Algorithm.HMAC256("secret"));
@@ -104,7 +104,6 @@ class MetaTagResourceAccessTest {
   @Test
   void canSeeResource_LDM_tags() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     String bearer = JWT.create()
         .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("LDM-X"))
         .sign(Algorithm.HMAC256("secret"));
@@ -120,7 +119,6 @@ class MetaTagResourceAccessTest {
   @Test
   void canSeeResource_tagging_disabled() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     when(bioProperties.isTaggingEnabled()).thenReturn(false);
     assertTrue(metaTagResourceAccess.canSeeResource(requestDetails, null));
   }
@@ -128,7 +126,6 @@ class MetaTagResourceAccessTest {
   @Test
   void canSeeResource_not_tagged_resource() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     when(bioProperties.isTaggingEnabled()).thenReturn(true);
     assertTrue(metaTagResourceAccess.canSeeResource(requestDetails, new AuditEvent()));
   }
@@ -136,9 +133,16 @@ class MetaTagResourceAccessTest {
   @Test
   void canSeeResource_Person() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
-    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     final Person pers = new Person();
     metaTagResourceAccess.canSeeResource(requestDetails, pers);
     verify(metaTagPerson).canSeeResource(metaTagResourceAccess, requestDetails, pers);
+  }
+  
+  @Test
+  void preShow_Person() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    final Person person = new Person();
+    metaTagResourceAccess.preShow(requestDetails, person);
+    verify(prescriptionMasking).preShow(metaTagResourceAccess, person, requestDetails);
   }
 }

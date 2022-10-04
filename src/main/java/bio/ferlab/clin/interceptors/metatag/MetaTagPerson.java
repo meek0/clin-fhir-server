@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.LDM_TAG_PREFIX;
-import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.USER_ALL_TAGS;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class MetaTagPerson {
   // custom implementation of canSeeResource for Person
   public boolean canSeeResource(MetaTagResourceAccess metaTagResourceAccess, RequestDetails requestDetails, Person person) {
     final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
-    if (!userTags.contains(USER_ALL_TAGS) && isOnlyLDM(userTags)) {  // restrict access only for LDMs, EP always see Person
+    if (isOnlyLDM(userTags)) {  // restrict access only for LDMs, EP always see Person
       final List<IBaseResource> resources = sameRequestInterceptor.get(requestDetails);
       // only if not a prescription (cf PrescriptionMaskingInterceptor)
       if (resources.contains(person) && !MaskingUtils.isValidPrescriptionRequest(resources)) {

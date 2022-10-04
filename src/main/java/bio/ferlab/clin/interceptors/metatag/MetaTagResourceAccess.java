@@ -35,6 +35,15 @@ public class MetaTagResourceAccess {
   
   private final BioProperties bioProperties;
   private final MetaTagPerson metaTagPerson;
+  private final PrescriptionMasking prescriptionMasking;
+  
+  public void preShow(RequestDetails requestDetails, IBaseResource resource) {
+    if (bioProperties.isTaggingEnabled()) {
+      if (resource instanceof Person) {
+        prescriptionMasking.preShow(this, (Person) resource, requestDetails);
+      }
+    }
+  }
 
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
     if (bioProperties.isTaggingEnabled()) {

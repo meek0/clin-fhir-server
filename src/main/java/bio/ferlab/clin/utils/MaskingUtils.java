@@ -2,7 +2,6 @@ package bio.ferlab.clin.utils;
 
 import bio.ferlab.clin.es.builder.nanuq.AbstractPrescriptionDataBuilder;
 import ca.uhn.fhir.rest.api.server.IPreResourceShowDetails;
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static bio.ferlab.clin.interceptors.PrescriptionMaskingInterceptor.RESTRICTED_FIELD;
+import static bio.ferlab.clin.interceptors.metatag.PrescriptionMasking.RESTRICTED_FIELD;
 
 public class MaskingUtils {
   

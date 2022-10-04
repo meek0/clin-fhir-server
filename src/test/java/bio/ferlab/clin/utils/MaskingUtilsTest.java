@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static bio.ferlab.clin.interceptors.PrescriptionMaskingInterceptor.RESTRICTED_FIELD;
+import static bio.ferlab.clin.interceptors.metatag.PrescriptionMasking.RESTRICTED_FIELD;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaskingUtilsTest {
