@@ -1,11 +1,13 @@
 package bio.ferlab.clin.utils;
 
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Person;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import bio.ferlab.clin.es.builder.nanuq.AbstractPrescriptionDataBuilder;
+import ca.uhn.fhir.rest.api.server.SimplePreResourceShowDetails;
+import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static bio.ferlab.clin.interceptors.metatag.PrescriptionMasking.RESTRICTED_FIELD;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaskingUtilsTest {
@@ -54,6 +56,64 @@ class MaskingUtilsTest {
 
     assertFalse(MaskingUtils.areLinked(pers1, p2));
     assertFalse(MaskingUtils.areLinked(pers2, p1));
+  }
+  
+  @Test
+  void isAlreadyMasked() {
+    final Person p1 = new Person();
+    p1.setId(RESTRICTED_FIELD);
+    assertTrue(MaskingUtils.isAlreadyMasked(p1));
+    p1.setId("foo");
+    assertFalse(MaskingUtils.isAlreadyMasked(p1));
+  }
+  
+  @Test
+  void isValidPrescriptionRequest_valid() {
+    final ServiceRequest sr = new ServiceRequest();
+    sr.getMeta().addProfile(AbstractPrescriptionDataBuilder.Type.ANALYSIS.value);
+    sr.setSubject(new Reference("Patient/p1"));
+    final Patient p = new Patient();
+    p.setId("p1");
+    final Person pers = new Person();
+    pers.setId("pers1");
+    pers.addLink().setTarget(new Reference("Patient/p1"));
+    assertTrue(MaskingUtils.isValidPrescriptionRequest(List.of(sr, p, pers)));
+  }
+
+  @Test
+  void isValidPrescriptionRequest_not_linked() {
+    final ServiceRequest sr = new ServiceRequest();
+    sr.getMeta().addProfile(AbstractPrescriptionDataBuilder.Type.ANALYSIS.value);
+    sr.setSubject(new Reference("Patient/p1"));
+    final Patient p = new Patient();
+    p.setId("p2");
+    final Person pers = new Person();
+    pers.setId("pers1");
+    pers.addLink().setTarget(new Reference("Patient/p3"));
+    assertFalse(MaskingUtils.isValidPrescriptionRequest(List.of(sr, p, pers)));
+  }
+
+  @Test
+  void isValidPrescriptionRequest_not_analysis() {
+    final ServiceRequest sr = new ServiceRequest();
+    assertFalse(MaskingUtils.isValidPrescriptionRequest(List.of(sr)));
+  }
+  
+  @Test
+  void extractAnalysis() {
+    final ServiceRequest analysis = new ServiceRequest();
+    analysis.getMeta().addProfile(AbstractPrescriptionDataBuilder.Type.ANALYSIS.value);
+    ServiceRequest result = MaskingUtils.extractAnalysis(List.of(new ServiceRequest(), new ServiceRequest(), analysis));
+    assertEquals(analysis, result);
+  }
+  
+  @Test
+  void extractPerson() {
+    final Person person = new Person();
+    final SimplePreResourceShowDetails details = new SimplePreResourceShowDetails(person);
+    assertEquals(person, MaskingUtils.extractPerson(details));
+    
+    assertNull(MaskingUtils.extractPerson(new SimplePreResourceShowDetails(new ServiceRequest())));
   }
   
 }

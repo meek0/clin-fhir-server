@@ -97,9 +97,6 @@ public class BaseJpaRestfulServer extends RestfulServer {
     MetaTagInterceptor metaTagInterceptor;
     
     @Autowired
-    PrescriptionMaskingInterceptor prescriptionMaskingInterceptor;
-    
-    @Autowired
     SameRequestInterceptor sameRequestInterceptor;
 
     @Autowired
@@ -424,10 +421,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
         
         if (bioProperties.isTaggingEnabled()) {
             registerInterceptor(metaTagInterceptor);
-            if (bioProperties.isTaggingMasking()) {
-                registerInterceptor(sameRequestInterceptor);
-                registerInterceptor(prescriptionMaskingInterceptor);
-            }
+            registerInterceptor(sameRequestInterceptor);
         }
 
         if (bioProperties.isAuthorizationEnabled()) {

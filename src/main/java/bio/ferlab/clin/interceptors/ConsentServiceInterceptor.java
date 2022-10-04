@@ -3,6 +3,8 @@ package bio.ferlab.clin.interceptors;
 import bio.ferlab.clin.audit.AuditEventsBuilder;
 import bio.ferlab.clin.audit.AuditTrail;
 import bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess;
+import bio.ferlab.clin.interceptors.metatag.PrescriptionMasking;
+import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.user.RequesterData;
 import bio.ferlab.clin.utils.Constants;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
@@ -12,10 +14,12 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.interceptor.consent.ConsentOutcome;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentContextServices;
 import ca.uhn.fhir.rest.server.interceptor.consent.IConsentService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Person;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ConsentServiceInterceptor implements IConsentService {
     private final static Logger log = LoggerFactory.getLogger(ConsentServiceInterceptor.class);
     public static final String AUDIT_EVENT_RESOURCE_TYPE = "AuditEvent";
+    
     private final AuditTrail auditTrail;
     private final MetaTagResourceAccess metaTagResourceAccess;
-
-    public ConsentServiceInterceptor(AuditTrail auditTrail, MetaTagResourceAccess metaTagResourceAccess) {
-        this.auditTrail = auditTrail;
-        this.metaTagResourceAccess = metaTagResourceAccess;
-    }
 
     @Override
     public ConsentOutcome startOperation(RequestDetails requestDetails, IConsentContextServices contextServices) {
@@ -51,6 +52,8 @@ public class ConsentServiceInterceptor implements IConsentService {
 
     @Override
     public ConsentOutcome willSeeResource(RequestDetails requestDetails, IBaseResource theResource, IConsentContextServices contextServices) {
+        // theResource param here is mutable, you can change data inside without modifying the original resource
+        this.metaTagResourceAccess.preShow(requestDetails, theResource);
         return ConsentOutcome.AUTHORIZED;
     }
 
