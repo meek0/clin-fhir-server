@@ -34,10 +34,17 @@ public class MaskingUtils {
     final ServiceRequest analysis = extractAnalysis(resources);
     final List<Patient> patients = FhirUtils.extractAllOfType(resources, Patient.class);
     final List<Person> persons = FhirUtils.extractAllOfType(resources, Person.class);
-    if (analysis != null && patients.size() == 1 && persons.size() == 1) {
-      Patient patient = patients.get(0);
-      Person pers = persons.get(0);
-      return MaskingUtils.areLinked(analysis, patient) && MaskingUtils.areLinked(pers, patient);
+    if (analysis != null) {
+      boolean areLinked = false;
+      // the query may contain several Patients/Person, at least two must be linked
+      for(Patient patient: patients) {
+        for(Person person: persons) {
+          if(MaskingUtils.areLinked(analysis, patient) && MaskingUtils.areLinked(person, patient)) {
+            areLinked = true;
+          }
+        }
+      }
+      return areLinked;
     }
     return false;
   }
