@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.LDM_TAG_PREFIX;
+import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.*;
 
 @Component
 @RequiredArgsConstructor
@@ -32,12 +32,13 @@ public class MetaTagPerson {
   
   // custom implementation of canSeeResource for Person
   public boolean canSeeResource(MetaTagResourceAccess metaTagResourceAccess, RequestDetails requestDetails, Person person) {
+    final List<String> userRoles = metaTagResourceAccess.getUserRoles(requestDetails);
     final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
-    if (isOnlyLDM(userTags)) {  // restrict access only for LDMs, EP always see Person
+    if (!userTags.contains(USER_ALL_TAGS) && !userRoles.contains(USER_ROLE_PRESCRIBER)) {  // if not system nor prescriber
       final List<IBaseResource> resources = sameRequestInterceptor.get(requestDetails);
       // only if not a prescription (cf PrescriptionMaskingInterceptor)
       if (resources.contains(person) && !MaskingUtils.isValidPrescriptionRequest(resources)) {
-        // Person resources aren't tagged with EP, instead let's find out all related Patients
+        // Person resources aren't tagged with EP/LDM, instead let's find out all related Patients
         final List<Patient> patients = fetchPatients(person);
         final List<ServiceRequest> serviceRequests = fetchServiceRequests(patients);
 
@@ -48,10 +49,6 @@ public class MetaTagPerson {
       }
     }
     return true;
-  }
-  
-  private boolean isOnlyLDM(List<String> userTags) {
-    return userTags.stream().allMatch(t -> t.startsWith(LDM_TAG_PREFIX));
   }
 
   private List<Patient> fetchPatients(Person person) {

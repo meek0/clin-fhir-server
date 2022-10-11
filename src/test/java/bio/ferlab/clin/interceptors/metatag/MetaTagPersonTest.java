@@ -29,10 +29,10 @@ class MetaTagPersonTest {
   final MetaTagPerson metaTagPerson = new MetaTagPerson(sameRequestInterceptor, daoConfiguration);
   
   @Test
-  void canSeeResource_ep() {
+  void canSeeResource_not_only_prescriber() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     final MetaTagResourceAccess access = Mockito.mock(MetaTagResourceAccess.class);
-    when(access.getUserTags(any())).thenReturn(List.of("LDM-1", "EP-1"));
+    when(access.getUserRoles(any())).thenReturn(List.of("clin_prescriber", "clin_genetician"));
     final Person person = new Person();
     assertTrue(metaTagPerson.canSeeResource(access, requestDetails, person));
   }
@@ -47,9 +47,10 @@ class MetaTagPersonTest {
   }
 
   @Test
-  void canSeeResource_ldm() {
+  void canSeeResource_only_genetician() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     final MetaTagResourceAccess access = Mockito.mock(MetaTagResourceAccess.class);
+    when(access.getUserRoles(any())).thenReturn(List.of());
     when(access.getUserTags(any())).thenReturn(List.of("LDM-1"));
     final Person person = new Person();
     when(sameRequestInterceptor.get(any())).thenReturn(List.of(person));
@@ -68,7 +69,8 @@ class MetaTagPersonTest {
     when(serviceRequestBundle.getAllResources()).thenReturn(List.of(sr1));
     
     assertTrue(metaTagPerson.canSeeResource(access, requestDetails, person));
-    
+
+    verify(access).getUserRoles(requestDetails);
     verify(access).getUserTags(requestDetails);
     verify(access).getResourceTags(sr1);
   }

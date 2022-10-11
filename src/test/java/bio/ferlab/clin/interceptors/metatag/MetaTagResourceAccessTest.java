@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.Map;
 
 import static bio.ferlab.clin.interceptors.metatag.MetaTagResourceAccess.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,32 @@ class MetaTagResourceAccessTest {
     assertFalse(metaTagResourceAccess.isResourceWithTags("AuditEvent"));
     assertFalse(metaTagResourceAccess.isResourceWithTags(new AuditEvent()));
     assertFalse(metaTagResourceAccess.isResourceWithTags(""));
+  }
+  
+  @Test
+  void getUserRoles() {
+    RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    String bearer = JWT.create()
+        .withClaim("realm_access", Map.of("roles", List.of("foo", "bar", "clin-1", "clin_2")))
+        .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    List<String> roles = metaTagResourceAccess.getUserRoles(requestDetails);
+    assertEquals(2, roles.size());
+    assertEquals("clin-1", roles.get(0));
+    assertEquals("clin_2", roles.get(1));
+  }
+
+  @Test
+  void getUserRoles_missing_roles() {
+    RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    String bearer = JWT.create()
+        .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    Exception ex = Assertions.assertThrows(
+        RptIntrospectionException.class,
+        () ->  metaTagResourceAccess.getUserRoles(requestDetails)
+    );
+    assertEquals("missing realm_access", ex.getMessage());
   }
   
   @Test
@@ -81,6 +108,7 @@ class MetaTagResourceAccessTest {
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     String bearer = JWT.create()
         .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1", "tag2"))
+        .withClaim("realm_access", Map.of("roles", List.of()))
         .sign(Algorithm.HMAC256("secret"));
     when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
     final Patient resource = new Patient();
@@ -95,6 +123,7 @@ class MetaTagResourceAccessTest {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     String bearer = JWT.create()
         .withClaim("azp", "system")
+        .withClaim("realm_access", Map.of("roles", List.of()))
         .sign(Algorithm.HMAC256("secret"));
     when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
     final ServiceRequest resource = new ServiceRequest();
@@ -102,10 +131,11 @@ class MetaTagResourceAccessTest {
   }
 
   @Test
-  void canSeeResource_LDM_tags() {
+  void canSeeResource_Genetician_tags() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     String bearer = JWT.create()
-        .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("LDM-X"))
+        .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of())
+        .withClaim("realm_access", Map.of("roles", List.of("clin_genetician")))
         .sign(Algorithm.HMAC256("secret"));
     when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
     final ServiceRequest resource = new ServiceRequest();
