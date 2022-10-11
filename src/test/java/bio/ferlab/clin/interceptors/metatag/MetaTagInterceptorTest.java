@@ -50,11 +50,12 @@ class MetaTagInterceptorTest {
   }
 
   @Test
-  void addTagParameter_GET_valid_resource_LDM() {
+  void addTagParameter_GET_valid_resource_genetician() {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
     when(requestDetails.getResourceName()).thenReturn("ValidResource");
     when(metaTagResourceAccess.isResourceWithTags(any(String.class))).thenReturn(true);
+    when(metaTagResourceAccess.getUserRoles(any())).thenReturn(List.of("clin_genetician"));
     when(metaTagResourceAccess.getUserTags(any())).thenReturn(List.of("tag1", "tag2", "LDM-X"));
     metaTagInterceptor.addTagParameter(requestDetails);
     verify(bioProperties).isTaggingEnabled();
