@@ -34,7 +34,7 @@ public class MetaTagPerson {
   public boolean canSeeResource(MetaTagResourceAccess metaTagResourceAccess, RequestDetails requestDetails, Person person) {
     final List<String> userRoles = metaTagResourceAccess.getUserRoles(requestDetails);
     final List<String> userTags = metaTagResourceAccess.getUserTags(requestDetails);
-    if (!userTags.contains(USER_ALL_TAGS) && !isPrescriber(userRoles)) {  // if not system nor prescriber
+    if (!userTags.contains(USER_ALL_TAGS) && !userRoles.contains(USER_ROLE_PRESCRIBER)) {  // if not system nor prescriber
       final List<IBaseResource> resources = sameRequestInterceptor.get(requestDetails);
       // only if not a prescription (cf PrescriptionMaskingInterceptor)
       if (resources.contains(person) && !MaskingUtils.isValidPrescriptionRequest(resources)) {
@@ -49,10 +49,6 @@ public class MetaTagPerson {
       }
     }
     return true;
-  }
-  
-  private boolean isPrescriber(List<String> userRoles) {
-    return userRoles.stream().anyMatch(t -> t.startsWith(USER_ROLE_PRESCRIBER));
   }
 
   private List<Patient> fetchPatients(Person person) {

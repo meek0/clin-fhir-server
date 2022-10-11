@@ -55,7 +55,7 @@ public class MetaTagResourceAccess {
         final List<String> userRoles = getUserRoles(requestDetails);
         final List<String> userTags = getUserTags(requestDetails);
         final List<String> resourceTags = getResourceTags(resource);
-        if (userTags.contains(USER_ALL_TAGS) || userRoles.stream().anyMatch(t -> t.startsWith(USER_ROLE_GENETICIAN))) {
+        if (userTags.contains(USER_ALL_TAGS) || userRoles.contains(USER_ROLE_GENETICIAN)) {
           return true;  // can see all
         } else {
           return resourceTags.stream().anyMatch(userTags::contains);  // tagged by EP/LDM

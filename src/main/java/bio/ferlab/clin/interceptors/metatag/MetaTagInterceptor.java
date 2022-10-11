@@ -50,7 +50,7 @@ public class MetaTagInterceptor {
       final List<String> userRoles =  metaTagResourceAccess.getUserRoles(requestDetails);
       final List<String> userTags =  metaTagResourceAccess.getUserTags(requestDetails);
       // ignore filter if no tags or system or Genetician
-      if(!userTags.isEmpty() && !userTags.contains(USER_ALL_TAGS) && userRoles.stream().noneMatch(t -> t.startsWith(USER_ROLE_GENETICIAN))) {
+      if(!userTags.isEmpty() && !userTags.contains(USER_ALL_TAGS) && !userRoles.contains(USER_ROLE_GENETICIAN)) {
         // we use "," separated query param _security because it's a OR relation, at least one should match.
         final String orTags = String.join(",", userTags);
         requestDetails.addParameter("_security", new String[]{orTags});
