@@ -12,10 +12,18 @@ class ValidatorUtilsTest {
     assertTrue(ValidatorUtils.isTrimmed(null));
     assertTrue(ValidatorUtils.isTrimmed(""));
     assertTrue(ValidatorUtils.isTrimmed("foo"));
+
     // KO
     assertFalse(ValidatorUtils.isTrimmed(" "));
     assertFalse(ValidatorUtils.isTrimmed(" foo"));
     assertFalse(ValidatorUtils.isTrimmed(" foo "));
+
+  }
+  
+  @Test
+  void hasSpecialCharacters() {
+    assertFalse(ValidatorUtils.hasSpecialCharacters("- ."));
+    assertTrue(ValidatorUtils.hasSpecialCharacters("*$&_"));
   }
 
 }
