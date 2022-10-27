@@ -57,7 +57,7 @@ public class ImmutableMrnInterceptor {
                 .add(Patient.SP_IDENTIFIER, new TokenParam(mrn))
                 .add(Patient.SP_ORGANIZATION, new ReferenceParam(ep)));
         if(!search.isEmpty()) {
-          throw new InvalidRequestException("Duplicated person with same MRN " + getObstructed(mrn));
+          throw new InvalidRequestException("Duplicated patient with same MRN " + getObstructed(mrn));
         }
       }
     }
