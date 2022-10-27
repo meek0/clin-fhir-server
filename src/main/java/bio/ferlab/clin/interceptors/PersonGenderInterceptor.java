@@ -1,5 +1,6 @@
 package bio.ferlab.clin.interceptors;
 
+import bio.ferlab.clin.auth.KeycloakClient;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -25,6 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PersonGenderInterceptor {
 
+  private static final Logger log = LoggerFactory.getLogger(PersonGenderInterceptor.class);
+  
   private final ResourceDaoConfiguration configuration;
 
   private boolean isValidRequestAndResource(RequestDetails requestDetails, IBaseResource oldResource, IBaseResource newResource) {
@@ -71,6 +76,8 @@ public class PersonGenderInterceptor {
          this.configuration.patientDAO.update(patient);
        }
      }
+   } else {
+     log.warn("Ignore update gender of Patient: {}", patientId);
    }
   }
 }
