@@ -42,7 +42,7 @@ class ImmutableMrnInterceptorTest {
         InvalidRequestException.class,
         () -> interceptor.created(requestDetails, patient)
     );
-    assertEquals("Duplicated person with same MRN mrn...", ex.getMessage());
+    assertEquals("Duplicated patient with same MRN mrn...", ex.getMessage());
   }
 
   @Test

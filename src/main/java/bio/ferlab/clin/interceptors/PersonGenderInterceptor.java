@@ -8,10 +8,7 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Person;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -51,13 +48,14 @@ public class PersonGenderInterceptor {
   private List<String> extractPatientIds(Person person) {
     return person.getLink()
         .stream().map(Person.PersonLinkComponent::getTarget)
-        .filter(r -> r.getReference().startsWith("Patient/"))
-        .map(r -> r.getReference().replace("Patient/", "")).collect(Collectors.toList());
+        .map(Reference::getReference)
+        .filter(ref -> ref.startsWith("Patient/")).collect(Collectors.toList());
   }
   
   private void updatePatientGender(String patientId, String newGenderCode) {
     final Patient patient = configuration.patientDAO.read(new IdType(patientId));
-    if (!patient.hasGender() || !patient.getGender().toCode().equals(newGenderCode)) {
+    // patient can be null if inside the same request for example, so not yet in DB, can be ignored
+    if (patient != null && (!patient.hasGender() || !patient.getGender().toCode().equals(newGenderCode))) {
       patient.setGender(Enumerations.AdministrativeGender.fromCode(newGenderCode));
       this.configuration.patientDAO.update(patient);
     }
