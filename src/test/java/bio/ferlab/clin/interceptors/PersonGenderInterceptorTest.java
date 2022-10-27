@@ -3,11 +3,14 @@ package bio.ferlab.clin.interceptors;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -53,9 +56,16 @@ class PersonGenderInterceptorTest {
     final Patient p1 = new Patient();
     final Patient p2 = new Patient();
     
-    when(patientDao.read(new IdType(("1")))).thenReturn(p1);
-    when(patientDao.read(new IdType(("2")))).thenReturn(p2);
+    final IBundleProvider bundle1 = Mockito.mock(IBundleProvider.class);
+    when(bundle1.isEmpty()).thenReturn(false);
+    when(bundle1.getAllResources()).thenReturn(List.of(p1));
+
+    final IBundleProvider bundle2 = Mockito.mock(IBundleProvider.class);
+    when(bundle2.isEmpty()).thenReturn(false);
+    when(bundle2.getAllResources()).thenReturn(List.of(p2));
     
+    when(patientDao.search(any())).thenReturn(bundle1).thenReturn(bundle2);
+
     this.interceptor.updated(requestDetails, oldPerson, newPerson);
     
     if (shouldUpdate) {
