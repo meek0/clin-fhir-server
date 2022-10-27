@@ -1,14 +1,22 @@
 package bio.ferlab.clin.interceptors;
 
+import bio.ferlab.clin.auth.KeycloakClient;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -20,6 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PersonGenderInterceptor {
 
+  private static final Logger log = LoggerFactory.getLogger(PersonGenderInterceptor.class);
+  
   private final ResourceDaoConfiguration configuration;
 
   private boolean isValidRequestAndResource(RequestDetails requestDetails, IBaseResource oldResource, IBaseResource newResource) {
@@ -53,11 +63,21 @@ public class PersonGenderInterceptor {
   }
   
   private void updatePatientGender(String patientId, String newGenderCode) {
-    final Patient patient = configuration.patientDAO.read(new IdType(patientId));
-    // patient can be null if inside the same request for example, so not yet in DB, can be ignored
-    if (patient != null && (!patient.hasGender() || !patient.getGender().toCode().equals(newGenderCode))) {
-      patient.setGender(Enumerations.AdministrativeGender.fromCode(newGenderCode));
-      this.configuration.patientDAO.update(patient);
-    }
+    // search instead of read because Patient could be in the request and not yet in DB
+    // read will cause not found exception and rollback the transaction
+   final IBundleProvider bundle = configuration.patientDAO.search(SearchParameterMap.newSynchronous()
+        .add(IAnyResource.SP_RES_ID, new TokenParam(patientId)));
+   if (!bundle.isEmpty()) {
+     final IBaseResource resource = bundle.getAllResources().get(0);
+     if (resource instanceof Patient){
+       final Patient patient = (Patient) resource; 
+       if (!patient.hasGender() || !patient.getGender().toCode().equals(newGenderCode)) {
+         patient.setGender(Enumerations.AdministrativeGender.fromCode(newGenderCode));
+         this.configuration.patientDAO.update(patient);
+       }
+     }
+   } else {
+     log.warn("Ignore update gender of Patient: {}", patientId);
+   }
   }
 }
