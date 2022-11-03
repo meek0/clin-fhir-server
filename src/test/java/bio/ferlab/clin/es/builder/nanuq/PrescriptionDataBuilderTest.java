@@ -64,6 +64,18 @@ class PrescriptionDataBuilderTest {
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     final ServiceRequest serviceRequest = new ServiceRequest();
     serviceRequest.setId("serviceRequest1");
+    
+    final Extension familyMemberExt = new Extension("http://fhir.cqgc.ferlab.bio/StructureDefinition/family-member");
+    final Extension motherRefExt = new Extension("parent");
+    motherRefExt.setValue(new Reference("Patient/motherRef"));
+    final Extension motherRelationExt = new Extension("parent-relationship");
+    final CodeableConcept motherCode = new CodeableConcept();
+    motherCode.getCodingFirstRep().setCode("MTH");
+    motherRelationExt.setValue(motherCode);
+    familyMemberExt.addExtension(motherRefExt);
+    familyMemberExt.addExtension(motherRelationExt);
+    serviceRequest.addExtension(familyMemberExt);
+    
     serviceRequest.getMeta().getProfile().add(new CanonicalType(AbstractPrescriptionDataBuilder.Type.ANALYSIS.value));
     serviceRequest.getMeta().getSecurity().add(new Coding().setCode("TAG1"));
     serviceRequest.getSubject().setReference("patient1");
@@ -104,6 +116,7 @@ class PrescriptionDataBuilderTest {
     assertEquals(1, results.size());
     AnalysisData data1 = results.get(0);
     assertEquals("patient1", data1.getPatientId());
+    assertEquals("motherRef", data1.getMotherId());
     assertEquals(List.of("TAG1"), data1.getSecurityTags());
     assertEquals("draft", data1.getStatus());
     assertEquals("asap", data1.getPriority());
