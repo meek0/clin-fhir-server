@@ -49,6 +49,9 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
           if(sr.hasStatus()) {
             srd.setStatus(sr.getStatus().toCode());
           }
+          if(sr.hasSpecimen()) {
+            srd.setSample(getSampleValue(sr, requestDetails));
+          }
           analysisData.getSequencingRequests().add(srd);
         }
         
