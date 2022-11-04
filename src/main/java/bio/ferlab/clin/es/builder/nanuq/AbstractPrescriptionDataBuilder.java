@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static bio.ferlab.clin.es.builder.CommonDataBuilder.MRN_CODE;
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
+import static bio.ferlab.clin.utils.Extensions.FAMILY_MEMBER;
 
 public abstract class AbstractPrescriptionDataBuilder {
 
@@ -116,5 +117,24 @@ public abstract class AbstractPrescriptionDataBuilder {
       }
     }
     return resources;
+  }
+
+  protected Reference extractParentReference(ServiceRequest serviceRequest, String relationCode) {
+    if (serviceRequest.hasExtension()) {
+      // get all family-member exts
+      for(Extension ext: serviceRequest.getExtensionsByUrl(FAMILY_MEMBER)) {
+        // first is the patient ref
+        final Extension parentExt = ext.getExtensionByUrl("parent");
+        // second if the relation with the patient mother or father
+        final Extension parentRelationExt = ext.getExtensionByUrl("parent-relationship");
+        if (parentExt != null && parentRelationExt !=null && parentExt.hasValue() && parentRelationExt.hasValue()) {
+          final CodeableConcept relation = (CodeableConcept) parentRelationExt.getValue();
+          if (relation.hasCoding() && relationCode.equals(relation.getCodingFirstRep().getCode())) {
+            return (Reference) parentExt.getValue();
+          }
+        }
+      }
+    }
+    return null;
   }
 }
