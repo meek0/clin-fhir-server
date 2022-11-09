@@ -100,6 +100,12 @@ class PrescriptionDataBuilderTest {
     sequencing2.setId("seq2");
     sequencing2.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED);
     when(bundle.getAllResources()).thenReturn(List.of(sequencing1, sequencing2));
+
+    final Specimen specimen = new Specimen();
+    specimen.getParent().add(new Reference("parent1"));
+    specimen.getAccessionIdentifier().setValue("speciId");
+    sequencing1.getSpecimen().addAll(List.of(new Reference("speci")));
+    when(specimenDao.read(eq(new IdType("speci")), any())).thenReturn(specimen);
     
     when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
     when(patientDao.read(any())).thenReturn(patient);
@@ -133,8 +139,10 @@ class PrescriptionDataBuilderTest {
     assertEquals(2, data1.getSequencingRequests().size());
     assertEquals("seq1", data1.getSequencingRequests().get(0).getRequestId());
     assertEquals("draft", data1.getSequencingRequests().get(0).getStatus());
+    assertEquals("speciId", data1.getSequencingRequests().get(0).getSample());
     assertEquals("seq2", data1.getSequencingRequests().get(1).getRequestId());
     assertEquals("completed", data1.getSequencingRequests().get(1).getStatus());
+    assertEquals("", data1.getSequencingRequests().get(1).getSample());
   }
 
   @Test

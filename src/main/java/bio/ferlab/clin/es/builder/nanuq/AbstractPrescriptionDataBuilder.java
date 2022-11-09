@@ -3,6 +3,7 @@ package bio.ferlab.clin.es.builder.nanuq;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AbstractPrescriptionData;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -106,6 +107,16 @@ public abstract class AbstractPrescriptionDataBuilder {
       prescriptionData.setCreatedOn(formatter.get().format(serviceRequest.getAuthoredOn()));
     }
     
+  }
+  
+  protected String getSampleValue(ServiceRequest serviceRequest, RequestDetails requestDetails) {
+    for(Reference specimenRef: serviceRequest.getSpecimen()) {
+      final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
+      if(specimen.hasParent() && specimen.hasAccessionIdentifier()) { // specimen with a parent is the good one
+        return specimen.getAccessionIdentifier().getValue();
+      }
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")

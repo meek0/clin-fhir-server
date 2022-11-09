@@ -76,7 +76,8 @@
           "type": "keyword"
         },
         "sample": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
         }
       }
     }
