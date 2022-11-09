@@ -4,17 +4,21 @@ import bio.ferlab.clin.es.builder.CommonDataBuilder;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AnalysisData;
 import bio.ferlab.clin.es.data.nanuq.SequencingRequestData;
+import bio.ferlab.clin.utils.Extensions;
+import bio.ferlab.clin.utils.FhirUtils;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import static bio.ferlab.clin.utils.Extensions.*;
 
 @Component
 public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
@@ -47,7 +51,13 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
           }
           analysisData.getSequencingRequests().add(srd);
         }
-                
+        
+        final Reference motherRef = extractParentReference(serviceRequest, FAMILY_MEMBER_MOTHER_CODE);
+        Optional.ofNullable(motherRef).map(FhirUtils::extractId).ifPresent(analysisData::setMotherId);
+        
+        final Reference fatherRef = extractParentReference(serviceRequest, FAMILY_MEMBER_FATHER_CODE);
+        Optional.ofNullable(fatherRef).map(FhirUtils::extractId).ifPresent(analysisData::setFatherId);
+        
         analyses.add(analysisData);
       }
     }

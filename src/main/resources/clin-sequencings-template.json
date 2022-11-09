@@ -30,6 +30,14 @@
           "type": "keyword",
           "normalizer" : "lowercase_normalizer"
         },
+        "mother_id": {
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
+        },
+        "father_id": {
+          "type": "keyword",
+          "normalizer" : "lowercase_normalizer"
+        },
         "status": {
           "type": "keyword"
         },

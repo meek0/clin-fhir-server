@@ -2,6 +2,7 @@ package bio.ferlab.clin.es.builder.nanuq;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
+import bio.ferlab.clin.utils.FhirUtils;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Reference;
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static bio.ferlab.clin.utils.Extensions.FAMILY_MEMBER_FATHER_CODE;
+import static bio.ferlab.clin.utils.Extensions.FAMILY_MEMBER_MOTHER_CODE;
 
 @Component
 public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
@@ -43,6 +47,12 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
           if(basedOn.hasStatus()) {
             sequencingData.setPrescriptionStatus(basedOn.getStatus().toCode());
           }
+
+          final Reference motherRef = extractParentReference(basedOn, FAMILY_MEMBER_MOTHER_CODE);
+          Optional.ofNullable(motherRef).map(FhirUtils::extractId).ifPresent(sequencingData::setMotherId);
+
+          final Reference fatherRef = extractParentReference(basedOn, FAMILY_MEMBER_FATHER_CODE);
+          Optional.ofNullable(fatherRef).map(FhirUtils::extractId).ifPresent(sequencingData::setFatherId);
         }
         
         if(serviceRequest.hasSpecimen()) {

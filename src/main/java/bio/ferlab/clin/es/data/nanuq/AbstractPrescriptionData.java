@@ -20,6 +20,8 @@ public abstract class AbstractPrescriptionData {
   private String prescriptionId = EMPTY_STRING;
   private String patientId = EMPTY_STRING;
   private String patientMRN = EMPTY_STRING;
+  private String motherId = EMPTY_STRING;
+  private String fatherId = EMPTY_STRING;
   private String status = EMPTY_STRING;
   private String priority = EMPTY_STRING;
   private boolean prenatal = false;
