@@ -53,29 +53,33 @@ public class MigrationManager {
       log.info("Migrate: {} {}", analysesIndexWithHash, sequencingIndexWithHash);
       this.nanuqIndexer.migrate(analysesIndexWithHash, sequencingIndexWithHash);
 
-      // remove the add the aliases referring the new indexes + hash
-      this.publish(analysesIndexWithHash, currentESAnalysesIndexWithHash, analysesIndex);
-      this.publish(sequencingIndexWithHash, currentESSequencingIndexWithHash, sequencingsIndex);
+      // always remove indexes that could have the name of the aliases to publish
+      this.cleanup(List.of(analysesIndex, sequencingsIndex));
 
-      // remove previous indexes
-      this.cleanup(analysesIndex, sequencingsIndex, analysesHasChanged, currentESAnalysesIndexWithHash, sequencingsHasChanged, currentESSequencingIndexWithHash);
+      // remove the add the aliases referring the new indexes + hash
+      List<String> indexesToCleanup = new ArrayList<>();
+      if (analysesHasChanged) {
+        this.publish(analysesIndexWithHash, currentESAnalysesIndexWithHash, analysesIndex);
+        indexesToCleanup.add(currentESAnalysesIndexWithHash);
+      }
+
+      if (sequencingsHasChanged) {
+        this.publish(sequencingIndexWithHash, currentESSequencingIndexWithHash, sequencingsIndex);
+        indexesToCleanup.add(currentESSequencingIndexWithHash);
+      }
+
+      // cleanup previous indexes
+      this.cleanup(indexesToCleanup);
     } else {
       log.info("Nothing to migrate");
     }
   }
 
-  private void cleanup(String analysesIndex, String sequencingsIndex, boolean analysesHasChanged, String currentESAnalysesIndexWithHash, boolean sequencingsHasChanged, String currentESSequencingIndexWithHash) {
-    log.info("Cleanup ES indexes ...");
-    final List<String> indexesToCleanup = new ArrayList<>();
-    indexesToCleanup.add(analysesIndex);
-    indexesToCleanup.add(sequencingsIndex);
-    if (analysesHasChanged) {  // ignore if was the same
-      indexesToCleanup.add(currentESAnalysesIndexWithHash);
+  private void cleanup(List<String> indexesToCleanup) {
+    if (!indexesToCleanup.isEmpty()) {
+      log.info("Cleanup ES indexes ...");
+      this.esClient.delete(indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList()));
     }
-    if (sequencingsHasChanged) { // ignore if was the same
-      indexesToCleanup.add(currentESSequencingIndexWithHash);
-    }
-    this.esClient.delete(indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList()));
   }
 
   private void publish(String indexWithHash, String currentESIndexWithHash, String index) {
