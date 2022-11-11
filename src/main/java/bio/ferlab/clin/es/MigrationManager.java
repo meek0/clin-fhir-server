@@ -1,7 +1,10 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.indexer.NanuqIndexer;
 import bio.ferlab.clin.properties.BioProperties;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ public class MigrationManager {
   private final BioProperties bioProperties;
   private final ElasticsearchRestClient esClient;
   private final NanuqIndexer nanuqIndexer;
+  private final ResourceDaoConfiguration configuration;
 
   @EventListener(ApplicationReadyEvent.class)
   public void startMigration() {
@@ -51,9 +55,9 @@ public class MigrationManager {
     // Perform migration if any of them is different
     if (analysesHasChanged || sequencingsHasChanged) {
       log.info("Migrate: {} {}", analysesIndexWithHash, sequencingIndexWithHash);
-      this.nanuqIndexer.migrate(analysesIndexWithHash, sequencingIndexWithHash);
+      this.migrate(analysesIndexWithHash, sequencingIndexWithHash);
 
-      // always remove indexes that could have the name of the aliases to publish
+      // always remove indexes that could have the names of the aliases to publish
       this.cleanup(List.of(analysesIndex, sequencingsIndex));
 
       // remove + add the aliases referring the new indexes + hash
@@ -73,6 +77,25 @@ public class MigrationManager {
     } else {
       log.info("Nothing to migrate");
     }
+  }
+
+  private void migrate(String analysesIndex, String sequencingIndex) {
+    int batchSize = 100, offset = 0;
+    boolean running = true;
+    do {
+      final SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
+      searchParameterMap.setCount(batchSize);
+      searchParameterMap.setOffset(offset);
+      // good old batch with pagination
+      final IBundleProvider bundle = this.configuration.serviceRequestDAO.search(searchParameterMap);
+      final Set<String> prescriptionIds = bundle.getResources(0, batchSize).stream().map(r -> r.getIdElement().getIdPart()).collect(Collectors.toSet());
+      if (!prescriptionIds.isEmpty()) {
+        this.nanuqIndexer.doIndex(null, prescriptionIds, analysesIndex, sequencingIndex, false);
+        offset += batchSize;
+      } else {
+        running = false;
+      }
+    } while(running);
   }
 
   private void cleanup(List<String> indexesToCleanup) {

@@ -34,30 +34,10 @@ import static bio.ferlab.clin.es.TemplateIndexer.SEQUENCINGS_TEMPLATE;
 public class NanuqIndexer extends Indexer {
   
   private final ServiceRequestIdExtractor serviceRequestIdExtractor;
-  private final ResourceDaoConfiguration configuration;
   private final AnalysisDataBuilder analysisDataBuilder;
   private final SequencingDataBuilder sequencingDataBuilder;
   private final BioProperties bioProperties;
   private final IndexerTools tools;
-
-  public void migrate(String analysesIndex, String sequencingIndex) {
-    int batchSize = 100, offset = 0;
-    boolean running = true;
-    do {
-      final SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
-      searchParameterMap.setCount(batchSize);
-      searchParameterMap.setOffset(offset);
-      // good old batch with pagination
-      final IBundleProvider bundle = this.configuration.serviceRequestDAO.search(searchParameterMap);
-      final Set<String> prescriptionIds = bundle.getResources(0, batchSize).stream().map(r -> r.getIdElement().getIdPart()).collect(Collectors.toSet());
-      if (!prescriptionIds.isEmpty()) {
-        this.doIndex(null, prescriptionIds, analysesIndex, sequencingIndex, false);
-        offset += batchSize;
-      } else {
-        running = false;
-      }
-    } while(running);
-  }
 
   @Override
   protected void doIndex(RequestDetails requestDetails, IBaseResource resource) {
@@ -65,7 +45,7 @@ public class NanuqIndexer extends Indexer {
     this.doIndex(requestDetails, prescriptionIds, bioProperties.getNanuqEsAnalysesIndex(), bioProperties.getNanuqEsSequencingsIndex(), true);
   }
 
-  private void doIndex(RequestDetails requestDetails, Set<String> prescriptionIds, String analysesIndex, String sequencingIndex, boolean indexLinked) {
+  public void doIndex(RequestDetails requestDetails, Set<String> prescriptionIds, String analysesIndex, String sequencingIndex, boolean indexLinked) {
     List<AnalysisData> analyses = this.indexAnalyses(requestDetails, prescriptionIds, analysesIndex);
     List<SequencingData> sequencings = this.indexSequencings(requestDetails, prescriptionIds, sequencingIndex);
 
