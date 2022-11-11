@@ -8,9 +8,11 @@ import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.es.data.nanuq.AnalysisData;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
+import bio.ferlab.clin.es.data.nanuq.SequencingRequestData;
 import bio.ferlab.clin.es.extractor.ServiceRequestIdExtractor;
 import bio.ferlab.clin.properties.BioProperties;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -18,8 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static bio.ferlab.clin.es.TemplateIndexer.ANALYSES_TEMPLATE;
@@ -37,26 +41,47 @@ public class NanuqIndexer extends Indexer {
   private final IndexerTools tools;
 
   public void migrate(String analysesIndex, String sequencingIndex) {
-   final IBundleProvider bundle = this.configuration.serviceRequestDAO.search(SearchParameterMap.newSynchronous().setCount(Integer.MAX_VALUE));
-   final Set<String> prescriptionIds = bundle.getAllResources().stream().map(r -> r.getIdElement().getIdPart()).collect(Collectors.toSet());
-   this.doIndex(prescriptionIds, analysesIndex, sequencingIndex);
+    int batchSize = 100, offset = 0;
+    boolean running = true;
+    do {
+      final SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
+      searchParameterMap.setCount(batchSize);
+      searchParameterMap.setOffset(offset);
+      // good old batch with pagination
+      final IBundleProvider bundle = this.configuration.serviceRequestDAO.search(searchParameterMap);
+      final Set<String> prescriptionIds = bundle.getResources(0, batchSize).stream().map(r -> r.getIdElement().getIdPart()).collect(Collectors.toSet());
+      if (!prescriptionIds.isEmpty()) {
+        this.doIndex(null, prescriptionIds, analysesIndex, sequencingIndex, false);
+        offset += batchSize;
+      } else {
+        running = false;
+      }
+    } while(running);
   }
 
   @Override
   protected void doIndex(RequestDetails requestDetails, IBaseResource resource) {
     final Set<String> prescriptionIds = serviceRequestIdExtractor.extract(resource);
-    this.doIndex(prescriptionIds, bioProperties.getNanuqEsAnalysesIndex(), bioProperties.getNanuqEsSequencingsIndex());
+    this.doIndex(requestDetails, prescriptionIds, bioProperties.getNanuqEsAnalysesIndex(), bioProperties.getNanuqEsSequencingsIndex(), true);
   }
 
-  private void doIndex(Set<String> prescriptionIds, String analysesIndex, String sequencingIndex) {
-    List<AnalysisData> analyses = this.indexAnalyses(null, prescriptionIds, analysesIndex);
-    List<SequencingData> sequencings = this.indexSequencings(null, prescriptionIds, sequencingIndex);
+  private void doIndex(RequestDetails requestDetails, Set<String> prescriptionIds, String analysesIndex, String sequencingIndex, boolean indexLinked) {
+    List<AnalysisData> analyses = this.indexAnalyses(requestDetails, prescriptionIds, analysesIndex);
+    List<SequencingData> sequencings = this.indexSequencings(requestDetails, prescriptionIds, sequencingIndex);
 
-    // re-index parent analyses
-    final Set<String> linkedParentAnalyses = sequencings.stream().map(SequencingData::getPrescriptionId).collect(Collectors.toSet());
-    final Set<String> alreadyIndexedAnalyses = analyses.stream().map(AnalysisData::getPrescriptionId).collect(Collectors.toSet());
-    linkedParentAnalyses.removeAll(alreadyIndexedAnalyses); // ignore if indexed before
-    this.indexAnalyses(null, linkedParentAnalyses, analysesIndex);
+    if (indexLinked) {
+      // re-index linked analyses
+      final Set<String> linkedAnalyses = sequencings.stream().map(SequencingData::getPrescriptionId).collect(Collectors.toSet());
+      final Set<String> alreadyIndexedAnalyses = analyses.stream().map(AnalysisData::getPrescriptionId).collect(Collectors.toSet());
+      linkedAnalyses.removeAll(alreadyIndexedAnalyses); // ignore if indexed before
+      this.indexAnalyses(requestDetails, linkedAnalyses, analysesIndex);
+
+      // re-index linked sequencings
+      final Set<String> linkedSequencings = analyses.stream().flatMap(a -> a.getSequencingRequests().stream().map(SequencingRequestData::getRequestId)).collect(Collectors.toSet());
+      final Set<String> alreadyIndexedSequencings = sequencings.stream().map(SequencingData::getRequestId).collect(Collectors.toSet());
+      linkedSequencings.removeAll(alreadyIndexedSequencings); // ignore if indexed before
+      this.indexSequencings(requestDetails, linkedSequencings, sequencingIndex);
+    }
   }
 
   private List<AnalysisData> indexAnalyses(RequestDetails requestDetails, Set<String> ids, String index) {
