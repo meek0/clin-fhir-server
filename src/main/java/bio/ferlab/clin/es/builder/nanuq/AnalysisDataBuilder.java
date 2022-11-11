@@ -1,10 +1,8 @@
 package bio.ferlab.clin.es.builder.nanuq;
 
-import bio.ferlab.clin.es.builder.CommonDataBuilder;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AnalysisData;
 import bio.ferlab.clin.es.data.nanuq.SequencingRequestData;
-import bio.ferlab.clin.utils.Extensions;
 import bio.ferlab.clin.utils.FhirUtils;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;

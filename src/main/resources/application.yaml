@@ -153,7 +153,6 @@ hapi:
 
 bio:
   nanuq:
-    enabled: false
     analyses-index: "clin-qa-analyses"
     sequencings-index: "clin-qa-sequencings"
   tagging: 

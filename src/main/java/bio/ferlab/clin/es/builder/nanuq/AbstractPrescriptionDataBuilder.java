@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static bio.ferlab.clin.es.builder.CommonDataBuilder.MRN_CODE;
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
 import static bio.ferlab.clin.utils.Extensions.FAMILY_MEMBER;
 
@@ -32,6 +31,8 @@ public abstract class AbstractPrescriptionDataBuilder {
       this.value = value;
     }
   }
+
+  public static final String MRN_CODE = "MR";
 
   // thread confinement because SimpleDateFormat not thread-safe
   public final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal

@@ -1,9 +1,8 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.data.Actions;
 import bio.ferlab.clin.es.data.ElasticsearchData;
-import bio.ferlab.clin.es.indexer.IndexerTools;
 import bio.ferlab.clin.utils.JsonGenerator;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.EntityUtils;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ElasticsearchRestClient {
@@ -52,8 +50,8 @@ public class ElasticsearchRestClient {
         try {
 
             final Actions actions = new Actions();
-            remove.forEach(r-> actions.actions.add(new ActionRemove(r, alias)));
-            add.forEach(r-> actions.actions.add(new ActionAdd(r, alias)));
+            remove.forEach(r-> actions.getActions().add(new Actions.ActionRemove(r, alias)));
+            add.forEach(r-> actions.getActions().add(new Actions.ActionAdd(r, alias)));
 
             final Request request = new Request(
               HttpMethod.POST.name(), "/_aliases"
@@ -141,31 +139,4 @@ public class ElasticsearchRestClient {
         }
     }
 
-    private static class Actions {
-        public final List<ActionInf> actions = new ArrayList<>();
-    }
-
-    private interface ActionInf {
-
-    }
-
-    private static class ActionAdd implements ActionInf {
-        public final Action add;
-        public ActionAdd(String index, String alias) {
-            add = new Action(index, alias);
-        }
-    }
-
-    private static class ActionRemove implements ActionInf {
-        public final Action remove;
-        public ActionRemove(String index, String alias) {
-            remove = new Action(index, alias);
-        }
-    }
-
-    @AllArgsConstructor
-    private static class Action {
-        public String index;
-        public String alias;
-    }
 }

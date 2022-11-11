@@ -1,33 +1,21 @@
 package bio.ferlab.clin.es.indexer;
 
-import bio.ferlab.clin.dao.DaoConfiguration;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
 import bio.ferlab.clin.es.builder.nanuq.AnalysisDataBuilder;
 import bio.ferlab.clin.es.builder.nanuq.SequencingDataBuilder;
-import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
-import bio.ferlab.clin.es.data.PrescriptionData;
 import bio.ferlab.clin.es.data.nanuq.AnalysisData;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
 import bio.ferlab.clin.es.data.nanuq.SequencingRequestData;
 import bio.ferlab.clin.es.extractor.ServiceRequestIdExtractor;
 import bio.ferlab.clin.properties.BioProperties;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.rest.api.SummaryEnum;
-import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.ReferenceParam;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static bio.ferlab.clin.es.TemplateIndexer.ANALYSES_TEMPLATE;
-import static bio.ferlab.clin.es.TemplateIndexer.SEQUENCINGS_TEMPLATE;
 
 @Component
 @RequiredArgsConstructor

@@ -6,7 +6,6 @@ import bio.ferlab.clin.properties.BioProperties;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -33,6 +32,7 @@ public class MigrationManager {
 
   @EventListener(ApplicationReadyEvent.class)
   public void startMigration() {
+    // always index templates
     Map<String, String> templates = this.templateIndexer.indexTemplates();
     Map<String, String> aliases = esClient.aliases();
 
@@ -40,7 +40,7 @@ public class MigrationManager {
     final String analysesIndex = bioProperties.getNanuqEsAnalysesIndex();
     final String sequencingsIndex = bioProperties.getNanuqEsSequencingsIndex();
 
-    // indexes with templates hash from this version of FHIR
+    // indexes with templates hash from this release of FHIR
     final String analysesIndexWithHash = formatIndexWithHash(analysesIndex, templates.get(ANALYSES_TEMPLATE));
     final String sequencingIndexWithHash = formatIndexWithHash(sequencingsIndex, templates.get(SEQUENCINGS_TEMPLATE));
 
