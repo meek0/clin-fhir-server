@@ -50,7 +50,7 @@ public class ElasticsearchRestClientTest {
         this.patient.setId(IdType.newRandomUuid());
 
         this.jsonGenerator = new JsonGenerator(FhirContext.forR4());
-        this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost"));
+        this.elasticsearchRestClient = new ElasticsearchRestClient(new ElasticsearchData(this.client, "localhost"), jsonGenerator);
     }
 
     @Nested
