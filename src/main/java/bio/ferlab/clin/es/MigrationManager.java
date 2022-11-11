@@ -56,7 +56,7 @@ public class MigrationManager {
       // always remove indexes that could have the name of the aliases to publish
       this.cleanup(List.of(analysesIndex, sequencingsIndex));
 
-      // remove the add the aliases referring the new indexes + hash
+      // remove + add the aliases referring the new indexes + hash
       List<String> indexesToCleanup = new ArrayList<>();
       if (analysesHasChanged) {
         this.publish(analysesIndexWithHash, currentESAnalysesIndexWithHash, analysesIndex);

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ElasticsearchRestClient {
     private static final Logger log = LoggerFactory.getLogger(ElasticsearchRestClient.class);
-    public static final String FAILED_TO_CHECK_INDEX = "Failed to check index";
+    public static final String FAILED_TO_GET_ALIASES = "Failed to get aliases";
     public static final String FAILED_TO_DELETE_INDEX = "Failed to delete index";
     public static final String FAILED_TO_SET_ALIAS = "Failed to set alias";
     public static final String FAILED_TO_SAVE_RESOURCE = "Failed to save resource";
@@ -42,7 +42,7 @@ public class ElasticsearchRestClient {
             Arrays.stream(body.split("\n")).map(line -> line.split("\\s+")).filter(a -> a.length >= 2).forEach(e -> aliases.put(e[0], e[1]));
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
-            throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_CHECK_INDEX);
+            throw new ca.uhn.fhir.rest.server.exceptions.InternalErrorException(FAILED_TO_GET_ALIASES);
         }
         return aliases;
     }
