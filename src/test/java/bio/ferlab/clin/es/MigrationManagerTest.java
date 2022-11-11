@@ -51,7 +51,7 @@ class MigrationManagerTest {
   }
 
   @Test
-  void migration() {
+  void do_one_index__migration() {
 
     when(templateIndexer.indexTemplates()).thenReturn(Map.of(ANALYSES_TEMPLATE, "HASH2", SEQUENCINGS_TEMPLATE, "HASH1"));
     when(esClient.aliases()).thenReturn(Map.of("analyses", "analyses-HASH1", "sequencings", "sequencings-HASH1"));
@@ -71,5 +71,28 @@ class MigrationManagerTest {
     verify(esClient, never()).setAlias(any(), any(), eq("sequencings"));
     verify(esClient).delete(eq(List.of("analyses", "sequencings")));
     verify(esClient).delete(eq(List.of("analyses-HASH1")));
+  }
+
+  @Test
+  void do_both_indexes_migration() {
+
+    when(templateIndexer.indexTemplates()).thenReturn(Map.of(ANALYSES_TEMPLATE, "HASH2", SEQUENCINGS_TEMPLATE, "HASH2"));
+    when(esClient.aliases()).thenReturn(Map.of("analyses", "analyses-HASH1", "sequencings", "sequencings-HASH1"));
+
+    ServiceRequest sr1 = new ServiceRequest();
+    sr1.setId("sr1");
+    ServiceRequest sr2 = new ServiceRequest();
+    sr2.setId("sr2");
+    final SimpleBundleProvider bundleProvider1 = new SimpleBundleProvider(List.of(sr1, sr2));
+    final SimpleBundleProvider bundleProvider2 = new SimpleBundleProvider();
+    when(serviceRequestDao.search(any())).thenReturn(bundleProvider1).thenReturn(bundleProvider2);
+
+    migrationManager.startMigration();
+
+    verify(nanuqIndexer).doIndex(eq(null), eq(Set.of("sr1", "sr2")), eq("analyses-HASH2"), eq("sequencings-HASH2"), eq(false));
+    verify(esClient).setAlias(eq(List.of("analyses-HASH2")), eq(List.of("analyses-HASH1")), eq("analyses"));
+    verify(esClient).setAlias(eq(List.of("sequencings-HASH2")), eq(List.of("sequencings-HASH1")), eq("sequencings"));
+    verify(esClient).delete(eq(List.of("analyses", "sequencings")));
+    verify(esClient).delete(eq(List.of("analyses-HASH1", "sequencings-HASH1")));
   }
 }
