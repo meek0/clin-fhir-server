@@ -17,7 +17,6 @@ import java.util.Set;
 
 import static bio.ferlab.clin.es.TemplateIndexer.ANALYSES_TEMPLATE;
 import static bio.ferlab.clin.es.TemplateIndexer.SEQUENCINGS_TEMPLATE;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,6 +34,7 @@ class MigrationManagerTest {
 
   @BeforeEach
   void beforeEach() {
+    when(bioProperties.isNanuqMigration()).thenReturn(true);
     when(bioProperties.getNanuqEsAnalysesIndex()).thenReturn("analyses");
     when(bioProperties.getNanuqEsSequencingsIndex()).thenReturn("sequencings");
   }

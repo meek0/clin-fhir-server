@@ -34,46 +34,49 @@ public class MigrationManager {
   public void startMigration() {
     // always index templates
     Map<String, String> templates = this.templateIndexer.indexTemplates();
-    Map<String, String> aliases = esClient.aliases();
 
-    // indexes that will be used as aliases at the end of the process
-    final String analysesIndex = bioProperties.getNanuqEsAnalysesIndex();
-    final String sequencingsIndex = bioProperties.getNanuqEsSequencingsIndex();
+    if (bioProperties.isNanuqMigration()) {
+      Map<String, String> aliases = esClient.aliases();
 
-    // indexes with templates hash from this release of FHIR
-    final String analysesIndexWithHash = formatIndexWithHash(analysesIndex, templates.get(ANALYSES_TEMPLATE));
-    final String sequencingIndexWithHash = formatIndexWithHash(sequencingsIndex, templates.get(SEQUENCINGS_TEMPLATE));
+      // indexes that will be used as aliases at the end of the process
+      final String analysesIndex = bioProperties.getNanuqEsAnalysesIndex();
+      final String sequencingsIndex = bioProperties.getNanuqEsSequencingsIndex();
 
-    // indexes with templates hash known by elastic-search
-    final String currentESAnalysesIndexWithHash = aliases.get(analysesIndex);
-    final String currentESSequencingIndexWithHash = aliases.get(sequencingsIndex);
+      // indexes with templates hash from this release of FHIR
+      final String analysesIndexWithHash = formatIndexWithHash(analysesIndex, templates.get(ANALYSES_TEMPLATE));
+      final String sequencingIndexWithHash = formatIndexWithHash(sequencingsIndex, templates.get(SEQUENCINGS_TEMPLATE));
 
-    // compare current template hash with ES
-    final boolean analysesHasChanged = !analysesIndexWithHash.equals(currentESAnalysesIndexWithHash);
-    final boolean sequencingsHasChanged = !sequencingIndexWithHash.equals(currentESSequencingIndexWithHash);
+      // indexes with templates hash known by elastic-search
+      final String currentESAnalysesIndexWithHash = aliases.get(analysesIndex);
+      final String currentESSequencingIndexWithHash = aliases.get(sequencingsIndex);
 
-    // Perform migration if any of them is different
-    if (analysesHasChanged || sequencingsHasChanged) {
-      log.info("Migrate: {} {}", analysesIndexWithHash, sequencingIndexWithHash);
-      this.migrate(analysesIndexWithHash, sequencingIndexWithHash);
+      // compare current template hash with ES
+      final boolean analysesHasChanged = !analysesIndexWithHash.equals(currentESAnalysesIndexWithHash);
+      final boolean sequencingsHasChanged = !sequencingIndexWithHash.equals(currentESSequencingIndexWithHash);
 
-      // always remove indexes that could have the names of the aliases to publish
-      this.cleanup(List.of(analysesIndex, sequencingsIndex));
+      // Perform migration if any of them is different
+      if (analysesHasChanged || sequencingsHasChanged) {
+        log.info("Migrate: {} {}", analysesIndexWithHash, sequencingIndexWithHash);
+        this.migrate(analysesIndexWithHash, sequencingIndexWithHash);
 
-      // remove + add the aliases referring the new indexes + hash
-      List<String> indexesToCleanup = new ArrayList<>();
-      if (analysesHasChanged) {
-        this.publish(analysesIndexWithHash, currentESAnalysesIndexWithHash, analysesIndex);
-        indexesToCleanup.add(currentESAnalysesIndexWithHash);
+        // always remove indexes that could have the names of the aliases to publish
+        this.cleanup(List.of(analysesIndex, sequencingsIndex));
+
+        // remove + add the aliases referring the new indexes + hash
+        List<String> indexesToCleanup = new ArrayList<>();
+        if (analysesHasChanged) {
+          this.publish(analysesIndexWithHash, currentESAnalysesIndexWithHash, analysesIndex);
+          indexesToCleanup.add(currentESAnalysesIndexWithHash);
+        }
+
+        if (sequencingsHasChanged) {
+          this.publish(sequencingIndexWithHash, currentESSequencingIndexWithHash, sequencingsIndex);
+          indexesToCleanup.add(currentESSequencingIndexWithHash);
+        }
+
+        // cleanup previous indexes
+        this.cleanup(indexesToCleanup);
       }
-
-      if (sequencingsHasChanged) {
-        this.publish(sequencingIndexWithHash, currentESSequencingIndexWithHash, sequencingsIndex);
-        indexesToCleanup.add(currentESSequencingIndexWithHash);
-      }
-
-      // cleanup previous indexes
-      this.cleanup(indexesToCleanup);
     } else {
       log.info("Nothing to migrate");
     }
