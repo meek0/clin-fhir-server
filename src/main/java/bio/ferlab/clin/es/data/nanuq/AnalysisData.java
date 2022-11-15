@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static bio.ferlab.clin.es.data.ElasticsearchData.EMPTY_STRING;
-
 @Data
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)

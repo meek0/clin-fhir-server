@@ -1,6 +1,5 @@
 package bio.ferlab.clin.interceptors;
 
-import bio.ferlab.clin.es.indexer.LegacyIndexer;
 import bio.ferlab.clin.es.indexer.NanuqIndexer;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
@@ -23,16 +22,13 @@ import org.springframework.stereotype.Service;
 public class IndexerInterceptor {
     private final ElasticsearchRestClient client;
     private final BioProperties bioProperties;
-    private final LegacyIndexer legacyIndexer;
     private final NanuqIndexer nanuqIndexer;
 
     public IndexerInterceptor(ElasticsearchRestClient client,
-                              BioProperties bioProperties, 
-                              LegacyIndexer legacyIndexer,
+                              BioProperties bioProperties,
                               NanuqIndexer nanuqIndexer) {
         this.client = client;
         this.bioProperties = bioProperties;
-        this.legacyIndexer = legacyIndexer;
         this.nanuqIndexer = nanuqIndexer;
     }
 
@@ -47,11 +43,7 @@ public class IndexerInterceptor {
 
     @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
     public boolean response(RequestDetails requestDetails) {
-        if (bioProperties.isNanuqEnabled()) {
-            this.nanuqIndexer.index(requestDetails);
-        } else {
-            this.legacyIndexer.index(requestDetails);
-        }
+        this.nanuqIndexer.index(requestDetails);
         return true;
     }
 }

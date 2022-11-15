@@ -1,8 +1,9 @@
 package bio.ferlab.clin.es.config;
 
+import bio.ferlab.clin.es.data.ElasticsearchData;
 import bio.ferlab.clin.properties.BioProperties;
 import bio.ferlab.clin.es.ElasticsearchRestClient;
-import bio.ferlab.clin.es.data.ElasticsearchData;
+import bio.ferlab.clin.utils.JsonGenerator;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
@@ -24,7 +25,7 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public ElasticsearchRestClient esRestClient(ElasticsearchData esData) {
-        return new ElasticsearchRestClient(esData);
+    public ElasticsearchRestClient esRestClient(ElasticsearchData esData, JsonGenerator jsonGenerator) {
+        return new ElasticsearchRestClient(esData, jsonGenerator);
     }
 }

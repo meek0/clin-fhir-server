@@ -1,5 +1,11 @@
 package bio.ferlab.clin.es;
 
+import bio.ferlab.clin.es.indexer.NanuqIndexer;
+import bio.ferlab.clin.properties.BioProperties;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -10,28 +16,32 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Component
+@RequiredArgsConstructor
 public class TemplateIndexer {
-  
-  private final ElasticsearchRestClient esClient;
 
   private static final Logger log = LoggerFactory.getLogger(TemplateIndexer.class);
-  
-  public TemplateIndexer(ElasticsearchRestClient esClient) {
-    this.esClient = esClient;
+  public static final String ANALYSES_TEMPLATE = "clin-analyses-template.json";
+  public static final String SEQUENCINGS_TEMPLATE = "clin-sequencings-template.json";
+
+  private final ElasticsearchRestClient esClient;
+
+  public Map<String, String> indexTemplates() {
+    final Map<String, String> templates = new TreeMap<>();
+    templates.put(ANALYSES_TEMPLATE, indexTemplate(ANALYSES_TEMPLATE));
+    templates.put(SEQUENCINGS_TEMPLATE, indexTemplate(SEQUENCINGS_TEMPLATE));
+    return templates;
   }
 
-  @EventListener(ApplicationReadyEvent.class)
-  public void indextemplates() {
-    indexTemplate("clin-analyses-template.json");
-    indexTemplate("clin-sequencings-template.json");
-  }
-  
-  private void indexTemplate(String path) {
+  private String indexTemplate(String path) {
     log.info("Index ES template from resource: {}", path);
-    String templateName = FilenameUtils.getBaseName(path);
-    esClient.indexTemplate(templateName, loadTemplate(path));
+    final String templateName = FilenameUtils.getBaseName(path);
+    final String templateContent = loadTemplate(path);
+    esClient.indexTemplate(templateName, templateContent);
+    return DigestUtils.md5Hex(templateContent);
   }
   
   private String loadTemplate(String path) {

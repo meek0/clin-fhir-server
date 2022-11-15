@@ -14,7 +14,6 @@ public class ValidationConfiguration {
     
     @Bean
     public ValidationChain validationChain() {
-        if (bioProperties.isNanuqEnabled()) {
             return new ValidationChain()
                 .withValidator(new PatientValidator())
                 .withValidator(new PersonValidator())
@@ -24,11 +23,5 @@ public class ValidationConfiguration {
                 .withValidator(new ObservationValidator())
                 .withValidator(new SpecimenValidator())
                 .withValidator(new TaskValidator());
-        } else {
-            // legacy validation chain
-            return new ValidationChain()
-                .withValidator(new bio.ferlab.clin.validation.validators.PatientValidator())
-                .withValidator(new bio.ferlab.clin.validation.validators.ObservationValidator());
-        }
     }
 }
