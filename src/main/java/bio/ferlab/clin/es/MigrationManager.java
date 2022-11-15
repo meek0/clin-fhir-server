@@ -82,6 +82,7 @@ public class MigrationManager {
   private void migrate(String analysesIndex, String sequencingIndex) {
     int batchSize = 100, offset = 0;
     boolean running = true;
+    int total = 0;
     do {
       final SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
       searchParameterMap.setCount(batchSize);
@@ -92,16 +93,19 @@ public class MigrationManager {
       if (!prescriptionIds.isEmpty()) {
         this.nanuqIndexer.doIndex(null, prescriptionIds, analysesIndex, sequencingIndex, false);
         offset += batchSize;
+        total += prescriptionIds.size();
       } else {
         running = false;
       }
     } while(running);
+    log.info("Total migrated: {}", total);
   }
 
   private void cleanup(List<String> indexesToCleanup) {
-    if (!indexesToCleanup.isEmpty()) {
+    final List<String> nonNullIndexes = indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList());
+    if (!nonNullIndexes.isEmpty()) {
       log.info("Cleanup ES indexes ...");
-      this.esClient.delete(indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+      this.esClient.delete(nonNullIndexes);
     }
   }
 
