@@ -99,9 +99,10 @@ public class MigrationManager {
   }
 
   private void cleanup(List<String> indexesToCleanup) {
-    if (!indexesToCleanup.isEmpty()) {
+    final List<String> nonNullIndexes = indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList());
+    if (!nonNullIndexes.isEmpty()) {
       log.info("Cleanup ES indexes ...");
-      this.esClient.delete(indexesToCleanup.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+      this.esClient.delete(nonNullIndexes);
     }
   }
 
