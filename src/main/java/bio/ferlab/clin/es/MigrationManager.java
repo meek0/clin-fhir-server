@@ -76,9 +76,11 @@ public class MigrationManager {
 
         // cleanup previous indexes
         this.cleanup(indexesToCleanup);
+      } else {
+        log.info("Nothing to migrate");
       }
     } else {
-      log.info("Nothing to migrate");
+      log.info("Migration is disabled");
     }
   }
 
