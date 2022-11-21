@@ -1,5 +1,6 @@
 package bio.ferlab.clin.properties;
 
+import bio.ferlab.clin.es.MigrationManager;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,7 +32,7 @@ public class BioProperties {
     private final String authClientId;
     private final String authSystemId;
     private final String authClientSecret;
-    private final boolean nanuqMigration;
+    private final MigrationManager.Type nanuqReindex;
     private final String nanuqEsAnalysesIndex;
     private final String nanuqEsSequencingsIndex;
 
@@ -56,7 +57,7 @@ public class BioProperties {
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
             @Value("${bio.auth.authorization.system-id}") String authSystemId,
-            @Value("${bio.nanuq.migration}") boolean nanuqMigration,
+            @Value("${bio.nanuq.reindex}") MigrationManager.Type nanuqReindex,
             @Value("${bio.nanuq.analyses-index}") String nanuqEsAnalysesIndex,
             @Value("${bio.nanuq.sequencings-index}") String nanuqEsSequencingsIndex
 
@@ -81,7 +82,7 @@ public class BioProperties {
         this.authClientId = authClientId;
         this.authClientSecret = authClientSecret;
         this.authSystemId = authSystemId;
-        this.nanuqMigration = nanuqMigration;
+        this.nanuqReindex = nanuqReindex;
         this.nanuqEsAnalysesIndex = nanuqEsAnalysesIndex;
         this.nanuqEsSequencingsIndex = nanuqEsSequencingsIndex;
     }

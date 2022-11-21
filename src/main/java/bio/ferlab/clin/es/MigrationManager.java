@@ -24,6 +24,10 @@ public class MigrationManager {
 
   private static final Logger log = LoggerFactory.getLogger(MigrationManager.class);
 
+  public enum Type {
+    always, hash, none
+  }
+
   private final TemplateIndexer templateIndexer;
   private final BioProperties bioProperties;
   private final ElasticsearchRestClient esClient;
@@ -32,23 +36,24 @@ public class MigrationManager {
 
   @EventListener(ApplicationReadyEvent.class)
   public void startMigration() {
+
     // always index templates
     Map<String, String> templates = this.templateIndexer.indexTemplates();
+    Map<String, String> aliases = esClient.aliases();
 
-    if (bioProperties.isNanuqMigration()) {
-      Map<String, String> aliases = esClient.aliases();
+    // indexes that will be used as aliases at the end of the process
+    final String analysesIndex = bioProperties.getNanuqEsAnalysesIndex();
+    final String sequencingsIndex = bioProperties.getNanuqEsSequencingsIndex();
 
-      // indexes that will be used as aliases at the end of the process
-      final String analysesIndex = bioProperties.getNanuqEsAnalysesIndex();
-      final String sequencingsIndex = bioProperties.getNanuqEsSequencingsIndex();
+    // indexes with templates hash known by elastic-search
+    final String currentESAnalysesIndexWithHash = aliases.get(analysesIndex);
+    final String currentESSequencingIndexWithHash = aliases.get(sequencingsIndex);
+
+    if (Type.hash.equals(bioProperties.getNanuqReindex())) {
 
       // indexes with templates hash from this release of FHIR
       final String analysesIndexWithHash = formatIndexWithHash(analysesIndex, templates.get(ANALYSES_TEMPLATE));
       final String sequencingIndexWithHash = formatIndexWithHash(sequencingsIndex, templates.get(SEQUENCINGS_TEMPLATE));
-
-      // indexes with templates hash known by elastic-search
-      final String currentESAnalysesIndexWithHash = aliases.get(analysesIndex);
-      final String currentESSequencingIndexWithHash = aliases.get(sequencingsIndex);
 
       // compare current template hash with ES
       final boolean analysesHasChanged = !analysesIndexWithHash.equals(currentESAnalysesIndexWithHash);
@@ -79,8 +84,22 @@ public class MigrationManager {
       } else {
         log.info("Nothing to migrate");
       }
+    } else if (Type.always.equals(bioProperties.getNanuqReindex())){
+      log.info("Re-index: {} {}", analysesIndex, sequencingsIndex);
+      // remove all previous aliases and indexes
+      List<String> indexesToCleanup = new ArrayList<>(List.of(analysesIndex, sequencingsIndex));
+      if (currentESAnalysesIndexWithHash != null) {
+        this.esClient.setAlias(List.of(), List.of("*"), analysesIndex);
+        indexesToCleanup.add(currentESAnalysesIndexWithHash);
+      }
+      if (currentESSequencingIndexWithHash != null) {
+        this.esClient.setAlias(List.of(), List.of("*"), sequencingsIndex);
+        indexesToCleanup.add(currentESSequencingIndexWithHash);
+      }
+      this.cleanup(indexesToCleanup);
+      this.migrate(analysesIndex, sequencingsIndex);
     } else {
-      log.info("Migration is disabled");
+      log.info("Re-index is disabled");
     }
   }
 
@@ -103,7 +122,7 @@ public class MigrationManager {
         running = false;
       }
     } while(running);
-    log.info("Total migrated: {}", total);
+    log.info("Total indexed: {}", total);
   }
 
   private void cleanup(List<String> indexesToCleanup) {
@@ -115,9 +134,8 @@ public class MigrationManager {
   }
 
   private void publish(String indexWithHash, String currentESIndexWithHash, String index) {
-    List<String> aliasesToRemove = new ArrayList<>();
     log.info("Publish: {} <=> {}", index, indexWithHash);
-    Optional.ofNullable(currentESIndexWithHash).ifPresent(aliasesToRemove::add);
+    List<String> aliasesToRemove = currentESIndexWithHash != null ? List.of("*") : List.of();
     this.esClient.setAlias(List.of(indexWithHash), aliasesToRemove, index);
   }
 
