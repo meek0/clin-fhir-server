@@ -15,5 +15,7 @@ public class SequencingRequestData {
   private String requestId = EMPTY_STRING;
   private String status = EMPTY_STRING;
   private String sample = EMPTY_STRING;
+  private String patientId = EMPTY_STRING;
+  private String patientMRN = EMPTY_STRING;
   
 }
