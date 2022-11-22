@@ -50,15 +50,17 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
           if(sr.hasSpecimen()) {
             srd.setSample(getSampleValue(sr, requestDetails));
           }
+          if (sr.hasSubject()) {
+            final Reference subjectRef = sr.getSubject();
+            final Patient patient = this.configuration.patientDAO.read(new IdType(subjectRef.getReference()));
+            if (patient.hasIdentifier()) {
+              extractMRN(patient).ifPresent(srd::setPatientMRN);
+            }
+            srd.setPatientId(sr.getSubject().getReferenceElement().getIdPart());
+          }
           analysisData.getSequencingRequests().add(srd);
         }
-        
-        final Reference motherRef = extractParentReference(serviceRequest, FAMILY_MEMBER_MOTHER_CODE);
-        Optional.ofNullable(motherRef).map(FhirUtils::extractId).ifPresent(analysisData::setMotherId);
-        
-        final Reference fatherRef = extractParentReference(serviceRequest, FAMILY_MEMBER_FATHER_CODE);
-        Optional.ofNullable(fatherRef).map(FhirUtils::extractId).ifPresent(analysisData::setFatherId);
-        
+
         analyses.add(analysisData);
       }
     }

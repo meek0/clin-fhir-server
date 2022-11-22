@@ -96,10 +96,18 @@ class PrescriptionDataBuilderTest {
     final ServiceRequest sequencing1 = new ServiceRequest();
     sequencing1.setId("seq1");
     sequencing1.setStatus(ServiceRequest.ServiceRequestStatus.DRAFT);
+    sequencing1.setSubject(new Reference("p2"));
     final ServiceRequest sequencing2 = new ServiceRequest();
     sequencing2.setId("seq2");
     sequencing2.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED);
+    sequencing2.setSubject(new Reference("p3"));
     when(bundle.getAllResources()).thenReturn(List.of(sequencing1, sequencing2));
+    final Patient p2 = new Patient();
+    p2.setId("p2");
+    p2.getIdentifier().add(new Identifier().setType(new CodeableConcept().addCoding(new Coding().setCode("MR"))).setValue("P2"));
+    final Patient p3 = new Patient();
+    p3.setId("p3");
+    p3.getIdentifier().add(new Identifier().setType(new CodeableConcept().addCoding(new Coding().setCode("MR"))).setValue("P3"));
 
     final Specimen specimen = new Specimen();
     specimen.getParent().add(new Reference("parent1"));
@@ -108,7 +116,7 @@ class PrescriptionDataBuilderTest {
     when(specimenDao.read(eq(new IdType("speci")), any())).thenReturn(specimen);
     
     when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
-    when(patientDao.read(any())).thenReturn(patient);
+    when(patientDao.read(any())).thenReturn(patient).thenReturn(p2).thenReturn(p3);
     when(organizationDao.read(any())).thenReturn(organization);
     when(serviceRequestDao.search(any())).thenReturn(bundle);
     
@@ -116,14 +124,14 @@ class PrescriptionDataBuilderTest {
     
     verify(serviceRequestDao).read(eq(new IdType("serviceRequest1")), eq(requestDetails));
     verify(patientDao).read(eq(new IdType("patient1")));
+    verify(patientDao).read(eq(new IdType("p2")));
+    verify(patientDao).read(eq(new IdType("p3")));
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(serviceRequestDao).search(any());
     
     assertEquals(1, results.size());
     AnalysisData data1 = results.get(0);
     assertEquals("patient1", data1.getPatientId());
-    assertEquals("motherRef", data1.getMotherId());
-    assertEquals("", data1.getFatherId());
     assertEquals(List.of("TAG1"), data1.getSecurityTags());
     assertEquals("draft", data1.getStatus());
     assertEquals("asap", data1.getPriority());
@@ -137,12 +145,16 @@ class PrescriptionDataBuilderTest {
     assertEquals(nowStr, data1.getCreatedOn());
     assertEquals("serviceRequest1", data1.getPrescriptionId());
     assertEquals(2, data1.getSequencingRequests().size());
+    assertEquals("p2", data1.getSequencingRequests().get(0).getPatientId());
+    assertEquals("P2", data1.getSequencingRequests().get(0).getPatientMRN());
     assertEquals("seq1", data1.getSequencingRequests().get(0).getRequestId());
     assertEquals("draft", data1.getSequencingRequests().get(0).getStatus());
     assertEquals("speciId", data1.getSequencingRequests().get(0).getSample());
     assertEquals("seq2", data1.getSequencingRequests().get(1).getRequestId());
     assertEquals("completed", data1.getSequencingRequests().get(1).getStatus());
     assertEquals("", data1.getSequencingRequests().get(1).getSample());
+    assertEquals("p3", data1.getSequencingRequests().get(1).getPatientId());
+    assertEquals("P3", data1.getSequencingRequests().get(1).getPatientMRN());
   }
 
   @Test
@@ -206,8 +218,6 @@ class PrescriptionDataBuilderTest {
     assertEquals(1, results.size());
     SequencingData data1 = results.get(0);
     assertEquals("patient1", data1.getPatientId());
-    assertEquals("motherRef", data1.getMotherId());
-    assertEquals("", data1.getFatherId());
     assertEquals(List.of("TAG1"), data1.getSecurityTags());
     assertEquals("draft", data1.getStatus());
     assertEquals("asap", data1.getPriority());
