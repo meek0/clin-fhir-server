@@ -110,7 +110,8 @@ public abstract class AbstractPrescriptionDataBuilder {
   protected String getSampleValue(ServiceRequest serviceRequest, RequestDetails requestDetails) {
     for(Reference specimenRef: serviceRequest.getSpecimen()) {
       final Specimen specimen = this.configuration.specimenDao.read(new IdType(specimenRef.getReference()), requestDetails);
-      if(specimen.hasParent() && specimen.hasAccessionIdentifier()) { // specimen with a parent is the good one
+      // specimen without a parent is the good one (maybe because no spec)
+      if(!specimen.hasParent() && specimen.hasAccessionIdentifier()) {
         return specimen.getAccessionIdentifier().getValue();
       }
     }

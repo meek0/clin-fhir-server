@@ -110,7 +110,6 @@ class PrescriptionDataBuilderTest {
     p3.getIdentifier().add(new Identifier().setType(new CodeableConcept().addCoding(new Coding().setCode("MR"))).setValue("P3"));
 
     final Specimen specimen = new Specimen();
-    specimen.getParent().add(new Reference("parent1"));
     specimen.getAccessionIdentifier().setValue("speciId");
     sequencing1.getSpecimen().addAll(List.of(new Reference("speci")));
     when(specimenDao.read(eq(new IdType("speci")), any())).thenReturn(specimen);
@@ -179,10 +178,11 @@ class PrescriptionDataBuilderTest {
     patient.getIdentifier().add(new Identifier().setType(new CodeableConcept().addCoding(new Coding().setCode("MR"))).setValue("RAMQ"));
     final Organization organization =new Organization();
     organization.getAlias().add(new StringType("orgAlias"));
-    final Specimen specimen1 = new Specimen();  // no parent 
-    final Specimen specimen2 = new Specimen();
-    specimen2.getParent().add(new Reference("parent1"));
-    specimen2.getAccessionIdentifier().setValue("speciId");
+    final Specimen specimen1 = new Specimen();
+    specimen1.getParent().add(new Reference("parent1"));
+    specimen1.getAccessionIdentifier().setValue("speciId1");
+    final Specimen specimen2 = new Specimen(); // no parent
+    specimen2.getAccessionIdentifier().setValue("speciId2");
     serviceRequest.getSpecimen().addAll(List.of(new Reference("speci1"), new Reference("speci2")));
     
     final ServiceRequest parentAnalysis = new ServiceRequest();
@@ -232,7 +232,7 @@ class PrescriptionDataBuilderTest {
     assertEquals("serviceRequest1", data1.getRequestId());
     assertEquals("parentAnalysis", data1.getPrescriptionId());
     assertEquals("active", data1.getPrescriptionStatus());
-    assertEquals("speciId", data1.getSample());
+    assertEquals("speciId2", data1.getSample());
   }
 
 }
