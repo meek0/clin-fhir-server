@@ -157,7 +157,7 @@ bio:
     # none = do nothing
     # always = re-index all
     # hash = re-index only if template changed
-    reindex: always
+    reindex: none
     analyses-index: "clin-qa-analyses"
     sequencings-index: "clin-qa-sequencings"
   tagging: 
