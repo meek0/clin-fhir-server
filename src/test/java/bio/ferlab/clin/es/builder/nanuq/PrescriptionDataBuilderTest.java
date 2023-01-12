@@ -17,10 +17,9 @@ import java.util.Set;
 import static bio.ferlab.clin.interceptors.ServiceRequestPerformerInterceptor.ANALYSIS_REQUEST_CODE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class PrescriptionDataBuilderTest {
 
@@ -111,6 +110,7 @@ class PrescriptionDataBuilderTest {
 
     final Specimen specimen = new Specimen();
     specimen.getAccessionIdentifier().setValue("speciId");
+    specimen.addParent().setReference("Specimen/foo");
     sequencing1.getSpecimen().addAll(List.of(new Reference("speci")));
     when(specimenDao.read(eq(new IdType("speci")), any())).thenReturn(specimen);
     
@@ -213,7 +213,7 @@ class PrescriptionDataBuilderTest {
     verify(patientDao).read(eq(new IdType("patient1")));
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(specimenDao).read(eq(new IdType("speci1")), any());
-    verify(specimenDao).read(eq(new IdType("speci2")), any());
+    verify(specimenDao, never()).read(eq(new IdType("speci2")), any());
 
     assertEquals(1, results.size());
     SequencingData data1 = results.get(0);
@@ -232,7 +232,7 @@ class PrescriptionDataBuilderTest {
     assertEquals("serviceRequest1", data1.getRequestId());
     assertEquals("parentAnalysis", data1.getPrescriptionId());
     assertEquals("active", data1.getPrescriptionStatus());
-    assertEquals("speciId2", data1.getSample());
+    assertEquals("speciId1", data1.getSample());
   }
 
 }
