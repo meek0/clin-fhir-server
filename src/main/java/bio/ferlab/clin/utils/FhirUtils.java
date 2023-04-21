@@ -4,9 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ServiceRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FhirUtils {
   
@@ -49,5 +51,11 @@ public class FhirUtils {
 
   public static boolean equals(IBaseResource res1 , IBaseResource res2) {
     return res1!=null && res2 != null && formatResource(res1).equals(formatResource(res2));
+  }
+
+  public static List<String> getPerformerIds(ServiceRequest serviceRequest, Class<? extends IBaseResource> type){
+    return serviceRequest.getPerformer().stream().filter(p -> type != null && p.getReference().startsWith(type.getSimpleName()))
+      .map(p -> p.getReferenceElement().getIdPart())
+      .collect(Collectors.toList());
   }
 }

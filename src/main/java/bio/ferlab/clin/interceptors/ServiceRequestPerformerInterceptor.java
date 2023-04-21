@@ -1,6 +1,7 @@
 package bio.ferlab.clin.interceptors;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
+import bio.ferlab.clin.utils.FhirUtils;
 import bio.ferlab.clin.utils.ResourceFinder;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
@@ -13,10 +14,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.OrganizationAffiliation;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -87,12 +85,13 @@ public class ServiceRequestPerformerInterceptor {
   private void handleRequestAndResource(RequestDetails requestDetails, IBaseResource resource) {
     if (isValidRequestAndResource(requestDetails, resource)) {
       final ServiceRequest serviceRequest = (ServiceRequest) resource;
-      if (serviceRequest.getPerformer().isEmpty()) {
+      final var existingLdm = FhirUtils.getPerformerIds(serviceRequest, Organization.class).stream().findFirst();
+      if (existingLdm.isEmpty()) {
         final String code = extractCode(serviceRequest);
         final String ep = extractEp(requestDetails, serviceRequest);
         final OrganizationAffiliation affiliation = findOrganizationAffiliationByCode(ep, code);
         final String ldm = affiliation.getParticipatingOrganization().getReference();
-        serviceRequest.setPerformer(List.of(new Reference(ldm)));
+        serviceRequest.getPerformer().add(new Reference(ldm));
       }
     }
   }

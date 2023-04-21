@@ -2,6 +2,7 @@ package bio.ferlab.clin.es.builder.nanuq;
 
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AbstractPrescriptionData;
+import bio.ferlab.clin.utils.FhirUtils;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +81,7 @@ public abstract class AbstractPrescriptionDataBuilder {
     }
     
     if(serviceRequest.hasPerformer()) {
-      prescriptionData.setLdm(serviceRequest.getPerformer().get(0).getReferenceElement().getIdPart());
+      prescriptionData.setLdm(FhirUtils.getPerformerIds(serviceRequest, Organization.class).stream().findFirst().orElse(null));
     }
 
     if (serviceRequest.hasSubject()) {

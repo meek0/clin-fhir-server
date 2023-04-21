@@ -82,7 +82,9 @@ class PrescriptionDataBuilderTest {
     serviceRequest.setPriority(ServiceRequest.ServiceRequestPriority.ASAP);
     serviceRequest.getCode().getCoding().add(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("code1"));
     serviceRequest.setRequester(new Reference("requester1"));
-    serviceRequest.getPerformer().add(new Reference("performer1"));
+    serviceRequest.getPerformer().add(new Reference("Organization/performer1"));
+    serviceRequest.getPerformer().add(new Reference("PractitionerRole/assigned1"));
+    serviceRequest.getPerformer().add(new Reference("PractitionerRole/assigned2"));
     final Date now = new Date();
     serviceRequest.setAuthoredOn(now);
     final Patient patient = new Patient();
@@ -154,6 +156,9 @@ class PrescriptionDataBuilderTest {
     assertEquals("", data1.getSequencingRequests().get(1).getSample());
     assertEquals("p3", data1.getSequencingRequests().get(1).getPatientId());
     assertEquals("P3", data1.getSequencingRequests().get(1).getPatientMRN());
+    assertEquals(2, data1.getAssignments().size());
+    assertEquals("assigned1", data1.getAssignments().get(0));
+    assertEquals("assigned2", data1.getAssignments().get(1));
   }
 
   @Test
@@ -169,7 +174,7 @@ class PrescriptionDataBuilderTest {
     serviceRequest.setPriority(ServiceRequest.ServiceRequestPriority.ASAP);
     serviceRequest.getCode().getCoding().add(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("code1"));
     serviceRequest.setRequester(new Reference("requester1"));
-    serviceRequest.getPerformer().add(new Reference("performer1"));
+    serviceRequest.getPerformer().add(new Reference("Organization/performer1"));
     serviceRequest.getBasedOn().add(new Reference().setReference("parentAnalysis"));
     final Date now = new Date();
     serviceRequest.setAuthoredOn(now);

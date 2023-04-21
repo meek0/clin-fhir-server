@@ -165,13 +165,13 @@ class ServiceRequestPerformerInterceptorTest {
     final Patient patient = new Patient().setManagingOrganization(new Reference("ep1"));
     final ServiceRequest serviceRequest = new ServiceRequest()
         .setSubject(new Reference("patient"))
-        .setPerformer(List.of(new Reference("bar")))
+        .setPerformer(List.of(new Reference("Organization/bar")))
         .setCode(new CodeableConcept().setCoding(List.of(new Coding().setSystem(ANALYSIS_REQUEST_CODE).setCode("foo"))));
     final IBundleProvider bundle = Mockito.mock(IBundleProvider.class);
     interceptor.created(requestDetails, serviceRequest);
     verify(resourceFinder,never()).findPatientFromRequestOrDAO(any(), any());
     verify(dao,never()).search(any());
-    assertEquals("bar", serviceRequest.getPerformer().get(0).getReference());
+    assertEquals("Organization/bar", serviceRequest.getPerformer().get(0).getReference());
   }
 
 }
