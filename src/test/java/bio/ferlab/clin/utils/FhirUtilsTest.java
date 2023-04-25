@@ -3,6 +3,7 @@ package bio.ferlab.clin.utils;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,6 +54,21 @@ class FhirUtilsTest {
     final Patient p2 = new Patient();
     p2.setId("1");
     assertTrue(FhirUtils.equals(p1, p2));
+  }
+
+  @Test
+  void getPerformerIds() {
+    final var serviceRequest = new ServiceRequest();
+    assertTrue(FhirUtils.getPerformerIds(serviceRequest, null).isEmpty());
+    serviceRequest.getPerformer().add(new Reference("Organization/bar"));
+    assertTrue(FhirUtils.getPerformerIds(serviceRequest, null).isEmpty());
+    assertEquals(1, FhirUtils.getPerformerIds(serviceRequest, Organization.class).size());
+    assertEquals("bar", FhirUtils.getPerformerIds(serviceRequest, Organization.class).stream().findFirst().orElse(null));
+    serviceRequest.getPerformer().add(new Reference("PractitionerRole/1"));
+    serviceRequest.getPerformer().add(new Reference("PractitionerRole/2"));
+    assertEquals(2, FhirUtils.getPerformerIds(serviceRequest, PractitionerRole.class).size());
+    assertEquals("1", FhirUtils.getPerformerIds(serviceRequest, PractitionerRole.class).get(0));
+    assertEquals("2", FhirUtils.getPerformerIds(serviceRequest, PractitionerRole.class).get(1));
   }
 
 }

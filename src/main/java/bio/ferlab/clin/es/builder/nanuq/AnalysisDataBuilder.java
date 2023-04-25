@@ -37,6 +37,9 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
         
         this.handlePrescription(serviceRequest, analysisData);
         analysisData.setPrescriptionId(serviceRequest.getIdElement().getIdPart());
+        if (serviceRequest.hasPerformer()) {
+          analysisData.setAssignments(FhirUtils.getPerformerIds(serviceRequest, PractitionerRole.class));
+        }
 
         final SearchParameterMap searchMap = SearchParameterMap.newSynchronous("based-on", new ReferenceParam(serviceRequestId));
         final IBundleProvider srProvider = this.configuration.serviceRequestDAO.search(searchMap);
@@ -60,7 +63,6 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
           }
           analysisData.getSequencingRequests().add(srd);
         }
-
         analyses.add(analysisData);
       }
     }

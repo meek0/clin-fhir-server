@@ -12,7 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AnalysisData extends AbstractPrescriptionData {
-  
+
+  private List<String> assignments = new ArrayList<>();
   private List<SequencingRequestData> sequencingRequests = new ArrayList<>();
   
 }

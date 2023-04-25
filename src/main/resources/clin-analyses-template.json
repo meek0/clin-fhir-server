@@ -60,6 +60,9 @@
         "security_tags": {
           "type": "keyword"
         },
+        "assignments": {
+          "type": "keyword"
+        },
         "sequencing_requests": {
           "type": "nested",
           "properties": {
