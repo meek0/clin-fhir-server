@@ -25,6 +25,11 @@ public class Monitors {
     "|| within(bio.ferlab.clin.utils..*)" +
     "|| within(bio.ferlab.clin.auth..*)" +
     "|| within(bio.ferlab.clin.interceptors..*)" +
+    "|| within(bio.ferlab.clin.es.ElasticsearchRestClient)" +
+    "|| within(bio.ferlab.clin.es.TemplateIndexer)" +
+    "|| within(bio.ferlab.clin.es.IndexerHelper)" +
+    "|| within(bio.ferlab.clin.es.MigrationManager)" +
+    "|| within(bio.ferlab.clin.es.builder.nanuq..*)" +
     "|| within(bio.ferlab.clin.es.extractor..*)" +
     "|| within(bio.ferlab.clin.es.indexer..*)")
   public Object monitors(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -38,7 +43,7 @@ public class Monitors {
     }
   }
 
-  @Scheduled(fixedDelayString = "${bio.monitors.display-rate}")
+  @Scheduled(fixedDelayString = "${bio.monitors.display-rate}", initialDelay = 60000)
   public void scheduleFixedRateTask() {
     System.out.println(monitors());
   }
