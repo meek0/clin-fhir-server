@@ -43,7 +43,7 @@ public class Monitors {
     }
   }
 
-  @Scheduled(fixedDelayString = "${bio.monitors.display-rate}")
+  @Scheduled(fixedDelayString = "${bio.monitors.display-rate}", initialDelay = 60000)
   public void scheduleFixedRateTask() {
     System.out.println(monitors());
   }
