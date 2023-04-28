@@ -152,6 +152,9 @@ hapi:
 #  username: SomeUsername
 
 bio:
+  monitors:
+    enabled: false
+    display-rate: 3600000
   nanuq:
     # re-index at startup
     # none = do nothing
