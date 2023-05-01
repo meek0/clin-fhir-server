@@ -38,10 +38,12 @@ public class TokenDecoder {
     
     private final JwkProviderService provider;
     private final BioProperties bioProperties;
+    private final String issuer;
 
     public TokenDecoder(JwkProviderService jwkProviderService, BioProperties bioProperties) {   
         this.provider = jwkProviderService;
         this.bioProperties = bioProperties;
+        this.issuer = StringUtils.appendIfMissing(bioProperties.getAuthServerUrl(), "/") + "realms/" + bioProperties.getAuthRealm();
     }
 
     public RequesterData decode(String authorization, Locale locale) {
@@ -55,6 +57,8 @@ public class TokenDecoder {
             final Verification verifier = JWT.require(algorithm);
 
             verifier.acceptLeeway(bioProperties.getAuthLeeway()).build().verify(decodedJWT);
+            verifier.withAudience(bioProperties.getAuthClientId());
+            verifier.withIssuer(issuer);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
         } catch (JwkException e) {
