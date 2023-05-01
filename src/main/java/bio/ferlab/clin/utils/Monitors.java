@@ -1,7 +1,5 @@
 package bio.ferlab.clin.utils;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 @EnableScheduling*/
 public class Monitors {
 
-  @Around("within(bio.ferlab.clin.es.builder.nanuq..*)" +
+  /*@Around("within(bio.ferlab.clin.es.builder.nanuq..*)" +
     //"|| within(ca.uhn.fhir.jpa.app..*)" +
     "|| within(bio.ferlab.clin.validation..*)" +
     "|| within(bio.ferlab.clin.utils..*)" +
@@ -46,9 +44,9 @@ public class Monitors {
   @Scheduled(fixedDelayString = "${bio.monitors.display-rate}", initialDelay = 60000)
   public void scheduleFixedRateTask() {
     System.out.println(monitors());
-  }
+  }*/
 
-  public String monitors() {
+  /*public String monitors() {
     StringBuilder builder = new StringBuilder();
     builder.append("Monitors:\n");
     builder.append("~~~~~\n");
@@ -63,6 +61,6 @@ public class Monitors {
     }
     builder.append("\n");
     return builder.toString();
-  }
+  }*/
 
 }
