@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Aspect
+/*@Aspect
 @Component
 @ConditionalOnProperty(value = "bio.monitors.enabled", havingValue = "true")
-@EnableScheduling
+@EnableScheduling*/
 public class Monitors {
 
   @Around("within(bio.ferlab.clin.es.builder.nanuq..*)" +

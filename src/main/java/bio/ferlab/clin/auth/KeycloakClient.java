@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
+//@Component
 public class KeycloakClient {
     private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
     public static final String AUTH_CLIENT_SECRET_KEY = "secret";
