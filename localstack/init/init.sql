@@ -1,0 +1,2 @@
+CREATE DATABASE fhir;
+CREATE DATABASE keycloak;

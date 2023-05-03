@@ -1,0 +1,1181 @@
+{
+  "info": {
+    "_postman_id": "b6934e24-70ab-46cb-ad02-e6f63d9d028e",
+    "name": "FHIR - Localstack",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Keycloak",
+      "item": [
+        {
+          "name": "Access token - CHUSJ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "pm.globals.set(\"clin-localstack-access-token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "clin-client",
+                  "type": "text"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "chusj",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "chusj",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/auth/realms/master/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "auth",
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Access token - CHUS",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "pm.globals.set(\"clin-localstack-access-token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "clin-client",
+                  "type": "text"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "chus",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "chus",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/auth/realms/master/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "auth",
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Access token - test (ALL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "pm.globals.set(\"clin-localstack-access-token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "clin-client",
+                  "type": "text"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "test",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "test",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/auth/realms/master/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "auth",
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "clin-system",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "pm.globals.set(\"clin-localstack-access-token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "clin-system",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "06d34b61-5099-4303-8cfd-e19c676c5b28",
+                  "type": "text"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/auth/realms/master/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "auth",
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RPT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "pm.globals.set(\"clin-localstack-rpt\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-access-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "urn:ietf:params:oauth:grant-type:uma-ticket",
+                  "type": "text"
+                },
+                {
+                  "key": "audience",
+                  "value": "clin-acl",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/auth/realms/master/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "auth",
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FHIR",
+      "item": [
+        {
+          "name": "Clean",
+          "item": [
+            {
+              "name": "Bundle - DELETE cascade",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{clin-localstack-rpt}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/fhir/ServiceRequest/SR0002?_cascade=delete",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "fhir",
+                    "ServiceRequest",
+                    "SR0002"
+                  ],
+                  "query": [
+                    {
+                      "key": "_cascade",
+                      "value": "delete"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Bundle - PUT Organization + Affiliation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{clin-localstack-rpt}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"resource\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"CHUSJ\",\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"code\": \"prov\",\n                \"display\": \"Healthcare Provider\"\n              }\n            ]\n          }\n        ],\n        \"name\": \"Centre hospitalier universitaire Sainte-Justine\",\n        \"alias\": [\"CHUSJ\"]\n      },\n      \"fullUrl\": \"Organization/CHUSJ\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Organization/CHUSJ\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"LDM-CHUSJ\",\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"code\": \"labdx\",\n                \"display\": \"Diagnostic Laboratory\"\n              }\n            ]\n          }\n        ],\n        \"name\": \"Laboratoire de diagnostic moléculaire, CHU Sainte-Justine\",\n        \"alias\": [\"LDM-CHUSJ\"]\n      },\n      \"fullUrl\": \"Organization/LDM-CHUSJ\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Organization/LDM-CHUSJ\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"CHUS\",\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"code\": \"prov\",\n                \"display\": \"Healthcare Provider\"\n              }\n            ]\n          }\n        ],\n        \"name\": \"Centre hospitalier universitaire de Sherbrooke\",\n        \"alias\": [\"CHUS\"]\n      },\n      \"fullUrl\": \"Organization/CHUS\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Organization/CHUS\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"LDM-CHUS\",\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"code\": \"labdx\",\n                \"display\": \"Diagnostic Laboratory\"\n              }\n            ]\n          }\n        ],\n        \"name\": \"Service de génétique médicale, CIUSSSE-CHUS\",\n        \"alias\": [\"LDM-CHUS\"]\n      },\n      \"fullUrl\": \"Organization/LDM-CHUS\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Organization/LDM-CHUS\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"OrganizationAffiliation\",\n        \"id\": \"AFF001\",\n        \"active\": true,\n        \"organization\": {\n          \"reference\": \"Organization/CHUSJ\"\n        },\n        \"participatingOrganization\": {\n          \"reference\": \"Organization/LDM-CHUSJ\"\n        },\n        \"specialty\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code\",\n                \"code\": \"MMG\"\n              }\n            ]\n          }\n        ]\n      },\n      \"fullUrl\": \"OrganizationAffiliation/AFF001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"OrganizationAffiliation/AFF001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"OrganizationAffiliation\",\n        \"id\": \"AFF002\",\n        \"active\": true,\n        \"organization\": {\n          \"reference\": \"Organization/CHUS\"\n        },\n        \"participatingOrganization\": {\n          \"reference\": \"Organization/LDM-CHUS\"\n        },\n        \"specialty\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code\",\n                \"code\": \"DYSTM\"\n              }\n            ]\n          }\n        ]\n      },\n      \"fullUrl\": \"OrganizationAffiliation/AFF002\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"OrganizationAffiliation/AFF002\"\n      }\n    }\n  ]\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/fhir",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "fhir"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Bundle - PUT Practitioner + Role",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{clin-localstack-rpt}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"resource\": {\n        \"resourceType\": \"Practitioner\",\n        \"id\": \"PR00001\",\n        \"identifier\": [\n          {\n            \"use\": \"official\",\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MD\",\n                  \"display\": \"Medical License number\"\n                }\n              ],\n              \"text\": \"Numéro de License Médicale du Québec\"\n            },\n            \"value\": \"00001\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Laflamme\",\n            \"given\": [\"Felix\"],\n            \"prefix\": [\"Dr\"]\n          }\n        ]\n      },\n      \"fullUrl\": \"Practitioner/PR00001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Practitioner/PR00001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Practitioner\",\n        \"id\": \"PR00002\",\n        \"identifier\": [\n          {\n            \"use\": \"official\",\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MD\",\n                  \"display\": \"Medical License number\"\n                }\n              ],\n              \"text\": \"Numéro de License Médicale du Québec\"\n            },\n            \"value\": \"00002\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Vallée\",\n            \"given\": [\"Juliette\"],\n            \"prefix\": [\"Dre\"]\n          }\n        ]\n      },\n      \"fullUrl\": \"Practitioner/PR00002\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Practitioner/PR00002\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"PractitionerRole\",\n        \"id\": \"PRR00001\",\n        \"active\": true,\n        \"practitioner\": {\n          \"reference\": \"Practitioner/PR00001\"\n        },\n        \"organization\": {\n          \"reference\": \"Organization/CHUSJ\"\n        },\n        \"code\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/practitioner-role\",\n                \"code\": \"doctor\",\n                \"display\": \"Doctor\"\n              }\n            ]\n          }\n        ],\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"514-564-3099\"\n          },\n          {\n            \"system\": \"email\",\n            \"value\": \"felix.laflamme.p@chusj.org\"\n          }\n        ]\n      },\n      \"fullUrl\": \"PractitionerRole/PRR00001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"PractitionerRole/PRR00001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"PractitionerRole\",\n        \"id\": \"PRR00002\",\n        \"active\": true,\n        \"practitioner\": {\n          \"reference\": \"Practitioner/PR00002\"\n        },\n        \"organization\": {\n          \"reference\": \"Organization/CHUS\"\n        },\n        \"code\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/practitioner-role\",\n                \"code\": \"doctor\",\n                \"display\": \"Doctor\"\n              }\n            ]\n          }\n        ],\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"514-564-3100\"\n          },\n          {\n            \"system\": \"email\",\n            \"value\": \"juliette.vallee.p@chusj.org\"\n          }\n        ]\n      },\n      \"fullUrl\": \"PractitionerRole/PRR00002\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"PractitionerRole/PRR00002\"\n      }\n    }\n  ]\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/fhir",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "fhir"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Bundle - PUT Observation + ClinicalObservation + Patient + Role",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{clin-localstack-rpt}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"resource\": {\n        \"resourceType\": \"Observation\",\n      \"id\": \"OB00001\",\n      \"status\": \"final\",\n      \"code\": {\n        \"coding\": [ {\n          \"system\": \"http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code\",\n          \"code\": \"CGH\"\n        } ]\n      },\n      \"subject\": {\n        \"reference\": \"Patient/PA00003\"\n      },\n      \"interpretation\": [ {\n        \"coding\": [ {\n          \"code\": \"A\",\n          \"display\": \"Abnormal\"\n        } ]\n      } ],\n      \"note\": [ {\n        \"text\": \"une précision sur le CGH anormal\"\n      } ]\n      },\n      \"fullUrl\": \"Observation/OB00001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Observation/OB00001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Patient\",\n        \"id\": \"PA00003\",\n        \"extension\": [\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband\",\n            \"valueBoolean\": true\n          },\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus\",\n            \"valueBoolean\": false\n          }\n        ],\n        \"identifier\": [\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MR\",\n                  \"display\": \"Medical record number\"\n                }\n              ],\n              \"text\": \"Numéro du dossier médical\"\n            },\n            \"value\": \"MRN-00003\",\n            \"assigner\": {\n              \"reference\": \"Organization/CHUSJ\"\n            }\n          },\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"JHN\",\n                  \"display\": \"Jurisdictional health number (Canada)\"\n                }\n              ]\n            },\n            \"value\": \"CHAJ12020356\"\n          }\n        ],\n        \"active\": true,\n        \"name\": [\n          {\n            \"use\": \"official\",\n            \"family\": \"Champagne\",\n            \"given\": [\"Jacob\"]\n          }\n        ],\n        \"gender\": \"male\",\n        \"birthDate\": \"2012-02-03\",\n        \"generalPractitioner\": [\n          {\n            \"reference\": \"PractitionerRole/PRR00003\"\n          }\n        ],\n        \"managingOrganization\": {\n          \"reference\": \"Organization/CHUSJ\",\n          \"display\": \"CHUSJ\"\n        }\n      },\n      \"fullUrl\": \"Patient/PA00003\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Patient/PA00003\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"PractitionerRole\",\n        \"id\": \"PRR00003\",\n        \"active\": true,\n        \"practitioner\": {\n          \"reference\": \"Practitioner/PR00003\"\n        },\n        \"organization\": {\n          \"reference\": \"Organization/CHUSJ\"\n        },\n        \"code\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/practitioner-role\",\n                \"code\": \"doctor\",\n                \"display\": \"Doctor\"\n              }\n            ]\n          }\n        ],\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"514-564-3099\"\n          },\n          {\n            \"system\": \"email\",\n            \"value\": \"felix.laflamme.p@chusj.org\"\n          }\n        ]\n      },\n      \"fullUrl\": \"PractitionerRole/PRR00003\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"PractitionerRole/PRR00003\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"ClinicalImpression\",\n        \"id\": \"CI00001\",\n        \"extension\": [ {\n          \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-event\",\n          \"valueAge\": {\n            \"value\": 3509,\n            \"unit\": \"days\",\n            \"system\": \"http://unitsofmeasure.org\",\n            \"code\": \"d\"\n          }\n        } ],\n        \"status\": \"completed\",\n        \"subject\": {\n          \"reference\": \"Patient/PA00003\"\n        },\n        \"date\": \"2021-09-12T13:08:00-04:00\",\n        \"assessor\": {\n          \"reference\": \"PractitionerRole/PRR00003\"\n        },\n        \"investigation\": [ {\n          \"code\": {\n            \"text\": \"Examination / signs\"\n          },\n          \"item\": [ {\n            \"reference\": \"Observation/OB00001\"\n          }]\n        } ]\n      },\n      \"fullUrl\": \"ClinicalImpression/CI00001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"ClinicalImpression/CI00001\"\n      }\n    }\n  ]\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/fhir",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "fhir"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Bundle - PUT ServiceRequest + Patient",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{clin-localstack-rpt}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"resource\": {\n        \"resourceType\": \"Patient\",\n        \"id\": \"PA00001\",\n        \"extension\": [\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband\",\n            \"valueBoolean\": true\n          },\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus\",\n            \"valueBoolean\": false\n          }\n        ],\n        \"identifier\": [\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MR\",\n                  \"display\": \"Medical record number\"\n                }\n              ],\n              \"text\": \"Numéro du dossier médical\"\n            },\n            \"value\": \"MRN-00001\",\n            \"assigner\": {\n              \"reference\": \"Organization/CHUSJ\"\n            }\n          },\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"JHN\",\n                  \"display\": \"Jurisdictional health number (Canada)\"\n                }\n              ]\n            },\n            \"value\": \"CHAJ12020376\"\n          }\n        ],\n        \"active\": true,\n        \"name\": [\n          {\n            \"use\": \"official\",\n            \"family\": \"Champagne\",\n            \"given\": [\"Jacob\"]\n          }\n        ],\n        \"gender\": \"male\",\n        \"birthDate\": \"2012-02-03\",\n        \"generalPractitioner\": [\n          {\n            \"reference\": \"PractitionerRole/PRR00001\"\n          }\n        ],\n        \"managingOrganization\": {\n          \"reference\": \"Organization/CHUSJ\",\n          \"display\": \"CHUSJ\"\n        }\n      },\n      \"fullUrl\": \"Patient/PA00001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Patient/PA00001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"Patient\",\n        \"id\": \"PA00002\",\n        \"extension\": [\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband\",\n            \"valueBoolean\": true\n          },\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus\",\n            \"valueBoolean\": false\n          }\n        ],\n        \"identifier\": [\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MR\",\n                  \"display\": \"Medical record number\"\n                }\n              ],\n              \"text\": \"Numéro du dossier médical\"\n            },\n            \"value\": \"MRN-00002\",\n            \"assigner\": {\n              \"reference\": \"Organization/CHUS\"\n            }\n          },\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"JHN\",\n                  \"display\": \"Jurisdictional health number (Canada)\"\n                }\n              ]\n            },\n            \"value\": \"CHAJ12020375\"\n          }\n        ],\n        \"active\": true,\n        \"name\": [\n          {\n            \"use\": \"official\",\n            \"family\": \"Champagne\",\n            \"given\": [\"Thomas\"]\n          }\n        ],\n        \"gender\": \"male\",\n        \"birthDate\": \"1973-03-23\",\n        \"generalPractitioner\": [\n          {\n            \"reference\": \"PractitionerRole/PRR00002\"\n          }\n        ],\n        \"managingOrganization\": {\n          \"reference\": \"Organization/CHUS\",\n          \"display\": \"CHUS\"\n        }\n      },\n      \"fullUrl\": \"Patient/PA00002\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Patient/PA00002\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"ServiceRequest\",\n        \"id\": \"SR0001\",\n        \"extension\": [\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted\",\n            \"valueBoolean\": true\n          }\n        ],\n        \"identifier\": [\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MR\",\n                  \"display\": \"Medical record number\"\n                }\n              ],\n              \"text\": \"Numéro du dossier médical\"\n            },\n            \"value\": \"MRN-283895\",\n            \"assigner\": {\n              \"reference\": \"Organization/CHUSJ\"\n            }\n          }\n        ],\n        \"status\": \"on-hold\",\n        \"intent\": \"order\",\n        \"priority\": \"routine\",\n        \"code\": {\n          \"coding\": [\n            {\n              \"system\": \"http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code\",\n              \"code\": \"MMG\",\n              \"display\": \"Maladies musculaires (Panel global)\"\n            }\n          ]\n        },\n        \"subject\": {\n          \"reference\": \"Patient/PA00001\"\n        },\n        \"authoredOn\": \"2021-09-12T13:08:00-04:00\",\n        \"requester\": {\n          \"reference\": \"Practitioner/PR00001\"\n        },\n        \"note\": [\n          {\n            \"authorReference\": {\n              \"reference\": \"Practitioner/PR00001\"\n            },\n            \"time\": \"2021-09-12T13:08:00-04:00\",\n            \"text\": \"Un commentaire général sur cette prescription\"\n          }\n        ]\n      },\n      \"fullUrl\": \"ServiceRequest/SR0001\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"ServiceRequest/SR0001\"\n      }\n    },\n    {\n      \"resource\": {\n        \"resourceType\": \"ServiceRequest\",\n        \"id\": \"SR0002\",\n        \"extension\": [\n          {\n            \"url\": \"http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted\",\n            \"valueBoolean\": true\n          }\n        ],\n        \"identifier\": [\n          {\n            \"type\": {\n              \"coding\": [\n                {\n                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n                  \"code\": \"MR\",\n                  \"display\": \"Medical record number\"\n                }\n              ],\n              \"text\": \"Numéro du dossier médical\"\n            },\n            \"value\": \"MRN-283894\",\n            \"assigner\": {\n              \"reference\": \"Organization/CHUS\"\n            }\n          }\n        ],\n        \"status\": \"on-hold\",\n        \"intent\": \"order\",\n        \"priority\": \"routine\",\n        \"code\": {\n          \"coding\": [\n            {\n              \"system\": \"http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code\",\n              \"code\": \"DYSTM\",\n              \"display\": \"Maladies musculaires (Panel global)\"\n            }\n          ]\n        },\n        \"subject\": {\n          \"reference\": \"Patient/PA00002\"\n        },\n        \"authoredOn\": \"2021-09-12T13:08:00-04:00\",\n        \"requester\": {\n          \"reference\": \"Practitioner/PR00002\"\n        },\n        \"note\": [\n          {\n            \"authorReference\": {\n              \"reference\": \"Practitioner/PR00002\"\n            },\n            \"time\": \"2021-09-12T13:08:00-04:00\",\n            \"text\": \"Un commentaire général sur cette prescription\"\n          }\n        ]\n      },\n      \"fullUrl\": \"ServiceRequest/SR0002\",\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"ServiceRequest/SR0002\"\n      }\n    }\n  ]\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/fhir",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "fhir"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ServiceRequest - all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/ServiceRequest?_count=100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "ServiceRequest"
+              ],
+              "query": [
+                {
+                  "key": "_count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ServiceRequest - by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/ServiceRequest?_count=100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "ServiceRequest"
+              ],
+              "query": [
+                {
+                  "key": "_count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patients - all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/Patient?_count=100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "Patient"
+              ],
+              "query": [
+                {
+                  "key": "_count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patients - by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/Patient/PA00001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "Patient",
+                "PA00001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Observation - all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/Observation?_count=100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "Observation"
+              ],
+              "query": [
+                {
+                  "key": "_count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ClinicalImpression - all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fhir/ClinicalImpression?_count=100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir",
+                "ClinicalImpression"
+              ],
+              "query": [
+                {
+                  "key": "_count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bundle - GET all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clin-localstack-rpt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry\": [\n    {\n      \"request\": {\n        \"method\": \"GET\",\n        \"url\": \"/Patient?_count=100\"\n      }\n    },\n    {\n      \"request\": {\n        \"method\": \"GET\",\n        \"url\": \"/ServiceRequest?_count=100\"\n      }\n    },\n    {\n      \"request\": {\n        \"method\": \"GET\",\n        \"url\": \"/Observation?_count=100\"\n      }\n    },\n    {\n      \"request\": {\n        \"method\": \"GET\",\n        \"url\": \"/ClinicalImpression?_count=100\"\n      }\n    }\n  ],\n  \"id\": \"bundle-request-patient-data\",\n  \"resourceType\": \"Bundle\",\n  \"type\": \"batch\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/fhir",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "fhir"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ES",
+      "item": [
+        {
+          "name": "Mappings / templates",
+          "item": [
+            {
+              "name": "Prescriptions - mapping",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/prescriptions/_search",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "prescriptions",
+                    "_search"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Prescriptions - template",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "6e000477-fe54-58ec-8af3-246c4844127b",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "a986fd6c-082b-92c8-3074-e33a48693fb3",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"index_patterns\": [\"prescriptions\"],\n  \"template\": {\n    \"settings\": {\n      \"number_of_shards\": 1\n    },\n    \"mappings\": {\n      \"_source\": {\n        \"enabled\": true\n      },\n      \"properties\": {\n        \"securityTags\": {\n          \"type\": \"keyword\"\n        },\n        \"authoredOn\": {\n          \"type\": \"date\"\n        },\n        \"bloodRelationship\": {\n          \"type\": \"boolean\"\n        },\n        \"cid\": {\n          \"type\": \"keyword\"\n        },\n        \"cidText\": {\n          \"type\": \"text\"\n        },\n        \"ethnicity\": {\n          \"type\": \"keyword\"\n        },\n        \"familyInfo\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"type\": {\n              \"type\": \"keyword\"\n            }\n          }\n        },\n        \"mrn\": {\n          \"type\": \"keyword\"\n        },\n        \"mrnText\": {\n          \"type\": \"text\"\n        },\n        \"patientInfo\": {\n          \"properties\": {\n            \"birthDate\": {\n              \"type\": \"date\"\n            },\n            \"securityTags\": {\n              \"type\": \"keyword\"\n            },\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"fetus\": {\n              \"type\": \"boolean\"\n            },\n            \"firstName\": {\n              \"type\": \"keyword\"\n            },\n            \"gender\": {\n              \"type\": \"keyword\"\n            },\n            \"lastName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastNameFirstName\": {\n              \"type\": \"keyword\"\n            },\n            \"mrn\": {\n              \"type\": \"keyword\"\n            },\n            \"mrnText\": {\n              \"type\": \"text\"\n            },\n            \"firstNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameFirstNameText\": {\n              \"type\": \"text\"\n            },\n            \"organization\": {\n              \"properties\": {\n                \"cid\": {\n                  \"type\": \"keyword\"\n                },\n                \"cidText\": {\n                  \"type\": \"text\"\n                },\n                \"name\": {\n                  \"type\": \"keyword\"\n                }\n              }\n            },\n            \"position\": {\n              \"type\": \"keyword\"\n            },\n            \"ramq\": {\n              \"type\": \"keyword\"\n            }\n          }\n        },\n        \"laboratory\": {\n          \"type\": \"keyword\"\n        },\n        \"prescriber\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"firstName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastNameFirstName\": {\n              \"type\": \"keyword\"\n            },\n            \"firstNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameFirstNameText\": {\n              \"type\": \"text\"\n            }\n          }\n        },\n        \"approver\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"firstName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastNameFirstName\": {\n              \"type\": \"keyword\"\n            },\n            \"firstNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameFirstNameText\": {\n              \"type\": \"text\"\n            }\n          }\n        },\n        \"organization\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"name\": {\n              \"type\": \"keyword\"\n            }\n          }\n        },\n        \"status\": {\n          \"type\": \"keyword\"\n        },\n        \"state\": {\n          \"type\": \"keyword\"\n        },\n        \"submitted\": {\n          \"type\": \"boolean\"\n        },\n        \"analysis\": {\n          \"properties\": {\n            \"code\": {\n              \"type\": \"keyword\"\n            },\n            \"display\": {\n              \"type\": \"keyword\"\n            }\n          }\n        },\n        \"timestamp\": {\n          \"type\": \"date\"\n        }\n      }\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:9200/_index_template/prescriptions-template",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "_index_template",
+                    "prescriptions-template"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Prescriptions - template",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "6e000477-fe54-58ec-8af3-246c4844127b",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "a986fd6c-082b-92c8-3074-e33a48693fb3",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/_index_template/prescriptions-template",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "_index_template",
+                    "prescriptions-template"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Patients - mapping",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/patients/_mapping",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "patients",
+                    "_mapping"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Patients - template",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "6e000477-fe54-58ec-8af3-246c4844127b",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "a986fd6c-082b-92c8-3074-e33a48693fb3",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"index_patterns\": [\"patients\"],\n  \"template\": {\n    \"settings\": {\n      \"number_of_shards\": 1\n    },\n    \"mappings\": {\n      \"_source\": {\n        \"enabled\": true\n      },\n      \"properties\": {\n        \"securityTags\": {\n          \"type\": \"keyword\"\n        },\n        \"birthDate\": {\n          \"type\": \"date\"\n        },\n        \"bloodRelationship\": {\n          \"type\": \"keyword\"\n        },\n        \"cid\": {\n          \"type\": \"keyword\"\n        },\n        \"cidText\": {\n          \"type\": \"text\"\n        },\n        \"ethnicity\": {\n          \"type\": \"keyword\"\n        },\n        \"familyId\": {\n          \"type\": \"keyword\"\n        },\n        \"familyType\": {\n          \"type\": \"keyword\"\n        },\n        \"fetus\": {\n          \"type\": \"boolean\"\n        },\n        \"firstName\": {\n          \"type\": \"keyword\"\n        },\n        \"gender\": {\n          \"type\": \"keyword\"\n        },\n        \"lastName\": {\n          \"type\": \"keyword\"\n        },\n        \"lastNameFirstName\": {\n          \"type\": \"keyword\"\n        },\n        \"firstNameText\": {\n          \"type\": \"text\"\n        },\n        \"lastNameText\": {\n          \"type\": \"text\"\n        },\n        \"lastNameFirstNameText\": {\n          \"type\": \"text\"\n        },\n        \"mrn\": {\n          \"type\": \"keyword\"\n        },\n        \"mrnText\": {\n          \"type\": \"text\"\n        },\n        \"organization\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"name\": {\n              \"type\": \"keyword\"\n            }\n          }\n        },\n        \"position\": {\n          \"type\": \"keyword\"\n        },\n        \"practitioner\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"firstName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastName\": {\n              \"type\": \"keyword\"\n            },\n            \"lastNameFirstName\": {\n              \"type\": \"keyword\"\n            },\n            \"firstNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameText\": {\n              \"type\": \"text\"\n            },\n            \"lastNameFirstNameText\": {\n              \"type\": \"text\"\n            }\n          }\n        },\n        \"ramq\": {\n          \"type\": \"keyword\"\n        },\n        \"ramqText\": {\n          \"type\": \"text\"\n        },\n        \"requests\": {\n          \"properties\": {\n            \"cid\": {\n              \"type\": \"keyword\"\n            },\n            \"securityTags\": {\n              \"type\": \"keyword\"\n            },\n            \"cidText\": {\n              \"type\": \"text\"\n            },\n            \"authoredOn\": {\n              \"type\": \"date\"\n            },\n            \"status\": {\n              \"type\": \"keyword\"\n            },\n            \"state\": {\n              \"type\": \"keyword\"\n            },\n            \"submitted\": {\n              \"type\": \"boolean\"\n            },\n            \"mrn\": {\n              \"type\": \"keyword\"\n            },\n            \"mrnText\": {\n              \"type\": \"text\"\n            },\n            \"laboratory\": {\n              \"type\": \"keyword\"\n            },\n            \"prescriber\": {\n              \"properties\": {\n                \"cid\": {\n                  \"type\": \"keyword\"\n                },\n                \"cidText\": {\n                  \"type\": \"text\"\n                },\n                \"firstName\": {\n                  \"type\": \"keyword\"\n                },\n                \"lastName\": {\n                  \"type\": \"keyword\"\n                },\n                \"lastNameFirstName\": {\n                  \"type\": \"keyword\"\n                },\n                \"firstNameText\": {\n                  \"type\": \"text\"\n                },\n                \"lastNameText\": {\n                  \"type\": \"text\"\n                },\n                \"lastNameFirstNameText\": {\n                  \"type\": \"text\"\n                }\n              }\n            },\n            \"approver\": {\n              \"properties\": {\n                \"cid\": {\n                  \"type\": \"keyword\"\n                },\n                \"cidText\": {\n                  \"type\": \"text\"\n                },\n                \"firstName\": {\n                  \"type\": \"keyword\"\n                },\n                \"lastName\": {\n                  \"type\": \"keyword\"\n                },\n                \"lastNameFirstName\": {\n                  \"type\": \"keyword\"\n                },\n                \"firstNameText\": {\n                  \"type\": \"text\"\n                },\n                \"lastNameText\": {\n                  \"type\": \"text\"\n                },\n                \"lastNameFirstNameText\": {\n                  \"type\": \"text\"\n                }\n              }\n            },\n            \"organization\": {\n              \"properties\": {\n                \"cid\": {\n                  \"type\": \"keyword\"\n                },\n                \"cidText\": {\n                  \"type\": \"text\"\n                },\n                \"name\": {\n                  \"type\": \"keyword\"\n                }\n              }\n            },\n            \"analysis\": {\n              \"properties\": {\n                \"code\": {\n                  \"type\": \"keyword\"\n                },\n                \"display\": {\n                  \"type\": \"keyword\"\n                }\n              }\n            }\n          }\n        },\n        \"timestamp\": {\n          \"type\": \"date\"\n        }\n      }\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:9200/_index_template/patients-template",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "_index_template",
+                    "patients-template"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Patients - template",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "6e000477-fe54-58ec-8af3-246c4844127b",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "a986fd6c-082b-92c8-3074-e33a48693fb3",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/_index_template/patients-template",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "_index_template",
+                    "patients-template"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Clean",
+          "item": [
+            {
+              "name": "Prescriptions",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/prescriptions",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "prescriptions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Patients",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/patients",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "patients"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Prescriptions - all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/prescriptions/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "prescriptions",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Prescriptions - by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sort\": [\n        {\n            \"timestamp\": \"desc\"\n        },\n        {\n            \"_id\": \"desc\"\n        }\n    ],\n    \"query\": {\n        \"bool\" : {\n            \"must\": {\n                 \"match\": {\n                    \"_id\": \"SR0002\"\n                }\n            }\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/prescriptions/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "prescriptions",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Prescriptions - by field",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sort\": [\n        {\n            \"timestamp\": \"desc\"\n        },\n        {\n            \"_id\": \"desc\"\n        }\n    ],\n    \"query\": {\n        \"bool\" : {\n            \"must\": {\n                 \"terms\": {\n                    \"patientInfo.lastNameFirstName\": [\"Champagne, Jacobb\"]\n                }\n            }\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/prescriptions/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "prescriptions",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patients - all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/patients/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "patients",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patients - by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sort\": [\n        {\n            \"timestamp\": \"desc\"\n        },\n        {\n            \"_id\": \"desc\"\n        }\n    ],\n    \"query\": {\n        \"bool\" : {\n            \"must\": {\n                 \"match\": {\n                    \"_id\": \"PA00001\"\n                }\n            }\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/patients/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "patients",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patients - by field",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sort\": [\n        {\n            \"timestamp\": \"desc\"\n        },\n        {\n            \"_id\": \"desc\"\n        }\n    ],\n    \"query\": {\n        \"bool\" : {\n            \"must\": {\n                 \"terms\": {\n                    \"requests.prescriber.lastNameFirstName\": [\"Marcou, Yann\"]\n                }\n            }\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/patients/_search",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "patients",
+                "_search"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

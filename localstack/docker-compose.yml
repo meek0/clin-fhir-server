@@ -1,0 +1,57 @@
+version: '3.5'
+
+services:
+  clin-fhir-postgres:
+    image: postgres
+    container_name: $CLIN_LOCALSTACK_NAME-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - $POSTGRES_DATA_DIRECTORY:/var/lib/postgresql/data
+      - $INIT_DATA_DIRECTORY/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  clin-fhir-keycloak:
+    image: ferlabcrsj/cqdg-keycloak:ba49d1571670f92d5f157e8128d5756fe0999277
+    container_name: $CLIN_LOCALSTACK_NAME-keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: clin-fhir-postgres
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: admin
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      JAVA_OPTS_APPEND: -Dkeycloak.profile.feature.upload_scripts=enabled
+    ports:
+      - 8081:8080
+    depends_on:
+      - clin-fhir-postgres
+  clin-fhir-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    container_name: $CLIN_LOCALSTACK_NAME-elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - $ELASTICSEARCH_DATA_DIRECTORY:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
