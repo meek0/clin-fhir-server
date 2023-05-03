@@ -33,3 +33,20 @@ Following the list of all services urls:
 # Postman
 
 Import `localstack.postman_collection.json` to have a set of pre-built requests. 
+
+# Backup
+
+In case you want to back up the current FIR and/or Keycloak databases content:
+
+```shell
+# go inside the running container
+docker exec -it clin-fhir-localstack-postgres /bin/bash
+
+# backup in plain test format
+/usr/bin/pg_dump --file "fhir" --host "localhost" --port "5432" --username "admin" --no-password --verbose --format=p --create --inserts --column-inserts "fhir"
+/usr/bin/pg_dump --file "keycloak" --host "localhost" --port "5432" --username "admin" --no-password --verbose --format=p --create --inserts --column-inserts "keycloak"
+
+# from outside of the container
+docker cp clin-fhir-localstack-postgres:fhir fhir.sql
+docker cp clin-fhir-localstack-postgres:keycloak keycloak.sql
+```
