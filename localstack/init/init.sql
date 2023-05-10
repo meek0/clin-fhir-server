@@ -5,7 +5,7 @@
 -- Dumped from database version 15.0 (Debian 15.0-1.pgdg110+1)
 -- Dumped by pg_dump version 15.0 (Debian 15.0-1.pgdg110+1)
 
--- Started on 2023-05-03 20:55:05 UTC
+-- Started on 2023-05-10 18:55:34 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1623,6 +1623,28 @@ INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('8df78ad8-7c78-4a63-af78-f405664a1046', '29b6112f-abdc-407c-888f-37915d530d29');
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b52ca339-e25b-4959-9b51-404fa891805c', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b52ca339-e25b-4959-9b51-404fa891805c', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('6e9f1189-a7af-440f-9b88-60f34fcb97f8', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('6e9f1189-a7af-440f-9b88-60f34fcb97f8', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('6e9f1189-a7af-440f-9b88-60f34fcb97f8', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b52ca339-e25b-4959-9b51-404fa891805c', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('1c75c85d-2112-4f8c-a745-06d9a255e49c', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('1c75c85d-2112-4f8c-a745-06d9a255e49c', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('1c75c85d-2112-4f8c-a745-06d9a255e49c', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5565ee4f-f4e6-423d-b174-8eb5ae8bff2a', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5565ee4f-f4e6-423d-b174-8eb5ae8bff2a', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5565ee4f-f4e6-423d-b174-8eb5ae8bff2a', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('d5528bfa-aa34-4328-a0c0-80543c201d70', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('d5528bfa-aa34-4328-a0c0-80543c201d70', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('d5528bfa-aa34-4328-a0c0-80543c201d70', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b06e52c5-6635-4642-abe9-61297c878cf9', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b06e52c5-6635-4642-abe9-61297c878cf9', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('b06e52c5-6635-4642-abe9-61297c878cf9', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5104b014-6fe6-4086-8e50-b6038d06f23e', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5104b014-6fe6-4086-8e50-b6038d06f23e', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5104b014-6fe6-4086-8e50-b6038d06f23e', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('fbc29587-fcba-4b81-b8f4-4c36313aeab7', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('fbc29587-fcba-4b81-b8f4-4c36313aeab7', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('fbc29587-fcba-4b81-b8f4-4c36313aeab7', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
 
 
 --
@@ -1892,6 +1914,8 @@ INSERT INTO public.client_attributes (client_id, value, name) VALUES ('df77c1aa-
 INSERT INTO public.client_attributes (client_id, value, name) VALUES ('df77c1aa-6543-489f-919a-3880f58d5494', 'false', 'tls.client.certificate.bound.access.tokens');
 INSERT INTO public.client_attributes (client_id, value, name) VALUES ('df77c1aa-6543-489f-919a-3880f58d5494', 'false', 'client_credentials.use_refresh_token');
 INSERT INTO public.client_attributes (client_id, value, name) VALUES ('df77c1aa-6543-489f-919a-3880f58d5494', 'false', 'display.on.consent.screen');
+INSERT INTO public.client_attributes (client_id, value, name) VALUES ('8f553005-b544-4e27-8fbc-a9a517ed6fe9', '3600', 'access.token.lifespan');
+INSERT INTO public.client_attributes (client_id, value, name) VALUES ('cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', '3600', 'access.token.lifespan');
 
 
 --
@@ -3402,9 +3426,9 @@ INSERT INTO public.redirect_uris (client_id, value) VALUES ('21967484-d12e-48b0-
 INSERT INTO public.redirect_uris (client_id, value) VALUES ('f7af93f2-37c5-4cf6-b07e-7b6620cf8458', '/realms/clin/account/*');
 INSERT INTO public.redirect_uris (client_id, value) VALUES ('09e07cd8-2e94-4ce2-acbe-981d5d672371', '/realms/clin/account/*');
 INSERT INTO public.redirect_uris (client_id, value) VALUES ('78e8963c-3ea0-4eee-b438-237191ebab68', '/admin/clin/console/*');
+INSERT INTO public.redirect_uris (client_id, value) VALUES ('df77c1aa-6543-489f-919a-3880f58d5494', '*');
 INSERT INTO public.redirect_uris (client_id, value) VALUES ('8f553005-b544-4e27-8fbc-a9a517ed6fe9', '*');
 INSERT INTO public.redirect_uris (client_id, value) VALUES ('cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', '*');
-INSERT INTO public.redirect_uris (client_id, value) VALUES ('df77c1aa-6543-489f-919a-3880f58d5494', '*');
 
 
 --
@@ -3461,6 +3485,13 @@ INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('f694439c-cb
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('7ff1d25f-ccd7-41b6-b141-a79bb7c778b9', 'e6115285-34ec-4fa2-a088-3003ab8ba657');
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('4f916a24-68e3-480c-9358-21e221cba83e', 'cd7122ba-e2eb-4b30-81d3-ae0831a33d01');
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('896377dc-5b01-4702-ab6e-9d459b06390c', 'b52ca339-e25b-4959-9b51-404fa891805c');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', '6e9f1189-a7af-440f-9b88-60f34fcb97f8');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', '1c75c85d-2112-4f8c-a745-06d9a255e49c');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', '5565ee4f-f4e6-423d-b174-8eb5ae8bff2a');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', 'd5528bfa-aa34-4328-a0c0-80543c201d70');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', 'b06e52c5-6635-4642-abe9-61297c878cf9');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', '5104b014-6fe6-4086-8e50-b6038d06f23e');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
 
 
 --
@@ -3509,6 +3540,34 @@ INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('896377dc-5b01
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('896377dc-5b01-4702-ab6e-9d459b06390c', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('896377dc-5b01-4702-ab6e-9d459b06390c', '91d0726a-d669-43b8-97fc-33b874287018');
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('896377dc-5b01-4702-ab6e-9d459b06390c', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
 
 
 --
@@ -3552,6 +3611,13 @@ INSERT INTO public.resource_server_policy (id, name, description, type, decision
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('8df78ad8-7c78-4a63-af78-f405664a1046', 'AuditEvent_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('eda6a66d-ad9c-4e4f-a73d-60877b2e1c52', 'Bundle_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('b52ca339-e25b-4959-9b51-404fa891805c', 'ServiceRequest_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('6e9f1189-a7af-440f-9b88-60f34fcb97f8', 'Patient_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('1c75c85d-2112-4f8c-a745-06d9a255e49c', 'Person_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('5565ee4f-f4e6-423d-b174-8eb5ae8bff2a', 'Observation_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('d5528bfa-aa34-4328-a0c0-80543c201d70', 'ClinicalImpression_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('b06e52c5-6635-4642-abe9-61297c878cf9', 'Task_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('5104b014-6fe6-4086-8e50-b6038d06f23e', 'DocumentReference_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('fbc29587-fcba-4b81-b8f4-4c36313aeab7', 'Specimen_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 
 
 --
@@ -3573,6 +3639,13 @@ INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, re
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('f694439c-cb98-47f4-a734-b0bc97121509', 'ValueSet', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'ValueSet');
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('7ff1d25f-ccd7-41b6-b141-a79bb7c778b9', 'CodeSystem', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'CodeSystem');
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('896377dc-5b01-4702-ab6e-9d459b06390c', 'ServiceRequest', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'ServiceRequest');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('11a7ff6d-5778-4f26-803a-8475ebd19545', 'Patient', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Patient');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('aa9520b9-7dc3-48ad-a0c0-f67683fb9287', 'Person', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Person');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('f6bd5c32-c43b-433e-80d8-f7a0bebd5f9d', 'Observation', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Observation');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('e9e1e3d7-bf77-4c89-8eb6-b2b496810fee', 'ClinicalImpression', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'ClinicalImpression');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', 'Task', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Task');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', 'DocumentReference', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'DocumentReference');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'Specimen', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Specimen');
 
 
 --
@@ -3660,6 +3733,34 @@ INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a0
 INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', 'b52ca339-e25b-4959-9b51-404fa891805c');
 INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', 'b52ca339-e25b-4959-9b51-404fa891805c');
 INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', 'b52ca339-e25b-4959-9b51-404fa891805c');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', '6e9f1189-a7af-440f-9b88-60f34fcb97f8');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', '6e9f1189-a7af-440f-9b88-60f34fcb97f8');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', '6e9f1189-a7af-440f-9b88-60f34fcb97f8');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', '6e9f1189-a7af-440f-9b88-60f34fcb97f8');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', '1c75c85d-2112-4f8c-a745-06d9a255e49c');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', '1c75c85d-2112-4f8c-a745-06d9a255e49c');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', '1c75c85d-2112-4f8c-a745-06d9a255e49c');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', '1c75c85d-2112-4f8c-a745-06d9a255e49c');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', '5565ee4f-f4e6-423d-b174-8eb5ae8bff2a');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', '5565ee4f-f4e6-423d-b174-8eb5ae8bff2a');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', '5565ee4f-f4e6-423d-b174-8eb5ae8bff2a');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', '5565ee4f-f4e6-423d-b174-8eb5ae8bff2a');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', 'd5528bfa-aa34-4328-a0c0-80543c201d70');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', 'd5528bfa-aa34-4328-a0c0-80543c201d70');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', 'd5528bfa-aa34-4328-a0c0-80543c201d70');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', 'd5528bfa-aa34-4328-a0c0-80543c201d70');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', 'b06e52c5-6635-4642-abe9-61297c878cf9');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', 'b06e52c5-6635-4642-abe9-61297c878cf9');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', 'b06e52c5-6635-4642-abe9-61297c878cf9');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', 'b06e52c5-6635-4642-abe9-61297c878cf9');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', '5104b014-6fe6-4086-8e50-b6038d06f23e');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', '5104b014-6fe6-4086-8e50-b6038d06f23e');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', '5104b014-6fe6-4086-8e50-b6038d06f23e');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', '5104b014-6fe6-4086-8e50-b6038d06f23e');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('48d555c3-5dee-4a09-ab05-48ce3f3abb77', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('0160bf98-6451-4222-a40b-f0ae29c6aeb4', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('91d0726a-d669-43b8-97fc-33b874287018', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
+INSERT INTO public.scope_policy (scope_id, policy_id) VALUES ('eced63df-ea65-4a3e-a4c1-c66365fef929', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
 
 
 --
@@ -6168,7 +6269,7 @@ ALTER TABLE ONLY public.identity_provider_config
     ADD CONSTRAINT fkdc4897cf864c4e43 FOREIGN KEY (identity_provider_id) REFERENCES public.identity_provider(internal_id);
 
 
--- Completed on 2023-05-03 20:55:05 UTC
+-- Completed on 2023-05-10 18:55:34 UTC
 
 --
 -- PostgreSQL database dump complete
