@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/hapi'
+    url: 'jdbc:postgresql://localhost:5432/fhir'
     #url: jdbc:h2:mem:test_mem
     username: admin
-    password: admin
+    password: password
     driverClassName: org.postgresql.Driver
     max-active: 15
   jpa:
@@ -168,14 +168,14 @@ bio:
     queryParam: true
     masking: true
   elasticsearch:
-    host: "elasticsearch-workers"
+    host: "localhost"
     port: 9200
     scheme: "http"
     patients-index: "patients"
     prescriptions-index: "prescriptions"
     enabled: true
   auth:
-    server-url: https://auth.qa.cqdg.ferlab.bio/auth
+    server-url: http://localhost:8081/auth/
     realm: clin
     retry: 5
     leeway: 30
@@ -183,6 +183,7 @@ bio:
     enabled: true
     authorization:
       enabled: true
+      client-secret:
       client-id: clin-acl
       system-id: clin-system
   audits:

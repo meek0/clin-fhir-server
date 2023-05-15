@@ -165,3 +165,5 @@ Temporary Items
 backup/
 
 .attach*
+
+localstack/data
