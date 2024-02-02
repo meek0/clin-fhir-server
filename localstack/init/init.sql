@@ -1657,6 +1657,7 @@ INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('5cf293bc-e1a9-479a-b503-561e0fa99fc6', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('9391162c-e6ba-48fd-99bd-31c1ef627695', 'f9b6ce0f-635b-4ba0-961b-39f98ba3fb6b');
 INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('9391162c-e6ba-48fd-99bd-31c1ef627695', 'de9e7111-fc7c-4e3c-9462-40c25d524f94');
+INSERT INTO public.associated_policy (policy_id, associated_policy_id) VALUES ('d9fa7efe-4b0f-43ac-aab7-94b61ac308f7', '5ed10474-21bf-40e9-bbb3-f80eab73baaa');
 
 
 --
@@ -3504,6 +3505,7 @@ INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('e9e1e3d7-bf
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', 'b06e52c5-6635-4642-abe9-61297c878cf9');
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', '5104b014-6fe6-4086-8e50-b6038d06f23e');
 INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'fbc29587-fcba-4b81-b8f4-4c36313aeab7');
+INSERT INTO public.resource_policy (resource_id, policy_id) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', 'd9fa7efe-4b0f-43ac-aab7-94b61ac308f7');
 
 
 --
@@ -3580,7 +3582,10 @@ INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', '91d0726a-d669-43b8-97fc-33b874287018');
 INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
-
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', '48d555c3-5dee-4a09-ab05-48ce3f3abb77');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', '0160bf98-6451-4222-a40b-f0ae29c6aeb4');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', '91d0726a-d669-43b8-97fc-33b874287018');
+INSERT INTO public.resource_scope (resource_id, scope_id) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', 'eced63df-ea65-4a3e-a4c1-c66365fef929');
 
 --
 -- TOC entry 4210 (class 0 OID 16743)
@@ -3630,6 +3635,7 @@ INSERT INTO public.resource_server_policy (id, name, description, type, decision
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('b06e52c5-6635-4642-abe9-61297c878cf9', 'Task_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('5104b014-6fe6-4086-8e50-b6038d06f23e', 'DocumentReference_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('fbc29587-fcba-4b81-b8f4-4c36313aeab7', 'Specimen_CRUD', NULL, 'scope', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
+INSERT INTO public.resource_server_policy (id, name, description, type, decision_strategy, logic, resource_server_id, owner) VALUES ('d9fa7efe-4b0f-43ac-aab7-94b61ac308f7', 'Binary_CRUD', NULL, 'resource', '0', '0', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', NULL);
 
 
 --
@@ -3658,6 +3664,7 @@ INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, re
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('7a65d616-ef9e-47b7-a9f4-450ad3a8979f', 'Task', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Task');
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('d97bb7b7-c203-4ded-9483-94d87c9fb905', 'DocumentReference', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'DocumentReference');
 INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('54b53bef-e5d6-4bbd-bf0d-02588a348420', 'Specimen', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Specimen');
+INSERT INTO public.resource_server_resource (id, name, type, icon_uri, owner, resource_server_id, owner_managed_access, display_name) VALUES ('151d5894-1864-4195-b1e9-0b6fc4a3f5bb', 'Binary', NULL, NULL, 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', 'cc2a6ae7-b199-4c5d-b5c2-91dbccac0d5e', false, 'Binary');
 
 
 --
