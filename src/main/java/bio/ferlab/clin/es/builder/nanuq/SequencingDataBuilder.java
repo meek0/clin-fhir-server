@@ -3,11 +3,11 @@ package bio.ferlab.clin.es.builder.nanuq;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.SequencingData;
 import bio.ferlab.clin.utils.FhirUtils;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.Specimen;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -52,6 +52,8 @@ public class SequencingDataBuilder extends AbstractPrescriptionDataBuilder {
         if(serviceRequest.hasSpecimen()) {
           sequencingData.setSample(getSampleValue(serviceRequest, requestDetails));
         }
+
+        this.addTasks(serviceRequest, sequencingData);
 
         sequencings.add(sequencingData);
       }

@@ -23,7 +23,7 @@ class ImmutableRamqInterceptorTest {
 
   final IFhirResourceDao<Person> personDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(null, personDao,null, null, null
-      , null, null, null, null, null, null);
+      , null, null, null, null, null, null, null);
   final ImmutableRamqInterceptor interceptor = new ImmutableRamqInterceptor(configuration);
 
   @Test

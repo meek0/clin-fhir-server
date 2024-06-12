@@ -61,15 +61,11 @@ public class TokenDecoder {
             verifier.withIssuer(issuer);
             final String decodedBody = new String(new Base64(true).decode(decodedJWT.getPayload()));
             return new ObjectMapper().readValue(decodedBody, RequesterData.class);
-        } catch (JwkException e) {
-            log.error("Failed to decode token", e);
-            throw new RptIntrospectionException("token from another provider");
-        } catch (JWTDecodeException | JsonProcessingException e) {
-            log.error("Failed to decode token", e);
-            throw new RptIntrospectionException("malformed token");
+        } catch (JwkException | JWTDecodeException | JsonProcessingException e) {
+            log.warn("Invalid token: {}", e.getMessage()); // hide from the user + log the reason
+            throw new RptIntrospectionException("invalid token");
         } catch (JWTVerificationException e) {
-            log.error("Failed to decode token", e);
-            throw new RptIntrospectionException("token is expired");
+            throw new RptIntrospectionException(e.getMessage());
         }
     }
 }

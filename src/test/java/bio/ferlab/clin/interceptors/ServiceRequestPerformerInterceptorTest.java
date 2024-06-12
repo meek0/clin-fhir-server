@@ -32,7 +32,7 @@ class ServiceRequestPerformerInterceptorTest {
   final ResourceFinder resourceFinder = Mockito.mock(ResourceFinder.class);
   final IFhirResourceDao<OrganizationAffiliation> dao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(null, null, null, null, null
-  , dao, null, null, null, null, null);
+  , dao, null, null, null, null, null, null);
   final ServiceRequestPerformerInterceptor interceptor = new ServiceRequestPerformerInterceptor(configuration, resourceFinder);
   
   @Test

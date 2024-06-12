@@ -19,7 +19,7 @@ class PersonGenderInterceptorTest {
 
   final IFhirResourceDao<Patient> patientDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null,null, null, null
-      , null, null, null, null, null, null);
+      , null, null, null, null, null, null, null);
   final PersonGenderInterceptor interceptor = new PersonGenderInterceptor(configuration);
   
   @Test

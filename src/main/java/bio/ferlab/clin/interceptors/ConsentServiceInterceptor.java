@@ -59,18 +59,16 @@ public class ConsentServiceInterceptor implements IConsentService {
 
     @Override
     public void completeOperationSuccess(RequestDetails requestDetails, IConsentContextServices contextServices) {
-        final boolean result = this.logOperation(requestDetails, true);
-        if (result) {
+        if (this.logOperation(requestDetails, true)) {
             log.info(String.format("Successful operation [%s] logged.", requestDetails.getRestOperationType()));
-        } else {
-            log.info(String.format("Successful operation [%s] not logged.", requestDetails.getRestOperationType()));
         }
     }
 
     @Override
     public void completeOperationFailure(RequestDetails requestDetails, BaseServerResponseException theException, IConsentContextServices contextServices) {
-        this.logOperation(requestDetails, false);
-        log.info(String.format("Failed operation [%s] logged.", requestDetails.getRestOperationType()));
+        if (this.logOperation(requestDetails, false)) {
+            log.info(String.format("Failed operation [%s] logged.", requestDetails.getRestOperationType()));
+        }
     }
 
     private boolean logOperation(RequestDetails requestDetails, boolean successful) {

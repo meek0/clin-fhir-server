@@ -3,8 +3,10 @@ package bio.ferlab.clin.es.builder.nanuq;
 import bio.ferlab.clin.es.config.ResourceDaoConfiguration;
 import bio.ferlab.clin.es.data.nanuq.AbstractPrescriptionData;
 import bio.ferlab.clin.utils.FhirUtils;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -106,6 +108,13 @@ public abstract class AbstractPrescriptionDataBuilder {
       prescriptionData.setCreatedOn(formatter.get().format(serviceRequest.getAuthoredOn()));
     }
     
+  }
+
+  protected void addTasks(ServiceRequest serviceRequest, AbstractPrescriptionData data) {
+    final SearchParameterMap sm = SearchParameterMap.newSynchronous("focus", new ReferenceParam(serviceRequest.getIdElement().getIdPart()));
+    final IBundleProvider taskProvider = this.configuration.taskDao.search(sm);
+    final List<Task> tasks = this.getListFromProvider(taskProvider);
+    tasks.forEach(t -> data.getTasks().add(t.getCode().getCodingFirstRep().getCode()));
   }
   
   protected String getSampleValue(ServiceRequest serviceRequest, RequestDetails requestDetails) {

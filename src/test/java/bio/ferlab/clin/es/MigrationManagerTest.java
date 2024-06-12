@@ -31,7 +31,7 @@ class MigrationManagerTest {
   private final NanuqIndexer nanuqIndexer = Mockito.mock(NanuqIndexer.class);
   final IFhirResourceDao<ServiceRequest> serviceRequestDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration daoConfiguration = new ResourceDaoConfiguration(null, null, serviceRequestDao, null, null
-    , null, null, null, null, null, null);
+    , null, null, null, null, null, null, null);
 
   private final MigrationManager migrationManager = new MigrationManager(templateIndexer, bioProperties, esClient, nanuqIndexer, daoConfiguration);
 

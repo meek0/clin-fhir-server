@@ -17,6 +17,7 @@ public class ResourceDaoConfiguration {
     public final IFhirResourceDao<Group> groupDao;
     public final IFhirResourceDao<Observation> observationDao;
     public final IFhirResourceDao<Specimen> specimenDao;
+    public final IFhirResourceDao<Task> taskDao;
 
     public ResourceDaoConfiguration(
             IFhirResourceDao<Patient> patientDAO,
@@ -29,7 +30,8 @@ public class ResourceDaoConfiguration {
             IFhirResourceDao<PractitionerRole> practitionerRoleDao,
             IFhirResourceDao<Group> groupDao,
             IFhirResourceDao<Observation> observationDao,
-            IFhirResourceDao<Specimen> specimenDao) {
+            IFhirResourceDao<Specimen> specimenDao,
+            IFhirResourceDao<Task> taskDao) {
         this.patientDAO = patientDAO;
         this.personDAO = personDAO;
         this.serviceRequestDAO = serviceRequestDAO;
@@ -41,5 +43,6 @@ public class ResourceDaoConfiguration {
         this.groupDao = groupDao;
         this.observationDao = observationDao;
         this.specimenDao = specimenDao;
+        this.taskDao = taskDao;
     }
 }

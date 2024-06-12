@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +49,7 @@ public class TokenDecoderTest {
           RptIntrospectionException.class,
           () -> decoder.decode(null, Locale.ENGLISH)
       );
-      assertTrue(ex.getMessage().equals("Missing bearer token in header"));
+      assertEquals("Missing bearer token in header", ex.getMessage());
     }
     @Test
     void token_another_provider() throws JwkException {
@@ -57,7 +58,7 @@ public class TokenDecoderTest {
           RptIntrospectionException.class,
           () -> decoder.decode(mockTokenJohnDoe, Locale.ENGLISH)
       );
-      assertTrue(ex.getMessage().equals("token from another provider"));
+      assertEquals("invalid token", ex.getMessage());
     }
     @Test
     void malformed_token() {
@@ -65,7 +66,7 @@ public class TokenDecoderTest {
           RptIntrospectionException.class,
           () -> decoder.decode("Bearer a.b.c", Locale.ENGLISH)
       );
-      assertTrue(ex.getMessage().equals("malformed token"));
+      assertEquals("invalid token", ex.getMessage());
     }
     @Test
     void internal_error() throws JwkException {
@@ -74,7 +75,7 @@ public class TokenDecoderTest {
           RuntimeException.class,
           () -> decoder.decode(mockTokenJohnDoe, Locale.ENGLISH)
       );
-      assertTrue(ex.getMessage().equals("internal_error"));
+      assertEquals("internal_error", ex.getMessage());
     }
     @Test
     void leeway_test() {

@@ -63,6 +63,9 @@
         "assignments": {
           "type": "keyword"
         },
+        "tasks": {
+          "type": "keyword"
+        },
         "sequencing_requests": {
           "type": "nested",
           "properties": {

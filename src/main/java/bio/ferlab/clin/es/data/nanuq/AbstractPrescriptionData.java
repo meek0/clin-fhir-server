@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import static bio.ferlab.clin.es.data.ElasticsearchData.EMPTY_STRING;
@@ -29,5 +31,5 @@ public abstract class AbstractPrescriptionData {
   private String createdOn = EMPTY_STRING;
   private String timestamp = Instant.now().toString();
   private List<String> securityTags = new ArrayList<>();
-  
+  private Collection<String> tasks = new HashSet<>();
 }

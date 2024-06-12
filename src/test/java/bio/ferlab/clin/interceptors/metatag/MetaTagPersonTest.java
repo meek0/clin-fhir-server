@@ -25,7 +25,7 @@ class MetaTagPersonTest {
   final IFhirResourceDao<Person> pesonDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<ServiceRequest> serviceRequestDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration daoConfiguration = new ResourceDaoConfiguration(null, pesonDao, serviceRequestDao, null, null
-      , null, null, null, null, null, null);
+      , null, null, null, null, null, null, null);
   final MetaTagPerson metaTagPerson = new MetaTagPerson(sameRequestInterceptor, daoConfiguration);
   
   @Test
