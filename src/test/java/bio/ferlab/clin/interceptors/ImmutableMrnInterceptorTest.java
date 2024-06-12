@@ -21,7 +21,7 @@ class ImmutableMrnInterceptorTest {
 
   final IFhirResourceDao<Patient> patientDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null,null, null, null
-      , null, null, null, null, null, null);
+      , null, null, null, null, null, null, null);
   final ImmutableMrnInterceptor interceptor = new ImmutableMrnInterceptor(configuration);
   
   @Test

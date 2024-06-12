@@ -27,8 +27,9 @@ class PrescriptionDataBuilderTest {
   final IFhirResourceDao<Patient> patientDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Organization> organizationDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Specimen> specimenDao = Mockito.mock(IFhirResourceDao.class);
+  final IFhirResourceDao<Task> taskDao = Mockito.mock(IFhirResourceDao.class);
   final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null, serviceRequestDao, null, organizationDao
-      , null, null, null, null, null, specimenDao);
+      , null, null, null, null, null, specimenDao, taskDao);
   
   private final AnalysisDataBuilder analysisDataBuilder = new AnalysisDataBuilder(configuration);
   private final SequencingDataBuilder sequencingDataBuilder = new SequencingDataBuilder(configuration);
@@ -115,11 +116,20 @@ class PrescriptionDataBuilderTest {
     specimen.addParent().setReference("Specimen/foo");
     sequencing1.getSpecimen().addAll(List.of(new Reference("speci")));
     when(specimenDao.read(eq(new IdType("speci")), any())).thenReturn(specimen);
+
+    final Task task1 = new Task();
+    task1.getCode().getCodingFirstRep().setCode("TEBA");
+    final Task task2 = new Task();
+    task2.getCode().getCodingFirstRep().setCode("TNEBA");
+    final IBundleProvider tasksBundle = Mockito.mock(IBundleProvider.class);
+    when(tasksBundle.isEmpty()).thenReturn(false);
+    when(tasksBundle.getAllResources()).thenReturn(List.of(task1, task2));
     
     when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
     when(patientDao.read(any())).thenReturn(patient).thenReturn(p2).thenReturn(p3);
     when(organizationDao.read(any())).thenReturn(organization);
     when(serviceRequestDao.search(any())).thenReturn(bundle);
+    when(taskDao.search(any())).thenReturn(tasksBundle);
     
     List<AnalysisData> results = analysisDataBuilder.fromIds(Set.of("serviceRequest1"), requestDetails);
     
@@ -129,6 +139,7 @@ class PrescriptionDataBuilderTest {
     verify(patientDao).read(eq(new IdType("p3")));
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(serviceRequestDao).search(any());
+    verify(taskDao, times(2)).search(any());
     
     assertEquals(1, results.size());
     AnalysisData data1 = results.get(0);
@@ -159,6 +170,7 @@ class PrescriptionDataBuilderTest {
     assertEquals(2, data1.getAssignments().size());
     assertEquals("assigned1", data1.getAssignments().get(0));
     assertEquals("assigned2", data1.getAssignments().get(1));
+    assertEquals("[TEBA, TNEBA]", data1.getTasks().toString());
   }
 
   @Test
@@ -202,6 +214,12 @@ class PrescriptionDataBuilderTest {
     familyMemberExt.addExtension(motherRefExt);
     familyMemberExt.addExtension(motherRelationExt);
     parentAnalysis.addExtension(familyMemberExt);
+
+    final Task task1 = new Task();
+    task1.getCode().getCodingFirstRep().setCode("TEBA");
+    final IBundleProvider tasksBundle = Mockito.mock(IBundleProvider.class);
+    when(tasksBundle.isEmpty()).thenReturn(false);
+    when(tasksBundle.getAllResources()).thenReturn(List.of(task1));
     
     when(serviceRequestDao.read(any(), any()))
         .thenReturn(serviceRequest)
@@ -210,6 +228,7 @@ class PrescriptionDataBuilderTest {
     when(organizationDao.read(any())).thenReturn(organization);
     when(specimenDao.read(eq(new IdType("speci1")), any())).thenReturn(specimen1);
     when(specimenDao.read(eq(new IdType("speci2")), any())).thenReturn(specimen2);
+    when(taskDao.search(any())).thenReturn(tasksBundle);
     
     List<SequencingData> results = sequencingDataBuilder.fromIds(Set.of("serviceRequest1"), requestDetails);
 
@@ -219,6 +238,7 @@ class PrescriptionDataBuilderTest {
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(specimenDao).read(eq(new IdType("speci1")), any());
     verify(specimenDao, never()).read(eq(new IdType("speci2")), any());
+    verify(taskDao).search(any());
 
     assertEquals(1, results.size());
     SequencingData data1 = results.get(0);
@@ -238,6 +258,7 @@ class PrescriptionDataBuilderTest {
     assertEquals("parentAnalysis", data1.getPrescriptionId());
     assertEquals("active", data1.getPrescriptionStatus());
     assertEquals("speciId1", data1.getSample());
+    assertEquals("[TEBA]", data1.getTasks().toString());
   }
 
 }
