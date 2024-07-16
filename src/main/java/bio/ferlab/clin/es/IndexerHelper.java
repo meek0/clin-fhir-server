@@ -1,10 +1,7 @@
 package bio.ferlab.clin.es;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Group;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ public class IndexerHelper {
         return resource instanceof Patient ||
                 resource instanceof ServiceRequest ||
                 resource instanceof Group ||
+                resource instanceof Task ||
                 resource instanceof Bundle && isModifierBundle((Bundle) resource);
     }
 
