@@ -12,6 +12,7 @@ public class Extensions {
     public static final String CLINICAL_IMPRESSION_REF = "http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression";
     public static final String PROCEDURE_DIRECTED_BY = "http://hl7.org/fhir/StructureDefinition/procedure-directedBy";
     public static final String FAMILY_MEMBER = "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-member";
+    public static final String SEQUENCING_EXPERIMENT = "http://fhir.cqgc.ferlab.bio/StructureDefinition/sequencing-experiment";
     public static final String FAMILY_MEMBER_MOTHER_CODE = "MTH";
     public static final String FAMILY_MEMBER_FATHER_CODE = "FTH";
 }

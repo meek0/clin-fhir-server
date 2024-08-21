@@ -87,6 +87,15 @@
             "patient_mrn": {
               "type": "keyword",
               "normalizer" : "lowercase_normalizer"
+            },
+            "task_runname": {
+              "type": "keyword"
+            },
+            "patient_disease_status": {
+              "type": "keyword"
+            },
+            "patient_relationship": {
+              "type": "keyword"
             }
           }
         }
