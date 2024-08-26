@@ -11,11 +11,14 @@ import static bio.ferlab.clin.es.data.ElasticsearchData.EMPTY_STRING;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SequencingRequestData {
-  
+
   private String requestId = EMPTY_STRING;
   private String status = EMPTY_STRING;
   private String sample = EMPTY_STRING;
   private String patientId = EMPTY_STRING;
   private String patientMRN = EMPTY_STRING;
-  
+  private String taskRunname = EMPTY_STRING;
+  private String patientRelationship = EMPTY_STRING;
+  private String patientDiseaseStatus = EMPTY_STRING;
+
 }

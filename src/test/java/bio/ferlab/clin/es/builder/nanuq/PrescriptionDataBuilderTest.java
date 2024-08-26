@@ -6,6 +6,7 @@ import bio.ferlab.clin.es.data.nanuq.SequencingData;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,9 +29,10 @@ class PrescriptionDataBuilderTest {
   final IFhirResourceDao<Organization> organizationDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Specimen> specimenDao = Mockito.mock(IFhirResourceDao.class);
   final IFhirResourceDao<Task> taskDao = Mockito.mock(IFhirResourceDao.class);
-  final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null, serviceRequestDao, null, organizationDao
+  final IFhirResourceDao<ClinicalImpression> clinicalImpressionDAO = Mockito.mock(IFhirResourceDao.class);
+  final ResourceDaoConfiguration configuration = new ResourceDaoConfiguration(patientDao, null, serviceRequestDao, clinicalImpressionDAO, organizationDao
       , null, null, null, null, null, specimenDao, taskDao);
-  
+
   private final AnalysisDataBuilder analysisDataBuilder = new AnalysisDataBuilder(configuration);
   private final SequencingDataBuilder sequencingDataBuilder = new SequencingDataBuilder(configuration);
 
@@ -40,7 +42,8 @@ class PrescriptionDataBuilderTest {
     serviceRequest.getMeta().getProfile().add(new CanonicalType(AbstractPrescriptionDataBuilder.Type.SEQUENCING.value));
 
     when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
-    
+    when(clinicalImpressionDAO.search(any())).thenReturn(Mockito.mock(IBundleProvider.class));
+
     List<AnalysisData> data = analysisDataBuilder.fromIds(Set.of("serviceRequest1"), null);
 
     assertEquals(0, data.size());
@@ -57,14 +60,14 @@ class PrescriptionDataBuilderTest {
 
     assertEquals(0, data.size());
   }
-  
+
   @Test
   public void analysisDataBuilder() {
 
     final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
     final ServiceRequest serviceRequest = new ServiceRequest();
     serviceRequest.setId("serviceRequest1");
-    
+
     final Extension familyMemberExt = new Extension("http://fhir.cqgc.ferlab.bio/StructureDefinition/family-member");
     final Extension motherRefExt = new Extension("parent");
     motherRefExt.setValue(new Reference("Patient/motherRef"));
@@ -75,7 +78,7 @@ class PrescriptionDataBuilderTest {
     familyMemberExt.addExtension(motherRefExt);
     familyMemberExt.addExtension(motherRelationExt);
     serviceRequest.addExtension(familyMemberExt);
-    
+
     serviceRequest.getMeta().getProfile().add(new CanonicalType(AbstractPrescriptionDataBuilder.Type.ANALYSIS.value));
     serviceRequest.getMeta().getSecurity().add(new Coding().setCode("TAG1"));
     serviceRequest.getSubject().setReference("patient1");
@@ -124,15 +127,15 @@ class PrescriptionDataBuilderTest {
     final IBundleProvider tasksBundle = Mockito.mock(IBundleProvider.class);
     when(tasksBundle.isEmpty()).thenReturn(false);
     when(tasksBundle.getAllResources()).thenReturn(List.of(task1, task2));
-    
+
     when(serviceRequestDao.read(any(), any())).thenReturn(serviceRequest);
     when(patientDao.read(any())).thenReturn(patient).thenReturn(p2).thenReturn(p3);
     when(organizationDao.read(any())).thenReturn(organization);
     when(serviceRequestDao.search(any())).thenReturn(bundle);
     when(taskDao.search(any())).thenReturn(tasksBundle);
-    
+
     List<AnalysisData> results = analysisDataBuilder.fromIds(Set.of("serviceRequest1"), requestDetails);
-    
+
     verify(serviceRequestDao).read(eq(new IdType("serviceRequest1")), eq(requestDetails));
     verify(patientDao).read(eq(new IdType("patient1")));
     verify(patientDao).read(eq(new IdType("p2")));
@@ -140,7 +143,7 @@ class PrescriptionDataBuilderTest {
     verify(organizationDao).read(eq(new IdType("organization1")));
     verify(serviceRequestDao).search(any());
     verify(taskDao, times(2)).search(any());
-    
+
     assertEquals(1, results.size());
     AnalysisData data1 = results.get(0);
     assertEquals("patient1", data1.getPatientId());
@@ -201,7 +204,7 @@ class PrescriptionDataBuilderTest {
     final Specimen specimen2 = new Specimen(); // no parent
     specimen2.getAccessionIdentifier().setValue("speciId2");
     serviceRequest.getSpecimen().addAll(List.of(new Reference("speci1"), new Reference("speci2")));
-    
+
     final ServiceRequest parentAnalysis = new ServiceRequest();
     parentAnalysis.setStatus(ServiceRequest.ServiceRequestStatus.ACTIVE);
     final Extension familyMemberExt = new Extension("http://fhir.cqgc.ferlab.bio/StructureDefinition/family-member");
@@ -220,7 +223,7 @@ class PrescriptionDataBuilderTest {
     final IBundleProvider tasksBundle = Mockito.mock(IBundleProvider.class);
     when(tasksBundle.isEmpty()).thenReturn(false);
     when(tasksBundle.getAllResources()).thenReturn(List.of(task1));
-    
+
     when(serviceRequestDao.read(any(), any()))
         .thenReturn(serviceRequest)
         .thenReturn(parentAnalysis);
@@ -229,7 +232,7 @@ class PrescriptionDataBuilderTest {
     when(specimenDao.read(eq(new IdType("speci1")), any())).thenReturn(specimen1);
     when(specimenDao.read(eq(new IdType("speci2")), any())).thenReturn(specimen2);
     when(taskDao.search(any())).thenReturn(tasksBundle);
-    
+
     List<SequencingData> results = sequencingDataBuilder.fromIds(Set.of("serviceRequest1"), requestDetails);
 
     verify(serviceRequestDao).read(eq(new IdType("serviceRequest1")), eq(requestDetails));

@@ -73,6 +73,15 @@
         },
         "tasks": {
           "type": "keyword"
+        },
+        "task_runName": {
+          "type": "keyword"
+        },
+        "patient_disease_status": {
+          "type": "keyword"
+        },
+        "patient_relationship": {
+          "type": "keyword"
         }
       }
     }

@@ -13,10 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-
-import static bio.ferlab.clin.utils.Extensions.*;
 
 @Component
 public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
@@ -34,7 +31,7 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
       final AnalysisData analysisData = new AnalysisData();
       final ServiceRequest serviceRequest = this.configuration.serviceRequestDAO.read(new IdType(serviceRequestId), requestDetails);
       if (this.isValidType(serviceRequest)) {
-        
+
         this.handlePrescription(serviceRequest, analysisData);
         analysisData.setPrescriptionId(serviceRequest.getIdElement().getIdPart());
         if (serviceRequest.hasPerformer()) {
@@ -48,7 +45,11 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
           SequencingRequestData srd = new SequencingRequestData();
           srd.setRequestId(sr.getIdElement().getIdPart());
 
-          this.addTasks(sr, analysisData);
+          Set<String> taskRunNames = this.addTasks(sr, analysisData);
+
+          if (taskRunNames.size() > 0) {
+            srd.setTaskRunname(taskRunNames.iterator().next());
+          }
 
           if(sr.hasStatus()) {
             srd.setStatus(sr.getStatus().toCode());
@@ -64,6 +65,8 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
             }
             srd.setPatientId(sr.getSubject().getReferenceElement().getIdPart());
           }
+
+          this.addRunInfo(serviceRequest, sr, srd);
           analysisData.getSequencingRequests().add(srd);
         }
         analyses.add(analysisData);
