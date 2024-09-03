@@ -74,7 +74,7 @@
         "tasks": {
           "type": "keyword"
         },
-        "task_runName": {
+        "task_runname": {
           "type": "keyword"
         },
         "patient_disease_status": {
