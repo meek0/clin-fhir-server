@@ -100,7 +100,9 @@ Again, browse to the following link to use the server (note that the port 8080 m
 
 Docker compose is a simple option to build and deploy container. To deploy with docker compose, you should build the project
 with `mvn clean install` and then bring up the containers with `docker-compose up -d --build`. The server can be
-reached at http://localhost:8080/hapi-fhir-jpaserver/.
+reached at http://localhost:8082.
+
+The compose file is aimed to work with [clin-localstack](https://github.com/Ferlab-Ste-Justine/clin-localstack).
 
 In order to use another port, change the `ports` parameter
 inside `docker-compose.yml` to `8888:8080`, where 8888 is a port of your choice.
