@@ -89,7 +89,8 @@
               "normalizer" : "lowercase_normalizer"
             },
             "task_runname": {
-              "type": "keyword"
+              "type": "keyword",
+              "normalizer" : "lowercase_normalizer"
             },
             "patient_disease_status": {
               "type": "keyword"
