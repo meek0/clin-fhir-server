@@ -73,6 +73,10 @@
               "type": "keyword",
               "normalizer" : "lowercase_normalizer"
             },
+            "prescription_id": {
+              "type": "keyword",
+              "normalizer" : "lowercase_normalizer"
+            },
             "status": {
               "type": "keyword"
             },
