@@ -44,7 +44,7 @@ public class AnalysisDataBuilder extends AbstractPrescriptionDataBuilder {
         for (ServiceRequest sr : serviceRequests) {
           SequencingRequestData srd = new SequencingRequestData();
           srd.setRequestId(sr.getIdElement().getIdPart());
-          srd.setPrescriptionId(serviceRequest.getIdElement().getIdPart());
+          srd.setPrescriptionId(serviceRequestId);
 
           Set<String> taskRunNames = this.addTasks(sr, analysisData);
 
