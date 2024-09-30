@@ -174,6 +174,7 @@ class PrescriptionDataBuilderTest {
     assertEquals("assigned1", data1.getAssignments().get(0));
     assertEquals("assigned2", data1.getAssignments().get(1));
     assertEquals("[TEBA, TNEBA]", data1.getTasks().toString());
+    assertEquals(2, data1.getSequencingRequests().stream().filter(sr -> sr.getPrescriptionId().equals(data1.getPrescriptionId())).count());
   }
 
   @Test
