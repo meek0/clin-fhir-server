@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Configuration
@@ -28,6 +30,7 @@ public class BioProperties {
     private final boolean isTaggingEnabled;
     private final boolean isTaggingQueryParam;
     private final boolean isTaggingMasking;
+    private final boolean isParamHasForbidden;
     private final boolean isAuthorizationEnabled;
     private final String authClientId;
     private final String authSystemId;
@@ -53,6 +56,7 @@ public class BioProperties {
             @Value("${bio.tagging.enabled}") boolean isTaggingEnabled,
             @Value("${bio.tagging.queryParam}") boolean isTaggingQueryParam,
             @Value("${bio.tagging.masking}") boolean isTaggingMasking,
+            @Value("${bio.tagging.param-has-forbidden}") boolean isParamHasForbidden,
             @Value("${bio.auth.authorization.enabled}") boolean isAuthorizationEnabled,
             @Value("${bio.auth.authorization.client-id}") String authClientId,
             @Value("${bio.auth.authorization.client-secret}") String authClientSecret,
@@ -78,6 +82,7 @@ public class BioProperties {
         this.isTaggingEnabled = isTaggingEnabled;
         this.isTaggingQueryParam = isTaggingQueryParam;
         this.isTaggingMasking = isTaggingMasking;
+        this.isParamHasForbidden = isParamHasForbidden;
         this.isAuthorizationEnabled = isAuthorizationEnabled;
         this.authClientId = authClientId;
         this.authClientSecret = authClientSecret;
@@ -86,6 +91,4 @@ public class BioProperties {
         this.nanuqEsAnalysesIndex = nanuqEsAnalysesIndex;
         this.nanuqEsSequencingsIndex = nanuqEsSequencingsIndex;
     }
-
-
 }
