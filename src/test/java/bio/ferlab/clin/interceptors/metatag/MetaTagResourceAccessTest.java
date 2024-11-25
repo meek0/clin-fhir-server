@@ -30,6 +30,7 @@ class MetaTagResourceAccessTest {
   @BeforeEach
   void beforeEach() {
     when(bioProperties.isTaggingEnabled()).thenReturn(true);
+    when(bioProperties.isParamHasForbidden()).thenReturn(true);
     when(bioProperties.getAuthSystemId()).thenReturn("system");
   }
   
@@ -175,4 +176,20 @@ class MetaTagResourceAccessTest {
     metaTagResourceAccess.preShow(requestDetails, person);
     verify(prescriptionMasking).preShow(metaTagResourceAccess, person, requestDetails);
   }
+
+  @Test
+  void canSeeResource_param_has_forbidden() {
+    final RequestDetails requestDetails = Mockito.mock(RequestDetails.class);
+    when(requestDetails.getRequestType()).thenReturn(RequestTypeEnum.GET);
+    when(requestDetails.getParameters()).thenReturn(Map.of("_has:Person:patient:name", new String[]{"John"}));
+    String bearer = JWT.create()
+      .withClaim(TOKEN_ATTR_FHIR_ORG_ID, List.of("tag1"))
+      .withClaim("realm_access", Map.of("roles", List.of()))
+      .sign(Algorithm.HMAC256("secret"));
+    when(requestDetails.getHeader("Authorization")).thenReturn("Bearer "+ bearer);
+    final Patient resource = new Patient();
+    resource.getMeta().addSecurity().setCode("tag1"); // allowed to see this resource
+    assertFalse(metaTagResourceAccess.canSeeResource(requestDetails, resource));
+  }
+
 }

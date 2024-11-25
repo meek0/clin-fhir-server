@@ -10,18 +10,17 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseCoding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Person;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,13 +51,17 @@ public class MetaTagResourceAccess {
   public boolean canSeeResource(RequestDetails requestDetails, IBaseResource resource) {
     if (bioProperties.isTaggingEnabled()) {
       if (isResourceWithTags(resource)) {
-        final List<String> userRoles = getUserRoles(requestDetails);
-        final List<String> userTags = getUserTags(requestDetails);
-        final List<String> resourceTags = getResourceTags(resource);
-        if (userTags.contains(USER_ALL_TAGS) || userRoles.contains(USER_ROLE_GENETICIAN)) {
-          return true;  // can see all
+        if (validParamFilters(requestDetails, resource)) {
+          final List<String> userRoles = getUserRoles(requestDetails);
+          final List<String> userTags = getUserTags(requestDetails);
+          final List<String> resourceTags = getResourceTags(resource);
+          if (userTags.contains(USER_ALL_TAGS) || userRoles.contains(USER_ROLE_GENETICIAN)) {
+            return true;  // can see all
+          } else {
+            return resourceTags.stream().anyMatch(userTags::contains);  // tagged by EP/LDM
+          }
         } else {
-          return resourceTags.stream().anyMatch(userTags::contains);  // tagged by EP/LDM
+          return false;
         }
       } else if (resource instanceof Person) {  // Person isn't tagged and has custom access implementation
         return metaTagPerson.canSeeResource(this, requestDetails, (Person) resource);
@@ -117,5 +120,12 @@ public class MetaTagResourceAccess {
 
   public boolean isResourceWithTags(IBaseResource resource) {
     return resource != null && this.isResourceWithTags(resource.getClass().getSimpleName());
+  }
+
+  private boolean validParamFilters(RequestDetails requestDetails, IBaseResource resource) {
+    if (bioProperties.isParamHasForbidden()) {
+      return requestDetails.getParameters().keySet().stream().noneMatch(param -> StringUtils.startsWithIgnoreCase(param, "_has"));
+    }
+    return true;
   }
 }

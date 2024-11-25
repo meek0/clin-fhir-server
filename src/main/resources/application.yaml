@@ -167,6 +167,7 @@ bio:
     enabled: true
     queryParam: true
     masking: true
+    param-has-forbidden: true
   elasticsearch:
     host: "localhost"
     port: 9200
