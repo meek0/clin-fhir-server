@@ -1,29 +1,15 @@
-version: "3"
 services:
   hapi-fhir-server:
     build: .
-    container_name: hapi-fhir-server
     restart: on-failure
     environment:
-      datasource.driver: "org.postgresql.Driver"
-      datasource.url: "jdbc:postgresql://hapi-fhir-postgres:5432/hapi"
-      hibernate.dialect: "org.hibernate.dialect.PostgreSQL95Dialect"
-      datasource.username: "admin"
-      datasource.password: "admin"
+      SPRING_PROFILES_ACTIVE: local
     ports:
-      - "8080:8080"
-  hapi-fhir-postgres:
-    image: postgres:latest
-    container_name: hapi-fhir-postgres
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: 'hapi'
-      POSTGRES_USER: 'admin'
-      POSTGRES_PASSWORD: 'admin'
-    volumes:
-      - hapi-fhir-postgres:/var/lib/postgresql/data
-      - "./backup:/root/backup"
-volumes:
-  hapi-fhir-postgres:
+      - 8080:8080
+      - 8000:8000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command:
+        - catalina.sh
+        - jpda
+        - run

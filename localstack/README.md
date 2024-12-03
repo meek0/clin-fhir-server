@@ -1,5 +1,7 @@
 # FHIR localstack
 
+( **Deprecated**: use https://github.com/Ferlab-Ste-Justine/clin-localstack instead )
+
 # Usage
 
 Run the following command to display usage.
