@@ -5,6 +5,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: local
     ports:
-      - "8080:8080"
+      - 8080:8080
+      - 8000:8000
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - host.docker.internal:host-gateway
+    command:
+        - catalina.sh
+        - jpda
+        - run
