@@ -171,11 +171,8 @@ class MetaTagResourceVisitorTest {
   @Test
   void extractLdmCode_ServiceRequest_missing_field() {
     final ServiceRequest resource = new ServiceRequest();
-    Exception ex = Assertions.assertThrows(
-        InvalidRequestException.class,
-        () -> metaTagResourceVisitor.extractLdmCode(null, resource)
-    );
-    assertEquals("Resource 'ServiceRequest' field 'performer' is required for meta tag", ex.getMessage());
+    String code = metaTagResourceVisitor.extractLdmCode(null, resource);
+    assertNull(code);
   }
 
 }
