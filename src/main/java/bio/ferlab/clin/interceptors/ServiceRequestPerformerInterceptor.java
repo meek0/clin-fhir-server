@@ -15,16 +15,19 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @Interceptor
 public class ServiceRequestPerformerInterceptor {
-  
+
+  private static final Logger log = LoggerFactory.getLogger(ServiceRequestPerformerInterceptor.class);
+
   public static final String ANALYSIS_REQUEST_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/analysis-request-code";
 
   private final ResourceDaoConfiguration configuration;
@@ -70,16 +73,15 @@ public class ServiceRequestPerformerInterceptor {
   }
   
   private OrganizationAffiliation findOrganizationAffiliationByCode(String ep, String code) {
-    final RuntimeException notFound = new InvalidRequestException("Can't find organization affiliation attached to code: " + code + " with ep: " + ep);
     final IBundleProvider searchResultBundle = this.configuration.organizationAffiliationDAO
         .search(SearchParameterMap.newSynchronous().add(OrganizationAffiliation.SP_SPECIALTY, new TokenParam(code)));
     if (searchResultBundle.isEmpty()) {
-      throw notFound;
+      return null;
     }
     return searchResultBundle.getAllResources().stream()
         .map(aff -> (OrganizationAffiliation)aff)
         .filter(aff -> ep.equals(aff.getOrganization().getReference()))
-        .findFirst().orElseThrow(() -> notFound);
+        .findFirst().orElse(null);
   }
   
   private void handleRequestAndResource(RequestDetails requestDetails, IBaseResource resource) {
@@ -90,8 +92,12 @@ public class ServiceRequestPerformerInterceptor {
         final String code = extractCode(serviceRequest);
         final String ep = extractEp(requestDetails, serviceRequest);
         final OrganizationAffiliation affiliation = findOrganizationAffiliationByCode(ep, code);
-        final String ldm = affiliation.getParticipatingOrganization().getReference();
-        serviceRequest.getPerformer().add(new Reference(ldm));
+        if (affiliation != null) {
+          final String ldm = affiliation.getParticipatingOrganization().getReference();
+          serviceRequest.getPerformer().add(new Reference(ldm));
+        } else {
+          log.warn("Can't find organization affiliation attached to code: " + code + " with ep: " + ep);
+        }
       }
     }
   }
