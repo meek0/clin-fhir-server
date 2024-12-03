@@ -82,11 +82,7 @@ class ServiceRequestPerformerInterceptorTest {
     when(dao.search(any())).thenReturn(bundle);
     when(bundle.isEmpty()).thenReturn(true);
     when(resourceFinder.findPatientFromRequestOrDAO(any(), any())).thenReturn(Optional.ofNullable(patient));
-    Exception ex = Assertions.assertThrows(
-        InvalidRequestException.class,
-        () -> interceptor.created(requestDetails, serviceRequest)
-    );
-    assertEquals("Can't find organization affiliation attached to code: foo with ep: ep1", ex.getMessage());
+    assertEquals(0, serviceRequest.getPerformer().size());
   }
 
   @Test
@@ -108,11 +104,7 @@ class ServiceRequestPerformerInterceptorTest {
         .setOrganization(new Reference("ep2"))
         .setParticipatingOrganization(new Reference("bar2"));
     when(bundle.getAllResources()).thenReturn(List.of(affiliation, affiliation2));
-    Exception ex = Assertions.assertThrows(
-        InvalidRequestException.class,
-        () -> interceptor.created(requestDetails, serviceRequest)
-    );
-    assertEquals("Can't find organization affiliation attached to code: foo with ep: ep3", ex.getMessage());
+    assertEquals(0, serviceRequest.getPerformer().size());
   }
 
   @Test
