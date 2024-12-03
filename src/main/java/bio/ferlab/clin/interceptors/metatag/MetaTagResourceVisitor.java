@@ -80,7 +80,7 @@ public class MetaTagResourceVisitor {
     return Optional.ofNullable(resource.getPerformer()).orElse(Collections.emptyList()).stream()
         .filter(p -> StringUtils.isNotBlank(p.getReference()))
         .map(this::getReferenceId)
-        .findFirst().orElseThrow(() -> formatExtractException(resource, "performer"));
+        .findFirst().orElse(null);
   }
   
   private String getReferenceId(Reference reference) {
