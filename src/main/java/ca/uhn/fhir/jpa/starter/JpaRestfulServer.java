@@ -1,4 +1,4 @@
-package ca.uhn.fhir.jpa.app;
+package ca.uhn.fhir.jpa.starter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;

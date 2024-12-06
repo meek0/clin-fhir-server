@@ -1,4 +1,4 @@
-package ca.uhn.fhir.jpa.app.annotations;
+package ca.uhn.fhir.jpa.starter.annotations;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;

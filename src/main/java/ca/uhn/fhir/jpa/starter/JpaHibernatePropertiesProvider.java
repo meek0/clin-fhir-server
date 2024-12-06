@@ -1,4 +1,4 @@
-package ca.uhn.fhir.jpa.app;
+package ca.uhn.fhir.jpa.starter;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.HibernatePropertiesProvider;

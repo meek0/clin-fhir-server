@@ -1,4 +1,4 @@
-package ca.uhn.fhir.jpa.app;
+package ca.uhn.fhir.jpa.starter;
 
 import ca.uhn.fhir.jpa.interceptor.validation.RepositoryValidatingInterceptor;
 

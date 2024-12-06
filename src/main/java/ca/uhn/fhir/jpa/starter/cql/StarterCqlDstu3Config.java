@@ -1,7 +1,7 @@
-package ca.uhn.fhir.jpa.app.cql;
+package ca.uhn.fhir.jpa.starter.cql;
 
 import ca.uhn.fhir.cql.config.CqlDstu3Config;
-import ca.uhn.fhir.jpa.app.annotations.OnDSTU3Condition;
+import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

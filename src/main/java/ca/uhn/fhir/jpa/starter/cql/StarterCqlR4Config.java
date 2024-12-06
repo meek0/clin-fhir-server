@@ -1,7 +1,7 @@
-package ca.uhn.fhir.jpa.app.cql;
+package ca.uhn.fhir.jpa.starter.cql;
 
 import ca.uhn.fhir.cql.config.CqlR4Config;
-import ca.uhn.fhir.jpa.app.annotations.OnR4Condition;
+import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 

@@ -1,4 +1,4 @@
-package ca.uhn.fhir.jpa.app.cql;
+package ca.uhn.fhir.jpa.starter.cql;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;

@@ -1,21 +1,27 @@
-package ca.uhn.fhir.jpa.app;
+package ca.uhn.fhir.jpa.starter;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
-import ca.uhn.fhir.jpa.app.annotations.OnDSTU3Condition;
+import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
+import ca.uhn.fhir.jpa.starter.cql.StarterCqlDstu3Config;
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 @Configuration
 @Conditional(OnDSTU3Condition.class)
+@Import(StarterCqlDstu3Config.class)
 public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
 
   @Autowired
@@ -29,6 +35,20 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
   @Autowired
   AppProperties appProperties;
 
+  @PostConstruct
+  public void initSettings() {
+    if(appProperties.getSearch_coord_core_pool_size() != null) {
+		 setSearchCoordCorePoolSize(appProperties.getSearch_coord_core_pool_size());
+	 }
+	  if(appProperties.getSearch_coord_max_pool_size() != null) {
+		  setSearchCoordMaxPoolSize(appProperties.getSearch_coord_max_pool_size());
+	  }
+	  if(appProperties.getSearch_coord_queue_capacity() != null) {
+		  setSearchCoordQueueCapacity(appProperties.getSearch_coord_queue_capacity());
+	  }
+  }
+
+
   @Override
   public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
     DatabaseBackedPagingProvider pagingProvider = super.databaseBackedPagingProvider();
@@ -39,7 +59,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
 
   @Autowired
   private ConfigurableEnvironment configurableEnvironment;
-  
+
   @Override
   @Bean
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -68,7 +88,12 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
   public ElasticsearchSvcImpl elasticsearchSvc() {
     if (EnvironmentHelper.isElasticsearchEnabled(configurableEnvironment)) {
       String elasticsearchUrl = EnvironmentHelper.getElasticsearchServerUrl(configurableEnvironment);
-      String elasticsearchHost = elasticsearchUrl.substring(elasticsearchUrl.indexOf("://")+3, elasticsearchUrl.lastIndexOf(":"));
+      String elasticsearchHost;
+      if (elasticsearchUrl.startsWith("http")) {
+        elasticsearchHost = elasticsearchUrl.substring(elasticsearchUrl.indexOf("://") + 3, elasticsearchUrl.lastIndexOf(":"));
+      } else {
+        elasticsearchHost = elasticsearchUrl.substring(0, elasticsearchUrl.indexOf(":"));
+      }
       String elasticsearchUsername = EnvironmentHelper.getElasticsearchServerUsername(configurableEnvironment);
       String elasticsearchPassword = EnvironmentHelper.getElasticsearchServerPassword(configurableEnvironment);
       int elasticsearchPort = Integer.parseInt(elasticsearchUrl.substring(elasticsearchUrl.lastIndexOf(":")+1));

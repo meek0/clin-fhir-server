@@ -1,16 +1,10 @@
 package bio.ferlab.clin.validation.validators.nanuq;
 
-import org.hl7.fhir.convertors.conv10_30.Patient10_30;
-import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Person;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatientValidatorTest {
   
