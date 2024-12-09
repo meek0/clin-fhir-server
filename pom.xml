@@ -1,10 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- one-liner to take you to the cloud with settings form the application.yaml file: -->
-    <!-- 'mvn clean package com.google.cloud.tools:jib-maven-plugin:dockerBuild -Dimage=distroless-hapi && docker run -p 8080:8080 -e spring.batch.job.enabled=false distroless-hapi' -->
+    <!-- 'mvn clean package com.google.cloud.tools:jib-maven-plugin:dockerBuild
+    -Dimage=distroless-hapi && docker run -p 8080:8080 -e spring.batch.job.enabled=false
+    distroless-hapi' -->
     <!--
     Note: HAPI projects use the "hapi-fhir" POM as their base to provide easy management.
     You do not need to use this in your own projects, so the "parent" tag and it's
@@ -15,7 +17,7 @@
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir</artifactId>
         <!-- FIMXME KBD Change this to 5.3.0 BEFORE merging this code to master !  -->
-        <version>5.5.1</version>
+        <version>5.6.0</version>
     </parent>
 
     <artifactId>clin-fhir-server</artifactId>
@@ -73,6 +75,7 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>
@@ -88,7 +91,8 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- This dependency includes the JPA server itself, which is packaged separately from the rest of HAPI FHIR -->
+        <!-- This dependency includes the JPA server itself, which is packaged separately from the
+        rest of HAPI FHIR -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-base</artifactId>
@@ -210,7 +214,8 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
+        <!-- You may not need this if you are deploying to an application server which provides
+        database connection pools itself. -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
@@ -222,7 +227,9 @@
             </exclusions>
         </dependency>
 
-        <!-- This example uses H2 embedded database. If you are using another database such as Mysql or Oracle, you may omit the following dependencies and replace them with an appropriate database client
+        <!-- This example uses H2 embedded database. If you are using another database such as Mysql
+        or Oracle, you may omit the following dependencies and replace them with an appropriate
+        database client
             dependency for your database platform. -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -283,7 +290,8 @@
             <version>2.29.4</version>
         </dependency>
 
-        <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
+        <!-- The following dependencies are only needed for automated unit tests, you do not
+        neccesarily need them to run the example. -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>
@@ -433,7 +441,9 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- The following is not required for the application to build, but allows you to test it by issuing "mvn package jetty:run -Dspring.batch.job.enabled=false" from the command line. -->
+            <!-- The following is not required for the application to build, but allows you to test
+            it by issuing "mvn package jetty:run -Dspring.batch.job.enabled=false" from the command
+            line. -->
             <!--
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -458,7 +468,8 @@
                 </configuration>
             </plugin>
 
-            <!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+            <!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You
+            can omit it if you are not using that feature. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -556,7 +567,8 @@
          -->
 
         <!-- example of how to start the server using spring boot-->
-        <!-- mvn clean package spring-boot:repackage -Pboot && java -jar target/hapi-fhir-jpaserver.war -->
+        <!-- mvn clean package spring-boot:repackage -Pboot && java -jar
+        target/hapi-fhir-jpaserver.war -->
 
         <!-- Use the boot profile for development and debugging options when using your IDE -->
         <profile>
@@ -571,7 +583,8 @@
         </profile>
         <!-- examples of how to start the server using the default profile-->
         <!-- mvn clean package jetty:run -Dspring.batch.job.enabled=false -->
-        <!-- java -jar -Dspring.batch.job.enabled=false jetty-runner.jar target/hapi-fhir-jpaserver.war -->
+        <!-- java -jar -Dspring.batch.job.enabled=false jetty-runner.jar
+        target/hapi-fhir-jpaserver.war -->
         <profile>
             <id>jetty</id>
             <dependencies>

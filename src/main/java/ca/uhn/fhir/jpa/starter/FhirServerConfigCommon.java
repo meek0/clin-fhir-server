@@ -8,8 +8,9 @@ import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings.CrossPartitionReferenceMode;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionDeliveryHandlerFactory;
+import ca.uhn.fhir.jpa.subscription.match.deliver.email.EmailSenderImpl;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
-import ca.uhn.fhir.jpa.subscription.match.deliver.email.JavaMailEmailSender;
+import ca.uhn.fhir.rest.server.mail.MailConfig;
 import com.google.common.base.Strings;
 import org.hl7.fhir.dstu2.model.Subscription;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -62,7 +63,6 @@ public class FhirServerConfigCommon {
     if (appProperties.getSubscription().getEmail() != null) {
       ourLog.info("Email subscriptions enabled");
     }
-
     if (appProperties.getEnable_index_contained_resource() == Boolean.TRUE) {
         ourLog.info("Indexed on contained resource enabled");
       }
@@ -206,22 +206,21 @@ public class FhirServerConfigCommon {
   @Bean()
   public IEmailSender emailSender(AppProperties appProperties, Optional<SubscriptionDeliveryHandlerFactory> subscriptionDeliveryHandlerFactory) {
     if (appProperties.getSubscription() != null && appProperties.getSubscription().getEmail() != null) {
-      JavaMailEmailSender retVal = new JavaMailEmailSender();
+		 MailConfig mailConfig = new MailConfig();
 
       AppProperties.Subscription.Email email = appProperties.getSubscription().getEmail();
-      retVal.setSmtpServerHostname(email.getHost());
-      retVal.setSmtpServerPort(email.getPort());
-      retVal.setSmtpServerUsername(email.getUsername());
-      retVal.setSmtpServerPassword(email.getPassword());
-      retVal.setAuth(email.getAuth());
-      retVal.setStartTlsEnable(email.getStartTlsEnable());
-      retVal.setStartTlsRequired(email.getStartTlsRequired());
-      retVal.setQuitWait(email.getQuitWait());
+      mailConfig.setSmtpHostname(email.getHost());
+      mailConfig.setSmtpPort(email.getPort());
+      mailConfig.setSmtpUsername(email.getUsername());
+      mailConfig.setSmtpPassword(email.getPassword());
+      mailConfig.setSmtpUseStartTLS(email.getStartTlsEnable());
+
+		 IEmailSender emailSender = new EmailSenderImpl(mailConfig);
 
       if(subscriptionDeliveryHandlerFactory.isPresent())
-       subscriptionDeliveryHandlerFactory.get().setEmailSender(retVal);
+       subscriptionDeliveryHandlerFactory.get().setEmailSender(emailSender);
 
-      return retVal;
+      return emailSender;
     }
 
     return null;

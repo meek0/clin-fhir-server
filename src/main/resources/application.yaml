@@ -10,6 +10,9 @@ spring:
     # database connection pool size
     hikari:
       maximum-pool-size: 10
+  flyway:
+    enabled: false
+    check-location: false
   jpa:
     properties:
       hibernate.format_sql: false

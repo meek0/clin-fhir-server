@@ -10,6 +10,6 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     command:
-        - catalina.sh
-        - jpda
-        - run
+      - catalina.sh
+      - jpda
+      - run
